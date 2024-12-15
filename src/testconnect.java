@@ -7,7 +7,7 @@ public class testconnect {
         String url = "jdbc:mysql://localhost:3306/hub?useSSL=false&serverTimezone=Asia/Shanghai";
         // 替换为你的数据库URL
         String user = "root"; // 替换为你的用户名
-        String password = "000000"; // 替换为你的密码
+        String password = "383517Cc."; // 替换为你的密码
 
         try {
             // 加载JDBC驱动

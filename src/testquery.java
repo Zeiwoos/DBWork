@@ -4,7 +4,7 @@ public class testquery {
     public static void main(String[] args) {
         String url = "jdbc:mysql://localhost:3306/hub?useSSL=false&serverTimezone=Asia/Shanghai";
         String user = "root";
-        String password = "000000";
+        String password = "383517Cc.";
 
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
             System.out.println("连接成功！");
