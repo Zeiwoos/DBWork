@@ -32,3 +32,5 @@ bin/
 
 JDBC_TEST.iml
 db_work_front.iml
+
+*.iml
