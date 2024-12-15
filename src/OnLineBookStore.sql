@@ -3,7 +3,7 @@ CREATE DATABASE IF NOT EXISTS `OnLineBookStore`;
 USE `OnLineBookStore`;
 
 -- 顾客表
-DROP TABLE IF EXISTS `customers`;
+DROP TABLE IF EXISTS `customers` ;
 CREATE TABLE customers (
                              CustomerID INT AUTO_INCREMENT PRIMARY KEY,
                              CustomerName VARCHAR(50) NOT NULL,
@@ -59,8 +59,9 @@ CREATE TABLE missingBooks (
                                 RequestedByCustomerID INT, -- 顾客ID（如果有）
                                 Quantity INT NOT NULL,
                                 RegisterDate DATE NOT NULL,
-                                FOREIGN KEY (BookID) REFERENCES `Books`(BookID),
+                                FOREIGN KEY (BookID) REFERENCES `Books`(BookID) ,
                                 FOREIGN KEY (RequestedByCustomerID) REFERENCES `Customers`(CustomerID)
+
 );
 
 -- 采购单表
@@ -80,7 +81,7 @@ CREATE TABLE purchaseDetails (
                                    PurchaseID INT NOT NULL,
                                    BookID INT NOT NULL,
                                    Quantity INT NOT NULL,
-                                   FOREIGN KEY (PurchaseID) REFERENCES `PurchaseOrders`(PurchaseID),
+                                   FOREIGN KEY (PurchaseID) REFERENCES `PurchaseOrders`(PurchaseID) ,
                                    FOREIGN KEY (BookID) REFERENCES `Books`(BookID)
 );
 
@@ -104,7 +105,7 @@ CREATE TABLE orderDetails (
                                 BookID INT NOT NULL,
                                 Quantity INT NOT NULL,
                                 Price DECIMAL(10, 2) NOT NULL, -- 单价
-                                FOREIGN KEY (OrderID) REFERENCES `Orders`(OrderID),
+                                FOREIGN KEY (OrderID) REFERENCES `Orders`(OrderID) ,
                                 FOREIGN KEY (BookID) REFERENCES `Books`(BookID)
 );
 
@@ -126,6 +127,6 @@ CREATE TABLE browsingLogs (
                                 CustomerID INT,
                                 BookID INT,
                                 BrowseDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                                FOREIGN KEY (CustomerID) REFERENCES `Customers`(CustomerID),
+                                FOREIGN KEY (CustomerID) REFERENCES `Customers`(CustomerID) ,
                                 FOREIGN KEY (BookID) REFERENCES `Books`(BookID)
 );
