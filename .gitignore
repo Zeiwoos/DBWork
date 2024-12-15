@@ -29,3 +29,6 @@ bin/
 .DS_Store
 
 /.idea/
+
+JDBC_TEST.iml
+db_work_front.iml
