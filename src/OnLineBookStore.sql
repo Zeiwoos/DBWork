@@ -91,3 +91,5 @@ CREATE TABLE BrowsingLogs (
                               FOREIGN KEY (CustomerID) REFERENCES customers(CustomerID),
                               FOREIGN KEY (BookID) REFERENCES books(BookID)
 );
+
+
