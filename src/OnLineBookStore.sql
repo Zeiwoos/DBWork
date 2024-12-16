@@ -130,3 +130,5 @@ CREATE TABLE browsingLogs (
                                 FOREIGN KEY (CustomerID) REFERENCES `Customers`(CustomerID) ,
                                 FOREIGN KEY (BookID) REFERENCES `Books`(BookID)
 );
+
+
