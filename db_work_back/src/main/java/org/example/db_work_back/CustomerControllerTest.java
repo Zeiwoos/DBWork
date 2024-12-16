@@ -21,6 +21,6 @@ public class CustomerControllerTest {
         customer.setEmail("alice@example.com");
         ResponseEntity<Customer> response = controller.registerCustomer(customer);
 
-        assertEquals("Alice", response.getBody().getCustomerName());
+        Assertions.assertEquals("Alice", response.getBody().getCustomerName());
     }
 }

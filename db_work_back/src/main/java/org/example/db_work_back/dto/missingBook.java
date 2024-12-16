@@ -1,4 +1,4 @@
-package org.example.dto;
+package org.example.db_work_back.dto;
 
 public class missingBook {
 //    书号，书名，出版社，供书商，数量，登记日期
