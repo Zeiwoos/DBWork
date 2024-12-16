@@ -9,8 +9,8 @@ public class databaseCreate {
     public static void main(String[] args) {
         String jdbcUrl = "jdbc:mysql://localhost:3306/?useSSL=false&serverTimezone=UTC";
         String username = "root";
-        String password = "383517Cc.";
-        String sqlFilePath = "src/OnLineBookStore.sql";
+        String password = "000000";
+        String sqlFilePath = "src/test.sql";
 
         try (Connection connection = DriverManager.getConnection(jdbcUrl, username, password);
              Statement statement = connection.createStatement();
