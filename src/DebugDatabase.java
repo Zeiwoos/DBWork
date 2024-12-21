@@ -7,7 +7,7 @@ public class DebugDatabase {
         // 数据库连接信息
         String jdbcUrl = "jdbc:mysql://localhost:3306/OnLineBookStore?useSSL=false&serverTimezone=UTC";
         String username = "root";
-        String password = "000000";
+        String password = "383517Cc.";
 
         // SQL 语句
         String dropSQL = "DROP DATABASE IF EXISTS onlinebookstore";

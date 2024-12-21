@@ -1,13 +1,16 @@
 package org.example.db_work_back.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
+
 @Data // 自动生成getters, setters, toString, equals, hashCode等
-@NoArgsConstructor // 自动生成无参构造函数
+@Builder // 自动生成构造器
 @AllArgsConstructor // 自动生成全参构造函数
+@NoArgsConstructor // 自动生成无参构造函数
 @Entity
 @Table(name = "customers")
 public class Customer {

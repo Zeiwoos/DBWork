@@ -7,10 +7,10 @@ import java.sql.Statement;
 
 public class databaseCreate {
     public static void main(String[] args) {
-        String jdbcUrl = "jdbc:mysql://localhost:3306/?useSSL=false&serverTimezone=UTC";
+        String jdbcUrl = "jdbc:mysql://localhost:3306/onlinebookstore?useSSL=false&serverTimezone=UTC";
         String username = "root";
-        String password = "000000";
-        String sqlFilePath = "src/test.sql";
+        String password = "383517Cc.";
+        String sqlFilePath = "OnlineBookStore.sql";
 
         try (Connection connection = DriverManager.getConnection(jdbcUrl, username, password);
              Statement statement = connection.createStatement();
