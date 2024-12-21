@@ -357,19 +357,19 @@ CREATE EVENT adjust_customer_credit
         WHEN Balance + (SELECT COALESCE(SUM(Price * Quantity), 0)
                         FROM orderDetails
                                  JOIN books ON orderDetails.BookID = books.BookID
-                        WHERE orderDetails.CustomerID = customers.CustomerID) <= 1000 THEN 1
+                        WHERE orderDetails.CustomerID = customers.CustomerID) <= 500 THEN 1
         WHEN Balance + (SELECT COALESCE(SUM(Price * Quantity), 0)
                         FROM orderDetails
                                  JOIN books ON orderDetails.BookID = books.BookID
-                        WHERE orderDetails.CustomerID = customers.CustomerID) <= 3000 THEN 2
+                        WHERE orderDetails.CustomerID = customers.CustomerID) <= 1500 THEN 2
         WHEN Balance + (SELECT COALESCE(SUM(Price * Quantity), 0)
                         FROM orderDetails
                                  JOIN books ON orderDetails.BookID = books.BookID
-                        WHERE orderDetails.CustomerID = customers.CustomerID) <= 5000 THEN 3
+                        WHERE orderDetails.CustomerID = customers.CustomerID) <= 2500 THEN 3
         WHEN Balance + (SELECT COALESCE(SUM(Price * Quantity), 0)
                         FROM orderDetails
                                  JOIN books ON orderDetails.BookID = books.BookID
-                        WHERE orderDetails.CustomerID = customers.CustomerID) <= 7000 THEN 4
+                        WHERE orderDetails.CustomerID = customers.CustomerID) <= 3500 THEN 4
         ELSE 5
         END;
 END ;
