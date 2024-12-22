@@ -1,43 +1,100 @@
 package org.example.db_work_back.entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
+import java.math.BigDecimal;
 
-@Data // 自动生成getters, setters, toString, equals, hashCode等
-@Builder // 自动生成构造器
-@AllArgsConstructor // 自动生成全参构造函数
-@NoArgsConstructor // 自动生成无参构造函数
 @Entity
 @Table(name = "customers")
 public class Customer {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // 主键自增
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer customerID;
 
-    @Column(nullable = false, length = 50) // 非空，最大长度50
-    private String customerName;
+    @Column(name = "customername", nullable = false, length = 50)
+    private String customername;
 
-    @Column(nullable = false, unique = true, length = 100) // 非空，唯一，最大长度100
+    @Column(name = "Email", nullable = false, length = 100)
     private String email;
 
-    @Column(nullable = false, length = 20) // 非空，最大长度20
+    @Column(name = "Phone", nullable = false, length = 20)
     private String phone;
 
-    @Column(nullable = false, columnDefinition = "TEXT") // 非空，大文本
+    @Column(name = "Address", columnDefinition = "TEXT")
     private String address;
 
-    @Column(nullable = false, precision = 10, scale = 2) // 默认值0.00，支持小数点后两位
-    private Double balance = 0.00;
+    @Column(name = "Balance", nullable = false, precision = 10, scale = 2)
+    private BigDecimal balance;
 
-    @Column(nullable = false) // 默认信用等级为1
-    private Integer creditLevel = 1;
+    @Column(name = "creditlevel", nullable = false)
+    private Integer creditlevel;
 
-    @Column(nullable = false, length = 100) // 非空，最大长度100
+    @Column(name = "Password", nullable = false, length = 100)
     private String password;
 
+    // Getters and Setters
+    public Integer getCustomerID() {
+        return customerID;
+    }
+
+    public void setCustomerID(Integer customerID) {
+        this.customerID = customerID;
+    }
+
+    public String getCustomerName() {
+        return customername;
+    }
+
+    public void setCustomerName(String customername) {
+        this.customername = customername;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public BigDecimal getBalance() {
+        return balance;
+    }
+
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
+    }
+
+    public Integer getCreditLevel() {
+        return creditlevel;
+    }
+
+    public void setCreditLevel(Integer creditLevel) {
+        this.creditlevel = creditLevel;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }
