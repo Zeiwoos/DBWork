@@ -1,80 +1,71 @@
 <template>
-  <body class="page">
+<div>
   <Navbar class="home-navbar"></Navbar>
-  <main class="main-body">
-    <el-carousel :interval="5000" class="home-carousel" arrow="always">
-      <el-carousel-item class="carousel_item">
-        <img src="https://via.placeholder.com/1200x400/ff7f7f/333333?text=欢迎来到网上书店" alt="banner1" />
-      </el-carousel-item >
-      <el-carousel-item class="carousel_item">
-        <img src="https://via.placeholder.com/1200x400/7f7fff/333333?text=畅销书籍推荐" alt="banner2" />
-      </el-carousel-item>
-      <el-carousel-item class="carousel_item">
-        <img src="https://via.placeholder.com/1200x400/7fff7f/333333?text=热卖图书" alt="banner3" />
-      </el-carousel-item>
-    </el-carousel>
-
-    <el-row :gutter="20" class="book-list">
-      <el-col v-for="book in books" :key="book.id" :span="6" class="book-show">
-        <el-card class="book-card">
-          <img :src="book.img" class="book-img" />
-          <div class="book-info">
-            <h3>{{ book.name }}</h3>
-            <p>作者：{{ book.author }}</p>
-            <p>价格：￥{{ book.price }}</p>
-            <el-button @click="addToOrders(book.id)" type="primary">加入购物车</el-button>
-          </div>
-        </el-card>
+  <div class="main-body">
+    <div class="carousel-box">
+      <el-carousel :interval="5000" arrow="always" class="carousel">
+        <el-carousel-item class="carousel_item">
+          <img :src="book_img1" alt="banner1" />
+        </el-carousel-item >
+        <el-carousel-item class="carousel_item">
+          <img :src="book_img2" alt="banner2" />
+        </el-carousel-item>
+        <el-carousel-item class="carousel_item">
+          <img :src="book_img3" alt="banner3" />
+        </el-carousel-item>
+      </el-carousel>
+    </div>
+    <div class="book-show">
+      <el-row :gutter="20" class="book-list">
+        <el-col v-for="book in books" :key="book.id" :span="4" class="book-box">
+          <el-card class="book-card">
+            <img :src="book.img" class="book-img" />
+            <div class="book-info">
+              <h3>{{ book.name }}</h3>
+              <p>作者：{{ book.author }}</p>
+              <p>价格：￥{{ book.price }}</p>
+              <el-button @click="addToOrders(book.id)" type="primary">加入购物车</el-button>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+    </div>
+  </div>
+<!-- 底部信息 -->
+  <div>
+    <el-footer class="home-footer">
+      <el-col :span="12" class="set-footer">
+        <p>&copy; 2024 网上书店 - 版权声明</p>
+        <p>联系我们：info@bookstore.com</p>
       </el-col>
-    </el-row>
-  </main>
-  <!-- 底部信息 -->
-  <el-footer class="home-footer">
-    <el-col :span="12" class="set-footer">
-      <p>&copy; 2024 网上书店 - 版权声明</p>
-      <p>联系我们：info@bookstore.com</p>
-    </el-col>
-  </el-footer>
-  </body>
+    </el-footer>
+  </div>
+</div>
 </template>
 
-<script>
+<script lang="ts" setup>
 
 import { ref,reactive,onMounted } from 'vue';
 import Navbar from '@/components/Navbar.vue'
+import book1 from '@/assets/image/book1.png'
+import book2 from '@/assets/image/book2.png'
+import book3 from '@/assets/image/book3.png'
 
-export default {
-  name: 'Home',
-  components: {Navbar},
-  setup() {
-    const activeMenu = ref('1')
+const activeMenu = ref('1')
+const book_img1 = book1
+const book_img2 = book2
+const book_img3 = book3
 
+const books = ref([
+  { id: 1, name: '《数据库系统原理》', author: '作者1', price: 99.99, img: 'https://via.placeholder.com/150' },
+  { id: 2, name: '《深入浅出Vue.js》', author: '作者2', price: 129.99, img: 'https://via.placeholder.com/150' },
+  { id: 3, name: '《算法导论》', author: '作者3', price: 89.99, img: 'https://via.placeholder.com/150' },
+  { id: 4, name: '《设计模式》', author: '作者4', price: 149.99, img: 'https://via.placeholder.com/150' }
+])
 
-    const books = ref([
-      { id: 1, name: '《数据库系统原理》', author: '作者1', price: 99.99, img: 'https://via.placeholder.com/150' },
-      { id: 2, name: '《深入浅出Vue.js》', author: '作者2', price: 129.99, img: 'https://via.placeholder.com/150' },
-      { id: 3, name: '《算法导论》', author: '作者3', price: 89.99, img: 'https://via.placeholder.com/150' },
-      { id: 4, name: '《设计模式》', author: '作者4', price: 149.99, img: 'https://via.placeholder.com/150' }
-    ])
-    return {
-      activeMenu,
-      books,
-    }
-  }
-}
 </script>
 
 <style scoped>
-.page{
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
-  gap: 20px;
-}
-
 .home-navbar {
   height: 80px;
   background-color: #409EFF;
@@ -91,36 +82,63 @@ export default {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  gap: 20px;
-  height: 100vh;
+  gap: 30px;
+  height: auto;
   width: 100vw;
   background-color: #f0f0f0;
-  margin-top: 350px;
 }
 
-.home-carousel{
-  width: 90vw;
-  height: 450px;
-}
-.carousel_item{
+.carousel-box{
+  margin-top: 120px;
+  width: 100vw;
+  height: 350px;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
 }
-.el-carousel__item img {
+.carousel{
+  width: 90vw;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.carousel_item img {
   width: 80%;
-  height: 400px;
+  height: 100%;
   object-fit: cover;
 }
-.book-list {
-  margin-top: 20px;
+.book-show{
+  padding-bottom: 40px;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.book-list{
+  width: 90vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  flex-direction: row;
+}
+.book-box{
+  margin: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 100px;
 }
 .book-card {
-  margin-bottom: 20px;
-  height: 300px;
   width: 200px;
+  height: 300px;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .book-img {
@@ -135,10 +153,9 @@ export default {
 }
 
 .home-footer {
-  background-color: #f1f1f1;
-  padding: 20px 0;
-  margin-top: 30px;
+  background-color: aliceblue;
   width: 100vw;
+  padding: 10px;
   text-align: center;
   display: flex;
   justify-content: center; /* 水平居中 */

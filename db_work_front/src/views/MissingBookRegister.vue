@@ -1,7 +1,7 @@
 <template xmlns="http://www.w3.org/1999/html">
   <Navbar />
   <div class="main-body">
-    <div class="register-block">
+    <div class="missing-book-register-block">
       <!-- Logo -->
       <div class="logo-box">
         <span class="logo">OnlineBookStore</span>
@@ -9,7 +9,7 @@
       <!-- 动态渲染表单输入项 -->
       <div v-for="(item, index) in inputItems" :key="index" class="input-box">
         <span class="character">{{ item.label }}</span>
-        <el-input v-model="item.model.value"  style="width: 240px" :placeholder="item.placeholder" />
+        <el-input v-model="item.v_model.value"  style="width: 240px" :placeholder="item.placeholder" />
       </div>
       <!-- 服务协议 -->
       <div>
@@ -24,7 +24,7 @@
       </div>
       <!-- 注册按钮 -->
       <div>
-        <el-button type="primary" class="login-button">
+        <el-button type="primary" class="register-button">
           <p class="button-font">提交缺书记录</p>
         </el-button>
       </div>
@@ -42,35 +42,33 @@
 </template>
 
 
-<script>
+<script lang="ts" setup>
 import { defineComponent, ref } from "vue";
 import Navbar from "@/components/Navbar.vue";
 import logo from "@/assets/image/logo.webp";
 
-export default defineComponent({
-  components: { Navbar },
-  setup() {
-    // 定义输入项及其模型
-    const input_UserID = ref('')
-    const input_password = ref('')
-    const regulation_checked = ref(false)
+// 定义输入项及其模型
+const input_BookID = ref("");
+const input_BookName = ref("");
+const input_Author = ref("");
+const input_Publisher = ref("");
+const input_Supplier = ref("");
+const input_Number = ref("");
+const input_RegisterDate = ref("");
+const regulation_checked = ref(false)
 
-    // 动态生成输入项数据
-    const inputItems = [
-      {label: "用户ID", model: input_UserID, placeholder: "Please input UserID"},
+// 动态生成输入项数据
+const inputItems = [
+  {label: "书号", v_model: input_BookID, placeholder: "Please input BookID"},
+  {label: "书名", v_model: input_BookName, placeholder: "Please input UserID"},
+  {label: "作者", v_model: input_Author, placeholder: "Please input Password"},
+  {label: "出版社", v_model: input_Publisher, placeholder: "Please input Publisher"},
+  {label: "供应商", v_model: input_Supplier, placeholder: "Please input Supplier"},
+  {label: "数量", v_model: input_Number, placeholder: "Please input Number"},
+];
 
-    ];
+const url = logo;
 
-
-    const url = logo;
-
-    return {
-      inputItems,
-      regulation_checked,
-      url,
-    };
-  },
-});
 </script>
 
 <style scoped>
@@ -85,12 +83,12 @@ export default defineComponent({
   background-color: #f0f0f0;
 }
 
-.register-block {
+.missing-book-register-block {
   display: flex;
   justify-content: center;
   flex-direction: column;
   gap: 20px;
-  margin: 150px auto auto 200px;
+  margin: 110px auto auto 200px;
 }
 
 .input-box {
@@ -116,10 +114,10 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px;
+  padding: 30px;
 }
 
-.login-button {
+.register-button {
   width: 100%;
   height: 40px;
   background-color: #409EFF;

@@ -58,6 +58,7 @@ export default {
   font-size: 32px;
   font-weight: bold;
   margin-left: 20px;
+  font-style: italic;
 }
 </style>
 
