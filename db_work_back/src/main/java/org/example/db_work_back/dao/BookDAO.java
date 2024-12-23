@@ -1,6 +1,7 @@
 package org.example.db_work_back.dao;
 
 import org.example.db_work_back.entity.Book;
+import org.example.db_work_back.entity.OrderDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -26,7 +27,26 @@ public class BookDAO {
         String sql = "SELECT * FROM books WHERE BookID = ?";
         return jdbcTemplate.queryForObject(sql, new Object[]{id}, this::mapRowToBook);
     }
-
+    //根据系列id查询书籍
+    public List<Book> selectBookBySeriesId(Integer SeriesID) {
+        String sql = "SELECT * FROM books WHERE SeriesID = ?";
+        return jdbcTemplate.query(sql, new Object[]{SeriesID}, (rs, rowNum) -> {
+            Book book = new Book();
+            book.setBookID(rs.getInt("BookID"));
+            book.setTitle(rs.getString("Title"));
+            book.setAuthor(rs.getString("Author"));
+            book.setPublisher(rs.getString("Publisher"));
+            book.setPrice(rs.getBigDecimal("Price"));
+            book.setKeywords(rs.getString("Keywords"));
+            book.setDescription(rs.getString("Description"));
+//        book.setCoverImage(rs.getBytes("CoverImage"));
+            book.setStock(rs.getInt("Stock"));
+            book.setStorageLocation(rs.getString("StorageLocation"));
+            book.setSeriesID(rs.getInt("SeriesID"));
+            book.setSupplierID(rs.getInt("SupplierID"));
+            return book;
+        });
+    }
     // 插入新书籍
     public void insertBook(Book book) {
         String sql = "INSERT INTO books (Title, Author, Publisher, Price, Keywords, Description, Stock, Storagelocation, SeriesID,SupplierID) " +

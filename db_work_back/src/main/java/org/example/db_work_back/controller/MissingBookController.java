@@ -40,8 +40,7 @@ public class MissingBookController {
 
     @PutMapping("/updateStatus/{id}")
     public Result updateMissingBookStatus(@PathVariable Integer id,@RequestParam String Status) {
-        MissingBook missingBook =new MissingBook();
-        missingBook = missingBookService.getMissingBookById(id);
+        MissingBook missingBook = missingBookService.getMissingBookById(id);
         missingBook.setStatus(Status);
         return Result.success(missingBookService.updateMissingBookStatus(missingBook));
     }

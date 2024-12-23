@@ -9,9 +9,6 @@ import java.util.Date;
 @Table(name = "orders")
 public class Order {
     // 定义枚举类型，表示订单状态
-    public enum OrderStatus {
-        PENDING, SHIPPED, DELIVERED
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,9 +27,8 @@ public class Order {
     private String shippingAddress;
 
     // 使用枚举类型 OrderStatus 映射数据库中的 ENUM 类型
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", columnDefinition = "ENUM('PENDING', 'SHIPPED', 'DELIVERED') DEFAULT 'PENDING'")
-    private OrderStatus status ;  // 默认值设置为 PENDING
+    @Column(name = "Status",  length = 50)
+    private String status = "PENDING" ;  // 默认值设置为 PENDING
 
     // Getters and Setters
     public Integer getOrderId() {
@@ -75,11 +71,11 @@ public class Order {
         this.shippingAddress = shippingAddress;
     }
 
-    public OrderStatus getStatus() {
+    public String  getStatus() {
         return status;
     }
 
-    public void setStatus(OrderStatus status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 }
