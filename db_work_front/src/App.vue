@@ -1,16 +1,13 @@
-<script setup>
-import Home from "./components/Home.vue";
-</script>
-
 <template>
-  <main id="app">
-    <Home />
-  </main>
+  <div id="app">
+    <router-view></router-view>
+  </div>
 </template>
 
-<style scoped>
-#app {
-  width:100vw;
-  height:100vw;
-}
+<script setup>
+import {RouterLink,RouterView} from "vue-router"
+</script>
+<style>
+
 </style>
+
