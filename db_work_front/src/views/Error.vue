@@ -1,160 +1,246 @@
 <template>
-  <div class="page">
-    <Navbar class="home-navbar"></Navbar>
-    <main class="main-body">
-      <el-carousel :interval="5000" class="home-carousel" arrow="always">
-        <el-carousel-item class="carousel_item">
-          <img src="https://via.placeholder.com/1200x400/ff7f7f/333333?text=欢迎来到网上书店" alt="banner1" />
-        </el-carousel-item >
-        <el-carousel-item class="carousel_item">
-          <img src="https://via.placeholder.com/1200x400/7f7fff/333333?text=畅销书籍推荐" alt="banner2" />
-        </el-carousel-item>
-        <el-carousel-item class="carousel_item">
-          <img src="https://via.placeholder.com/1200x400/7fff7f/333333?text=热卖图书" alt="banner3" />
-        </el-carousel-item>
-      </el-carousel>
+  <Navbar />
+  <div class="main-body">
+    <div class="sidebar">
+      <el-menu :default-active="menuActiveIndex"
+               @select="handleMenuSelect"
+               mode="vertical" class="sidebar-box">
+        <div>
+          <img class="self-img" :src="url" alt=""/>
+        </div>
+        <div class="items-box">
+          <el-menu-item class="menu-item" index="1">个人信息</el-menu-item>
+          <el-menu-item class="menu-item" index="2">历史订单</el-menu-item>
+        </div>
+      </el-menu>
+    </div>
+    <div>
+      <!-- 个人信息展示 -->
+      <div v-if="menuActiveIndex === '1'" class="info-box">
+        <div class="input-box">
+          <span class="character">用户ID</span>
+          <el-input v-model="show_ID" style="width: 240px" disabled />
+          <el-button @click="handleEdit('show_ID')">修改</el-button>
+        </div>
+        <div class="input-box">
+          <span class="character">信用等级</span>
+          <el-input v-model="show_Level" style="width: 240px" disabled />
+          <el-button @click="handleEdit('show_Level')">修改</el-button>
+        </div>
+        <div v-for="(item, index) in showItems" :key="index" class="input-box">
+          <span class="character">{{ item.label }}</span>
+          <el-input v-model="item.v_model.value" style="width: 240px" />
+          <el-button @click="handleEditItem(index)">修改</el-button>
+        </div>
+        <div class="input-box">
+          <span class="character">密码</span>
+          <el-input v-model="show_password" style="width: 240px" type="password" />
+          <el-button @click="handlePasswordChange">修改</el-button>
+        </div>
+        <div class="input-box">
+          <span class="character">余额</span>
+          <el-input v-model="show_balance" style="width: 240px" />
+          <el-button @click="handleBalanceRecharge">充值</el-button>
+        </div>
+        <el-button type="primary" @click="handleSave">保存</el-button>
+      </div>
 
-      <el-row :gutter="20" class="book-list">
-        <el-col v-for="book in books" :key="book.id" class="book-box">
-          <el-card class="book-card">
-            <img :src="book.img" class="book-img" />
-            <div class="book-info">
-              <h3>{{ book.name }}</h3>
-              <p>作者：{{ book.author }}</p>
-              <p>价格：￥{{ book.price }}</p>
-              <el-button @click="addToOrders(book.id)" type="primary">加入购物车</el-button>
-            </div>
-          </el-card>
-        </el-col>
-      </el-row>
-    </main>
-    <!-- 底部信息 -->
-    <el-footer class="home-footer">
-      <el-col :span="12" class="set-footer">
-        <p>&copy; 2024 网上书店 - 版权声明</p>
-        <p>联系我们：info@bookstore.com</p>
-      </el-col>
-    </el-footer>
+      <!-- 历史订单展示 -->
+      <div v-if="menuActiveIndex === '2'" class="orders-box">
+        <div v-for="(order, index) in orders" :key="index">
+          <OrderItem
+              :orderID="order.orderID"
+              :orderTime="order.orderTime"
+              :userID="order.userID"
+              :bookID="order.bookID"
+              :orderAmount="order.orderAmount"
+              :orderPrice="order.orderPrice"
+              :orderAddress="order.orderAddress"
+              :orderStatus="order.orderStatus" />
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
-<script>
+<script lang="ts" setup>
+import { ref, onMounted } from 'vue';
+import Navbar from "@/components/Navbar.vue";
+import { ElMenu, ElMenuItem } from "element-plus";
+import selfImg from "@/assets/image/self-img.jpg";
+import OrderItem from "@/components/OrderItem.vue";
 
-import { ref,reactive,onMounted } from 'vue';
-import Navbar from '@/components/Navbar.vue'
+// 引入图片路径
+const url = selfImg;
 
-export default {
-  name: 'Home',
-  components: {Navbar},
-  setup() {
-    const activeMenu = ref('1')
+// 使用响应式变量来跟踪当前选中的菜单项
+const menuActiveIndex = ref('1');
 
+// 定义显示的项
+const show_ID = ref('');
+const show_name = ref('');
+const show_password = ref('');
+const show_Level = ref('');
+const show_address = ref('');
+const show_email = ref('');
+const show_phone = ref('');
+const show_balance = ref('');
 
-    const books = ref([
-      { id: 1, name: '《数据库系统原理》', author: '作者1', price: 99.99, img: 'https://via.placeholder.com/150' },
-      { id: 2, name: '《深入浅出Vue.js》', author: '作者2', price: 129.99, img: 'https://via.placeholder.com/150' },
-      { id: 3, name: '《算法导论》', author: '作者3', price: 89.99, img: 'https://via.placeholder.com/150' },
-      { id: 4, name: '《设计模式》', author: '作者4', price: 149.99, img: 'https://via.placeholder.com/150' }
-    ])
-    return {
-      activeMenu,
-      books,
-    }
-  }
+// 用于绑定到表单的显示项
+const showItems = [
+  { label: "用户名称", v_model: show_name },
+  { label: "地址", v_model: show_address },
+  { label: "邮箱", v_model: show_email },
+  { label: "电话号码", v_model: show_phone },
+];
+
+// 初始化数据
+const init = () => {
+  show_ID.value = '123456';
+  show_name.value = '张三';
+  show_Level.value = '1';
+  show_address.value = '北京市海淀区';
+  show_email.value = '123456789@qq.com';
+  show_phone.value = '12345678901';
+  show_password.value = '123456';
+  show_balance.value = '1000';
 }
+
+const orders = ref([
+  {
+    orderID: '1001',
+    orderTime: '2024-12-23',
+    userID: 'user123',
+    bookID: 'book001',
+    orderAmount: '2',
+    orderPrice: '50',
+    orderAddress: '北京市海淀区',
+    orderStatus: '已发货'
+  },
+  {
+    orderID: '1002',
+    orderTime: '2024-12-22',
+    userID: 'user456',
+    bookID: 'book002',
+    orderAmount: '1',
+    orderPrice: '30',
+    orderAddress: '上海市浦东新区',
+    orderStatus: '待发货'
+  }
+]);
+
+// 处理菜单选择事件，更新当前选中的菜单项
+const handleMenuSelect = (index: string) => {
+  menuActiveIndex.value = index;
+};
+
+// 处理每个输入框修改按钮的点击事件
+const handleEdit = (field: string) => {
+  console.log(`编辑字段: ${field}`);
+  // 这里可以加入修改逻辑
+};
+
+// 处理显示项修改按钮的点击事件
+const handleEditItem = (index: number) => {
+  const item = showItems[index];
+  console.log(`${item.label} 的值是: `, item.v_model.value);
+  item.v_model = `已提交：${item.v_model.value}`; // 更新为已提交状态
+};
+
+// 处理密码修改按钮点击事件
+const handlePasswordChange = () => {
+  console.log('密码修改');
+  // 处理密码修改逻辑
+};
+
+// 处理余额充值按钮点击事件
+const handleBalanceRecharge = () => {
+  console.log('余额充值');
+  // 处理余额充值逻辑
+};
+
+// 保存按钮的点击事件
+const handleSave = () => {
+  console.log('保存数据');
+  // 执行保存操作
+};
+
+onMounted(() => {
+  init();
+});
+
 </script>
 
 <style scoped>
-.page{
+.main-body {
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  margin: 0;
+  flex-direction: column;
   gap: 20px;
-}
-
-.home-navbar {
-  height: 80px;
-  background-color: #409EFF;
-  color: white;
-  display: flex;
-  align-items: center;
-  position: fixed;
-  top: 0;
-  z-index: 1000;
-}
-
-.main-body{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
   height: 100vh;
   width: 100vw;
   background-color: #f0f0f0;
 }
-.home-carousel{
-  width: 90vw;
-  height: 400px;
-  margin-top: 300px;
-}
-.carousel_item{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.el-carousel__item img {
-  width: 80%;
+.sidebar {
+  width: 20%;
   height: 100%;
-  object-fit: cover;
-}
-.book-list {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
-.book-box {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 20px;
-
-}
-.book-card {
-  height: 300px;
-  width: 200px;
+  background-color: white;
+  margin-top: 10%;
+  position: fixed;
+  left: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center; /* 上下居中 */
-  align-items: center; /* 左右居中 */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
+  align-items: center;
 }
-.book-img {
+.sidebar-box {
   width: 100%;
-  height: auto;
-  border-radius: 5px;
-}
-
-.book-info {
-  margin-bottom: 0;
-  text-align: center;
-}
-
-.home-footer {
-  background-color: #f1f1f1;
-  width: 100vw;
-  text-align: center;
+  height: 100%;
   display: flex;
-  justify-content: center; /* 水平居中 */
-  align-items: center; /* 垂直居中 */
-}
-.set-footer{
-  display: inline-block;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.self-img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  margin-top: 40px;
+}
+.items-box {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+.menu-item {
+  width: 100%;
+  height: 70px;
+  display: flex;
   justify-content: center;
+  align-items: center;
+}
+.info-box {
+  height: 80%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-left: 20%;
+  margin-top: 10%;
+}
+.input-box {
+  display: flex;
+  gap: 20px;
+}
+.character {
+  width: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.orders-box {
+  margin-left: 20%;
+  margin-top: 10%;
 }
 </style>

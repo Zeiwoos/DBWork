@@ -2,7 +2,7 @@
   <div class="Navbar">
     <el-row class="row">
     <el-col class="content">
-      <H1 class="logo">OnlineBookStore</H1>
+      <h1 class="logo">OnlineBookStore</h1>
       <!-- 根据用户是否登录来显示不同的菜单 -->
       <Menu_Logged v-if="isLoggedIn" />
       <Menu_Unlogged v-else />
@@ -34,7 +34,7 @@ export default {
 
 <style scoped>
 .Navbar {
-  height: 80px;
+  height: 10%;
   background-color: #409EFF;
   color: white;
   display: flex;

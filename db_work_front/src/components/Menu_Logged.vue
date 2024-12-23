@@ -2,10 +2,9 @@
   <el-menu class="menu" :default-active="activeIndex" mode="horizontal">
     <el-menu-item index="1" @click="goToHome">首页</el-menu-item>
     <el-menu-item index="2" @click="goToBookSearch">书籍搜索</el-menu-item>
-    <el-menu-item index="3" @click="goToOrders">历史订单</el-menu-item>
-    <el-menu-item index="4" @click="goToMissingBookRegister">缺书登记</el-menu-item>
-    <el-menu-item index="5" @click="goToLogout">退出登录</el-menu-item>
-    <el-menu-item index="6" @click="goToUserInfo">个人中心</el-menu-item>
+    <el-menu-item index="3" @click="goToMissingBookRegister">缺书登记</el-menu-item>
+    <el-menu-item index="4" @click="goToLogout">退出登录</el-menu-item>
+    <el-menu-item index="5" @click="goToUserInfo">个人中心</el-menu-item>
   </el-menu>
 </template>
 
@@ -14,7 +13,7 @@ import {useRouter} from 'vue-router';
 import {ref} from 'vue';
 
 const router = useRouter();
-const activeIndex = ref('5'); // 可以根据实际情况动态设置当前激活的菜单项
+const activeIndex = ref('1'); // 可以根据实际情况动态设置当前激活的菜单项
 
 // 导航到不同页面
 const goToHome = () => {
@@ -23,18 +22,13 @@ const goToHome = () => {
 const goToBookSearch = () => {
   router.push('/book-search');
 };
-const goToOrders = () => {
-  router.push('/orders');
-};
+const goToMissingBookRegister = () => {
+  router.push('/missing-book-register');
+}
 const goToUserInfo = () => {
   router.push('/user-info');
 };
-const goToMissingBookRegister = () => {
-  router.push('/missing-book-register')
-}
 const goToLogout = () => {
-  // 退出登录
-  // 例如：message.success('已退出登录');
   router.push('/');
 };
 </script>

@@ -19,12 +19,12 @@
       <el-row :gutter="20" class="book-list">
         <el-col v-for="book in books" :key="book.id" :span="4" class="book-box">
           <el-card class="book-card">
-            <img :src="book.img" class="book-img" />
+            <img :src="book.img" class="book-img" alt=""/>
             <div class="book-info">
               <h3>{{ book.name }}</h3>
               <p>作者：{{ book.author }}</p>
               <p>价格：￥{{ book.price }}</p>
-              <el-button @click="addToOrders(book.id)" type="primary">加入购物车</el-button>
+              <el-button @click="" type="primary">加入购物车</el-button>
             </div>
           </el-card>
         </el-col>
@@ -45,13 +45,12 @@
 
 <script lang="ts" setup>
 
-import { ref,reactive,onMounted } from 'vue';
-import Navbar from '@/components/Navbar.vue'
-import book1 from '@/assets/image/book1.png'
-import book2 from '@/assets/image/book2.png'
-import book3 from '@/assets/image/book3.png'
+import { ref } from 'vue';
+import Navbar from '@/components/Navbar.vue';
+import book1 from '@/assets/image/book1.png';
+import book2 from '@/assets/image/book2.png';
+import book3 from '@/assets/image/book3.png';
 
-const activeMenu = ref('1')
 const book_img1 = book1
 const book_img2 = book2
 const book_img3 = book3
