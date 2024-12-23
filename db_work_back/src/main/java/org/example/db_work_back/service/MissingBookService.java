@@ -39,7 +39,7 @@ public class MissingBookService {
             missingBookDAO.updateMissingBook(missingBook);
             return Result.success(missingBook);
         } catch (Exception e) {
-            return Result.error("创建缺书记录失败: " + e.getMessage());
+            return Result.error("修改缺书记录失败: " + e.getMessage());
         }
     }
 

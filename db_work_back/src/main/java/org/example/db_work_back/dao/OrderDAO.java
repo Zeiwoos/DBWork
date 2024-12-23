@@ -4,7 +4,10 @@ import org.example.db_work_back.entity.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
 
 @Repository
@@ -15,11 +18,22 @@ public class OrderDAO {
 
     // 插入订单
     public void insertOrder(Order order) {
-        System.out.println(order.getStatus());
         String sql = "INSERT INTO orders (CustomerID, OrderDate, TotalAmount, ShippingAddress, Status) VALUES (?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, order.getCustomerId(), order.getOrderDate(), order.getTotalAmount(),
-                order.getShippingAddress(), order.getStatus());
 
+        // 使用 KeyHolder 获取自动生成的 ID
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setInt(1, order.getCustomerId());
+            ps.setDate(2, new java.sql.Date(order.getOrderDate().getTime()));
+            ps.setBigDecimal(3, order.getTotalAmount());
+            ps.setString(4, order.getShippingAddress());
+            ps.setString(5, order.getStatus());
+            return ps;
+        }, keyHolder);
+
+        // 设置 Order 实体中的 OrderID
+        order.setOrderId(keyHolder.getKey().intValue());
     }
 
     // 更新订单
@@ -40,7 +54,7 @@ public class OrderDAO {
             order.setOrderDate(rs.getDate("OrderDate"));
             order.setTotalAmount(rs.getBigDecimal("TotalAmount"));
             order.setShippingAddress(rs.getString("ShippingAddress"));
-            order.setStatus(Order.OrderStatus.valueOf(rs.getString("Status")));
+            order.setStatus(rs.getString("Status"));
 
             return order;
         });
@@ -56,7 +70,7 @@ public class OrderDAO {
             order.setOrderDate(rs.getDate("OrderDate"));
             order.setTotalAmount(rs.getBigDecimal("TotalAmount"));
             order.setShippingAddress(rs.getString("ShippingAddress"));
-            order.setStatus(Order.OrderStatus.valueOf(rs.getString("Status")));
+            order.setStatus(rs.getString("Status"));
             return order;
         });
     }
@@ -71,7 +85,7 @@ public class OrderDAO {
             order.setOrderDate(rs.getDate("OrderDate"));
             order.setTotalAmount(rs.getBigDecimal("TotalAmount"));
             order.setShippingAddress(rs.getString("ShippingAddress"));
-            order.setStatus(Order.OrderStatus.valueOf(rs.getString("Status")));
+            order.setStatus(rs.getString("Status"));
             return order;
         });
     }

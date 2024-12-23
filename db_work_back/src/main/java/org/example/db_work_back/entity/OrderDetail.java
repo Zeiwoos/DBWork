@@ -1,5 +1,6 @@
 package org.example.db_work_back.entity;
 
+import io.swagger.models.auth.In;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -12,19 +13,18 @@ public class OrderDetail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer orderDetailID;
 
-    @ManyToOne
     @JoinColumn(name = "OrderID")
-    private Order order;
+    private Integer orderID;
 
-    @ManyToOne
     @JoinColumn(name = "BookID")
-    private Book book;
+    private Integer bookID;
 
     @Column(name = "Quantity", nullable = false)
     private Integer quantity;
 
     @Column(name = "Price", precision = 10, scale = 2)
     private BigDecimal price;
+
 
     // Getters and Setters
     public Integer getOrderDetailID() {
@@ -35,20 +35,20 @@ public class OrderDetail {
         this.orderDetailID = orderDetailID;
     }
 
-    public Order getOrder() {
-        return order;
+    public Integer getOrder() {
+        return orderID;
     }
 
-    public void setOrder(Order order) {
-        this.order = order;
+    public void setOrder(Integer order) {
+        this.orderID = order;
     }
 
-    public Book getBook() {
-        return book;
+    public Integer getBookId() {
+        return bookID;
     }
 
-    public void setBook(Book book) {
-        this.book = book;
+    public void setBookId(Integer book) {
+        this.bookID = book;
     }
 
     public Integer getQuantity() {

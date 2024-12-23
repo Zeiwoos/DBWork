@@ -47,6 +47,8 @@ CREATE TABLE books (
                        Stock INT DEFAULT 0, -- 存货量
                        StorageLocation TEXT, -- 存放位置
                        SeriesID INT, -- 丛书ID（关联到series表）
+                       SupplierID INT,
+                       FOREIGN KEY (SupplierID) REFERENCES suppliers(SupplierID),
                        FOREIGN KEY (SeriesID) REFERENCES series(SeriesID)
 );
 
@@ -65,12 +67,12 @@ DROP TABLE IF EXISTS `missingBooks`;
 CREATE TABLE missingBooks (
                               MissingID INT AUTO_INCREMENT PRIMARY KEY,
                               BookID INT,
-                              RequestedByCustomerID INT, -- 顾客ID（如果有）
+                              CustomerID INT, -- 顾客ID（如果有）
                               Quantity INT NOT NULL,
                               RegisterDate DATE NOT NULL,
                               Status ENUM('SOLVED', 'UNSOLVED') DEFAULT 'UNSOLVED',
                               FOREIGN KEY (BookID) REFERENCES books(BookID) ,
-                              FOREIGN KEY (RequestedByCustomerID) REFERENCES customers(CustomerID)
+                              FOREIGN KEY (CustomerID) REFERENCES customers(CustomerID)
 
 );
 

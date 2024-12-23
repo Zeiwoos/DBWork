@@ -34,7 +34,7 @@ public class CustomerDAO {
 
 //        Integer creditLevel = (customer.getCreditLevel() != null) ? customer.getCreditLevel() : 1;
         jdbcTemplate.update(sql, customer.getCustomerName(), customer.getEmail(), customer.getPhone(),
-                customer.getAddress(), customer.getBalance(), customer.getCreditLevel(), customer.getPassword());
+                customer.getAddress(), 0, 0, customer.getPassword());
     }
 
     // 通过 ID 查询客户

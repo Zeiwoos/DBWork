@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "missingbooks")
+@Table(name = "missingBooks")
 public class MissingBook {
 
     public enum missingStatus {
@@ -27,7 +27,7 @@ public class MissingBook {
     @Column(name = "Registerdate")
     private Date Registerdate;
 
-    @Column(name = "Status", updatable = false)
+    @Column(name = "Status",  length = 50)
     private String Status ;
 
     // Getters and Setters

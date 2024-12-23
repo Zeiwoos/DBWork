@@ -2,6 +2,7 @@ package org.example.db_work_back.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.example.db_work_back.dto.OrderRequestDTO;
 import org.example.db_work_back.entity.Order;
 import org.example.db_work_back.service.OrderService;
 import org.example.db_work_back.result.Result;
@@ -39,7 +40,7 @@ public class OrderController {
     }
 
     @PutMapping("/updateStatus/{id}")
-    public Result updateOrderStatus(@PathVariable Integer id, @PathVariable Order.OrderStatus status) {
+    public Result updateOrderStatus(@PathVariable Integer id, @RequestParam String status) {
         Order order = orderService.getOrderById(id);
         order.setStatus(status);
         return Result.success(orderService.updateOrder(order));
@@ -48,5 +49,11 @@ public class OrderController {
     @DeleteMapping("/delete/{id}")
     public Result deleteOrder(@PathVariable Integer id) {
         return orderService.deleteOrder(id);
+    }
+
+    @PostMapping("/createWithDetails")
+    @ApiOperation("创建订单及其详情")
+    public Result createOrderWithDetails(@RequestBody OrderRequestDTO orderRequest) {
+        return Result.success(orderService.createOrderWithDetails(orderRequest));
     }
 }

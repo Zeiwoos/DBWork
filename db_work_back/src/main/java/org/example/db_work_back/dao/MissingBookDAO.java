@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -17,8 +18,10 @@ public class MissingBookDAO {
 
     // 插入缺书记录
     public void insertMissingBook(MissingBook missingBook) {
+        missingBook.setRegisterDate(new Date());
+//        System.out.println("Inserting missing book: " +missingBook.getBookId()+missingBook.getCustomerId()+missingBook.getQuantity()+ missingBook.getRegisterDate() + missingBook.getStatus());
         String sql = "INSERT INTO missingBooks (BookID, CustomerID, Quantity, RegisterDate, Status) " +
-                "VALUES (?, ?, ?, ?, ?)";
+                "VALUES (?, ?, ?, ?, ?);";
         jdbcTemplate.update(sql, missingBook.getBookId(), missingBook.getCustomerId(),
                 missingBook.getQuantity(), missingBook.getRegisterDate(),missingBook.getStatus());
     }
@@ -28,7 +31,7 @@ public class MissingBookDAO {
         String sql = "UPDATE missingBooks SET BookID = ?, CustomerID = ?, Quantity = ?, Status = ?," +
                 "RegisterDate = ? WHERE MissingID = ?";
         jdbcTemplate.update(sql, missingBook.getBookId(), missingBook.getCustomerId(),
-                missingBook.getQuantity(), missingBook.getRegisterDate(), missingBook.getMissingId(),missingBook.getStatus());
+                missingBook.getQuantity(),missingBook.getStatus(), missingBook.getRegisterDate(), missingBook.getMissingId());
     }
 
     // 根据ID查询缺书记录
