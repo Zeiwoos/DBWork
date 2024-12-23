@@ -342,4 +342,41 @@ CREATE TABLE browsingLogs (
 # END ;
 
 
+SHOW VARIABLES LIKE 'event_scheduler';
+
+SHOW VARIABLES LIKE 'character_set%';
+
+SET GLOBAL event_scheduler = ON;
+
+CREATE EVENT adjust_customer_credit
+    ON SCHEDULE
+        EVERY 1 MONTH
+            STARTS '2025-01-01 00:00:00'  -- 从2025年1月1号开始执行
+    DO
+    BEGIN
+    UPDATE customers
+    SET CreditLevel =
+    CASE
+        WHEN Balance + (SELECT COALESCE(SUM(Price * Quantity), 0)
+                        FROM orderDetails
+                                 JOIN books ON orderDetails.BookID = books.BookID
+                        WHERE orderDetails.CustomerID = customers.CustomerID) <= 500 THEN 1
+        WHEN Balance + (SELECT COALESCE(SUM(Price * Quantity), 0)
+                        FROM orderDetails
+                                 JOIN books ON orderDetails.BookID = books.BookID
+                        WHERE orderDetails.CustomerID = customers.CustomerID) <= 1500 THEN 2
+        WHEN Balance + (SELECT COALESCE(SUM(Price * Quantity), 0)
+                        FROM orderDetails
+                                 JOIN books ON orderDetails.BookID = books.BookID
+                        WHERE orderDetails.CustomerID = customers.CustomerID) <= 2500 THEN 3
+        WHEN Balance + (SELECT COALESCE(SUM(Price * Quantity), 0)
+                        FROM orderDetails
+                                 JOIN books ON orderDetails.BookID = books.BookID
+                        WHERE orderDetails.CustomerID = customers.CustomerID) <= 3500 THEN 4
+        ELSE 5
+        END;
+END ;
+
+
+
 
