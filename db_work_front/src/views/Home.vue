@@ -1,136 +1,142 @@
 <template>
-<div>
-  <Navbar class="home-navbar"></Navbar>
-  <div class="main-body">
-    <div class="carousel-box">
-      <el-carousel :interval="5000" arrow="always" class="carousel">
-        <el-carousel-item class="carousel_item">
-          <img :src="book_img1" alt="banner1" />
-        </el-carousel-item >
-        <el-carousel-item class="carousel_item">
-          <img :src="book_img2" alt="banner2" />
-        </el-carousel-item>
-        <el-carousel-item class="carousel_item">
-          <img :src="book_img3" alt="banner3" />
-        </el-carousel-item>
-      </el-carousel>
-    </div>
-    <div class="book-show">
-      <el-row :gutter="20" class="book-list">
-        <el-col v-for="book in books" :key="book.id" :span="4" class="book-box">
-          <el-card class="book-card">
-            <img :src="book.img" class="book-img" alt=""/>
-            <div class="book-info">
-              <h3>{{ book.name }}</h3>
-              <p>作者：{{ book.author }}</p>
-              <p>价格：￥{{ book.price }}</p>
-              <el-button @click="" type="primary">加入购物车</el-button>
-            </div>
-          </el-card>
-        </el-col>
-      </el-row>
-    </div>
-  </div>
-<!-- 底部信息 -->
+  <Navbar />
   <div>
-    <el-footer class="home-footer">
-      <el-col :span="12" class="set-footer">
-        <p>&copy; 2024 网上书店 - 版权声明</p>
-        <p>联系我们：info@bookstore.com</p>
-      </el-col>
-    </el-footer>
+    <div class="main-body">
+      <!-- Adjusted carousel box -->
+      <div class="carousel-box">
+        <el-carousel :interval="4000" type="card" height="400px" style="margin-top: 20px">
+          <el-carousel-item v-for="(item, index) in carouselImages" :key="index">
+            <!-- 显示图片 -->
+            <el-link><img :src="item" alt="Book Image" class="carousel-img" /></el-link>
+          </el-carousel-item>
+        </el-carousel>
+      </div>
+      <div class="book-show">
+        <el-row :gutter="20" class="book-list">
+          <div class="book-grid">
+            <el-col v-for="book in books" :key="book.id" :span="6" class="book-box">
+              <el-card class="book-card">
+                <img :src="book.img" class="book-img" alt="book img"/>
+                <div class="book-info">
+                  <router-link :to="'/book/' + book.id" style="text-decoration: none; color: #181818">
+                    <h3>{{ book.name }}</h3>
+                  </router-link>
+                  <p>作者：{{ book.author }}</p>
+                  <p>价格：￥{{ book.price }}</p>
+                  <router-link :to="'/book/' + book.id" style="text-decoration: none; color: #181818">
+                    <el-button @click="" type="primary">查看详情</el-button>
+                  </router-link>
+                </div>
+              </el-card>
+            </el-col>
+          </div>
+        </el-row>
+      </div>
+    </div>
+    <!-- 底部信息 -->
+    <div>
+      <el-footer class="home-footer">
+        <el-col :span="12" class="set-footer">
+          <p>&copy; 2024 网上书店 - 版权声明</p>
+          <p>联系我们：info@bookstore.com</p>
+        </el-col>
+      </el-footer>
+    </div>
   </div>
-</div>
 </template>
 
-<script lang="ts" setup>
-
-import { ref } from 'vue';
+<script>
+import { defineComponent } from 'vue';
 import Navbar from '@/components/Navbar.vue';
 import book1 from '@/assets/image/book1.png';
 import book2 from '@/assets/image/book2.png';
 import book3 from '@/assets/image/book3.png';
+import book4 from '@/assets/image/book4.png';
 
-const book_img1 = book1
-const book_img2 = book2
-const book_img3 = book3
-
-const books = ref([
-  { id: 1, name: '《数据库系统原理》', author: '作者1', price: 99.99, img: 'https://via.placeholder.com/150' },
-  { id: 2, name: '《深入浅出Vue.js》', author: '作者2', price: 129.99, img: 'https://via.placeholder.com/150' },
-  { id: 3, name: '《算法导论》', author: '作者3', price: 89.99, img: 'https://via.placeholder.com/150' },
-  { id: 4, name: '《设计模式》', author: '作者4', price: 149.99, img: 'https://via.placeholder.com/150' }
-])
-
+export default defineComponent({
+  name: 'BookList',
+  components: {
+    Navbar
+  },
+  data() {
+    return {
+      carouselImages: [book1, book2, book3, book4],
+      books: [
+        { id: 1, name: '《数据库系统原理》', author: '作者1', price: 99.99, img: 'https://via.placeholder.com/150' },
+        { id: 2, name: '《深入浅出Vue.js》', author: '作者2', price: 129.99, img: 'https://via.placeholder.com/150' },
+        { id: 3, name: '《算法导论》', author: '作者3', price: 89.99, img: 'https://via.placeholder.com/150' },
+        { id: 4, name: '《设计模式》', author: '作者4', price: 149.99, img: 'https://via.placeholder.com/150' },
+        { id: 5, name: '《深入理解计算机系统》', author: '作者5', price: 109.99, img: 'https://via.placeholder.com/150' },
+        { id: 6, name: '《计算机网络》', author: '作者6', price: 119.99, img: 'https://via.placeholder.com/150' },
+        { id: 7, name: '《C++ Primer》', author: '作者7', price: 139.99, img: 'https://via.placeholder.com/150' },
+        { id: 8, name: '《操作系统概念》', author: '作者8', price: 159.99, img: 'https://via.placeholder.com/150' }
+      ]
+    };
+  }
+});
 </script>
 
 <style scoped>
-.home-navbar {
-  height: 80px;
-  background-color: #409EFF;
-  color: white;
-  display: flex;
-  align-items: center;
-  position: fixed;
-  top: 0;
-  z-index: 1000;
-}
-
-.main-body{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
+/* Main layout adjustments */
+.main-body {
   gap: 30px;
-  height: auto;
-  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;  /* Start alignment to avoid overlapping with the navbar */
+  flex-direction: column;
   background-color: #f0f0f0;
+  padding-top: 60px; /* Ensuring space for Navbar */
 }
 
-.carousel-box{
-  margin-top: 120px;
+/* Carousel box adjustment */
+.carousel-box {
   width: 100vw;
-  height: 350px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.carousel{
-  width: 90vw;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  height: 400px; /* Slightly reduced height */
+  padding: 0 0 50px 0; /* Ensure some horizontal space */
+  z-index: 1; /* Set to higher priority for visibility */
 }
 
-.carousel_item img {
-  width: 80%;
-  height: 100%;
-  object-fit: cover;
+.el-carousel__item {
+  text-align: center;
 }
-.book-show{
+
+.carousel-img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+/* Book list and card styles */
+.book-show {
   padding-bottom: 40px;
   width: 100vw;
   display: flex;
   justify-content: center;
   align-items: center;
 }
-.book-list{
+
+.book-list {
   width: 90vw;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
-  gap: 20px;
-  flex-direction: row;
 }
-.book-box{
-  margin: 10px;
+
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 每行 4 个 */
+  gap: 20px;
+  width: 100%;
+}
+
+.book-box {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 100px;
 }
+
 .book-card {
   width: 200px;
   height: 300px;
@@ -150,17 +156,27 @@ const books = ref([
   margin-bottom: 0;
   text-align: center;
 }
+.book-info h3 {
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  font-size: 14px;
+}
 
+/* Footer styles */
 .home-footer {
   background-color: aliceblue;
   width: 100vw;
   padding: 10px;
   text-align: center;
   display: flex;
-  justify-content: center; /* 水平居中 */
-  align-items: center; /* 垂直居中 */
+  justify-content: center;
+  align-items: center;
 }
-.set-footer{
+
+.set-footer {
   display: inline-block;
   flex-direction: column;
   justify-content: center;

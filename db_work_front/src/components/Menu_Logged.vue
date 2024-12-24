@@ -37,7 +37,7 @@ const goToLogout = () => {
 .menu {
   display: flex;
   margin-left: auto;
-  margin-right: 20px;
+  margin-right: 40px;
   width: auto;
   position: relative;
   z-index: 1001;

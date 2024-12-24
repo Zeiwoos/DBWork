@@ -10,6 +10,7 @@ import Error from "@/views/Error.vue";
 import MissingBookRegister from "@/views/MissingBookRegister.vue";
 import Orders from "@/views/Orders.vue"
 import BookDetails from "@/views/BookDetails.vue";
+import BookDetail from "@/views/BookDetail.vue";
 
 
 const routes = [
@@ -63,6 +64,13 @@ const routes = [
         component: BookDetails,
         props: true, // 启用 props，方便将参数直接传递给组件
     }
+    },
+    {
+        path: '/book/:id',
+        name: 'BookDetail',
+        component: BookDetail,
+        props: true
+    },
 ];
 
 
