@@ -86,10 +86,10 @@ const show_balance = ref('');
 
 // 用于绑定到表单的显示项
 const showItems = [
-  { label: "用户名称", v_model: ref('') },
-  { label: "地址", v_model: ref('') },
-  { label: "邮箱", v_model: ref('') },
-  { label: "电话号码", v_model: ref('') },
+  { label: "用户名称", v_model: show_name },
+  { label: "地址", v_model: show_address },
+  { label: "邮箱", v_model: show_email },
+  { label: "电话号码", v_model: show_phone },
 ];
 
 // 初始化数据
@@ -135,8 +135,8 @@ const handleMenuSelect = (index: string) => {
 // 处理每个输入框修改按钮的点击事件
 const handleButtonClick = (index: number) => {
   const item = showItems[index];
-  console.log(`${item.label} 的值是: `, item.v_model.value);
-  item.v_model.value = `已提交：${item.v_model.value}`;
+  console.log(`修改后${item.label}的值是: `, item.v_model.value);
+  item.v_model.value = `${item.v_model.value}`;
 };
 
 // 处理密码修改按钮点击事件

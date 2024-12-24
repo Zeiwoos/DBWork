@@ -1,9 +1,10 @@
 <template>
+  <Navbar />
   <div>
-    <Navbar />
     <div class="main-body">
+      <!-- Adjusted carousel box -->
       <div class="carousel-box">
-        <el-carousel :interval="4000" type="card" height="400px">
+        <el-carousel :interval="4000" type="card" height="400px" style="margin-top: 20px">
           <el-carousel-item v-for="(item, index) in carouselImages" :key="index">
             <!-- 显示图片 -->
             <el-link><img :src="item" alt="Book Image" class="carousel-img" /></el-link>
@@ -15,7 +16,7 @@
           <div class="book-grid">
             <el-col v-for="book in books" :key="book.id" :span="6" class="book-box">
               <el-card class="book-card">
-                <img :src="book.img" class="book-img" alt=""/>
+                <img :src="book.img" class="book-img" alt="book img"/>
                 <div class="book-info">
                   <router-link :to="'/book/' + book.id" style="text-decoration: none; color: #181818">
                     <h3>{{ book.name }}</h3>
@@ -44,7 +45,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import { defineComponent } from 'vue';
 import Navbar from '@/components/Navbar.vue';
 import book1 from '@/assets/image/book1.png';
@@ -76,40 +77,37 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
+/* Main layout adjustments */
 .main-body {
+  gap: 30px;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;  /* Start alignment to avoid overlapping with the navbar */
   flex-direction: column;
-  gap: 30px;
-  height: auto;
-  width: 100vw;
   background-color: #f0f0f0;
+  padding-top: 60px; /* Ensuring space for Navbar */
 }
 
+/* Carousel box adjustment */
 .carousel-box {
-  margin-top: 120px;
   width: 100vw;
-  height: 450px;
+  height: 400px; /* Slightly reduced height */
+  padding: 0 0 50px 0; /* Ensure some horizontal space */
+  z-index: 1; /* Set to higher priority for visibility */
 }
 
-.el-carousel__item h3 {
-  color: #475669;
-  opacity: 0.75;
-  line-height: 200px;
-  margin: 0;
+.el-carousel__item {
   text-align: center;
 }
 
-.el-carousel__item:nth-child(2n) {
-  background-color: #99a9bf;
+.carousel-img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 5px;
 }
 
-.el-carousel__item:nth-child(2n + 1) {
-  background-color: #d3dce6;
-}
-
+/* Book list and card styles */
 .book-show {
   padding-bottom: 40px;
   width: 100vw;
@@ -167,6 +165,7 @@ export default defineComponent({
   font-size: 14px;
 }
 
+/* Footer styles */
 .home-footer {
   background-color: aliceblue;
   width: 100vw;
