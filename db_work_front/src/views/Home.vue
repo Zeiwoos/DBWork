@@ -3,15 +3,10 @@
   <Navbar class="home-navbar"></Navbar>
   <div class="main-body">
     <div class="carousel-box">
-      <el-carousel :interval="5000" arrow="always" class="carousel">
-        <el-carousel-item class="carousel_item">
-          <img :src="book_img1" alt="banner1" />
-        </el-carousel-item >
-        <el-carousel-item class="carousel_item">
-          <img :src="book_img2" alt="banner2" />
-        </el-carousel-item>
-        <el-carousel-item class="carousel_item">
-          <img :src="book_img3" alt="banner3" />
+      <el-carousel :interval="4000" type="card" height="400px">
+        <el-carousel-item v-for="(item, index) in carouselImages" :key="index">
+          <!-- 显示图片 -->
+          <img :src="item" alt="Book Image" class="carousel-img" />
         </el-carousel-item>
       </el-carousel>
     </div>
@@ -43,25 +38,30 @@
 </div>
 </template>
 
-<script lang="ts" setup>
-
-import { ref } from 'vue';
+<script lang="ts">
+import { defineComponent } from 'vue';
 import Navbar from '@/components/Navbar.vue';
 import book1 from '@/assets/image/book1.png';
 import book2 from '@/assets/image/book2.png';
 import book3 from '@/assets/image/book3.png';
 
-const book_img1 = book1
-const book_img2 = book2
-const book_img3 = book3
-
-const books = ref([
-  { id: 1, name: '《数据库系统原理》', author: '作者1', price: 99.99, img: 'https://via.placeholder.com/150' },
-  { id: 2, name: '《深入浅出Vue.js》', author: '作者2', price: 129.99, img: 'https://via.placeholder.com/150' },
-  { id: 3, name: '《算法导论》', author: '作者3', price: 89.99, img: 'https://via.placeholder.com/150' },
-  { id: 4, name: '《设计模式》', author: '作者4', price: 149.99, img: 'https://via.placeholder.com/150' }
-])
-
+export default defineComponent({
+  name: 'BookList',
+  components: {
+    Navbar
+  },
+  data() {
+    return {
+      carouselImages: [book1, book2, book3],
+      books: [
+        { id: 1, name: '《数据库系统原理》', author: '作者1', price: 99.99, img: 'https://via.placeholder.com/150' },
+        { id: 2, name: '《深入浅出Vue.js》', author: '作者2', price: 129.99, img: 'https://via.placeholder.com/150' },
+        { id: 3, name: '《算法导论》', author: '作者3', price: 89.99, img: 'https://via.placeholder.com/150' },
+        { id: 4, name: '《设计模式》', author: '作者4', price: 149.99, img: 'https://via.placeholder.com/150' }
+      ]
+    };
+  }
+});
 </script>
 
 <style scoped>
@@ -90,23 +90,22 @@ const books = ref([
 .carousel-box{
   margin-top: 120px;
   width: 100vw;
-  height: 350px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  height: 450px;
 }
-.carousel{
-  width: 90vw;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.el-carousel__item h3 {
+  color: #475669;
+  opacity: 0.75;
+  line-height: 200px;
+  margin: 0;
+  text-align: center;
 }
 
-.carousel_item img {
-  width: 80%;
-  height: 100%;
-  object-fit: cover;
+.el-carousel__item:nth-child(2n) {
+  background-color: #99a9bf;
+}
+
+.el-carousel__item:nth-child(2n + 1) {
+  background-color: #d3dce6;
 }
 .book-show{
   padding-bottom: 40px;
