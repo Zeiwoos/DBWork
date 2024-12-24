@@ -56,7 +56,7 @@
 
 
 <script>
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, onMounted} from "vue";
 import Navbar from "@/components/Navbar.vue";
 import logo from "@/assets/image/logo.webp";
 

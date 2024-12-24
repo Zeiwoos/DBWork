@@ -9,6 +9,7 @@ import BookSearch from '../views/BookSearch.vue';
 import Error from "@/views/Error.vue";
 import MissingBookRegister from "@/views/MissingBookRegister.vue";
 import Orders from "@/views/Orders.vue"
+import BookDetail from "@/views/BookDetail.vue";
 
 
 const routes = [
@@ -55,7 +56,13 @@ const routes = [
         path: '/orders',
         name: 'Orders',
         component: Orders
-    }
+    },
+    {
+        path: '/book/:id',
+        name: 'BookDetail',
+        component: BookDetail,
+        props: true
+    },
 ];
 
 
