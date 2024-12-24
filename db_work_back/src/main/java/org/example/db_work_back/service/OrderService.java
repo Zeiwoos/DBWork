@@ -1,9 +1,12 @@
 package org.example.db_work_back.service;
+import io.swagger.models.auth.In;
+import org.example.db_work_back.entity.Customer;
 import org.springframework.transaction.annotation.Transactional;
 import org.example.db_work_back.entity.OrderDetail;
 import org.example.db_work_back.repository.OrderDetailRepository;
 import org.example.db_work_back.dao.OrderDAO;
 import org.example.db_work_back.dao.BookDAO;
+import org.example.db_work_back.dao.CustomerDAO;
 import org.example.db_work_back.dao.OrderDetailDAO;
 import org.example.db_work_back.dto.OrderRequestDTO;
 import org.example.db_work_back.entity.Order;
@@ -25,6 +28,8 @@ public class OrderService {
     private  OrderDetailDAO orderDetailDAO;
     @Autowired
     private  BookDAO bookDAO;
+    @Autowired
+    private CustomerDAO customerDAO;
 
     // 获取所有订单
     public List<Order> getAllOrders() {
@@ -80,7 +85,7 @@ public class OrderService {
 //        System.out.println(order);
         // 获取生成的订单 ID（假设插入后 ID 可用）
         Integer orderId = order.getOrderId();
-
+        Integer customerId = order.getCustomerId();
 //        System.out.println("main "+orderId + " total : " + order.getTotalAmount());
         // 保存订单详情
         List<OrderDetail> orderDetails = orderRequest.getOrderDetails();
@@ -94,6 +99,12 @@ public class OrderService {
             orderDetailDAO.insertOrderDetail(detail); // 使用 OrderDetailDAO 插入订单详情
         }
         orderRequest.setOrderTotalprice();
+        Customer customer = customerDAO.selectCustomerById(customerId);
+        if(customer.getBalance().compareTo(orderRequest.getOrderTotalprice()) < 0){
+            return Result.error("您的余额不足");
+        }
+        customer.setBalance(customer.getBalance().min(orderRequest.getOrderTotalprice()));
+
         orderDAO.updateOrder(order);
         return Result.success(orderRequest);
     }

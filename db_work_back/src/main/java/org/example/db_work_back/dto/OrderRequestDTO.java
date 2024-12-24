@@ -19,6 +19,10 @@ public class OrderRequestDTO {
         }
     }
 
+    public BigDecimal getOrderTotalprice(){
+        return order.getTotalAmount();
+    }
+
     public void setOrderTotalpriceINI(){
         order.setTotalAmount(new BigDecimal("0"));
 
