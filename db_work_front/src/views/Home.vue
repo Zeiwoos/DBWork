@@ -52,7 +52,7 @@ import book1 from '@/assets/image/book1.png';
 import book2 from '@/assets/image/book2.png';
 import book3 from '@/assets/image/book3.png';
 import book4 from '@/assets/image/book4.png';
-
+import default_book from '@/assets/image/default.jpg';
 export default defineComponent({
   name: 'BookList',
   components: {
@@ -62,14 +62,14 @@ export default defineComponent({
     return {
       carouselImages: [book1, book2, book3, book4],
       books: [
-        { id: 1, name: '《数据库系统原理》', author: '作者1', price: 99.99, img: 'https://via.placeholder.com/150' },
-        { id: 2, name: '《深入浅出Vue.js》', author: '作者2', price: 129.99, img: 'https://via.placeholder.com/150' },
-        { id: 3, name: '《算法导论》', author: '作者3', price: 89.99, img: 'https://via.placeholder.com/150' },
-        { id: 4, name: '《设计模式》', author: '作者4', price: 149.99, img: 'https://via.placeholder.com/150' },
-        { id: 5, name: '《深入理解计算机系统》', author: '作者5', price: 109.99, img: 'https://via.placeholder.com/150' },
-        { id: 6, name: '《计算机网络》', author: '作者6', price: 119.99, img: 'https://via.placeholder.com/150' },
-        { id: 7, name: '《C++ Primer》', author: '作者7', price: 139.99, img: 'https://via.placeholder.com/150' },
-        { id: 8, name: '《操作系统概念》', author: '作者8', price: 159.99, img: 'https://via.placeholder.com/150' }
+        { id: 1, name: '《数据库系统原理》', author: '作者1', price: 99.99, img: default_book },
+        { id: 2, name: '《深入浅出Vue.js》', author: '作者2', price: 129.99, img: default_book },
+        { id: 3, name: '《算法导论》', author: '作者3', price: 89.99, img: default_book },
+        { id: 4, name: '《设计模式》', author: '作者4', price: 149.99, img: default_book },
+        { id: 5, name: '《深入理解计算机系统》', author: '作者5', price: 109.99, img: default_book },
+        { id: 6, name: '《计算机网络》', author: '作者6', price: 119.99, img: default_book },
+        { id: 7, name: '《C++ Primer》', author: '作者7', price: 139.99, img: default_book },
+        { id: 8, name: '《操作系统概念》', author: '作者8', price: 159.99, img: default_book }
       ]
     };
   }

@@ -4,7 +4,7 @@
 
     <div class="main-body">
       <div class="content">
-        <img :src="book.img" alt="Book Image" class="book-img" />
+        <img :src="book1" alt="Book Image" class="book-img" />
         <div class="book-info">
           <h2 class="book-title">{{ book.title }}</h2>
           <p class="book-price">￥{{ book.price }}</p>
@@ -44,7 +44,7 @@ import { ref, onMounted } from 'vue';
 import { getBookByID } from '@/api/Book';
 import Navbar from '@/components/Navbar.vue';
 import { useRoute } from 'vue-router'; // 导入 useRoute 函数
-
+import book1 from '@/assets/image/default.jpg';
 // 定义响应式变量
 const book = ref({
   bookID: 0,
@@ -58,7 +58,7 @@ const book = ref({
   storageLocation: '',
   seriesID: '',
   SupplierID: '',
-  // img: require('@/assets/images/default-book.png'),
+  // img: require('@/assets/images/book1.png'),
 });
 
 const quantity = ref(1);
