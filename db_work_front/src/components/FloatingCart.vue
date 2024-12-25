@@ -130,6 +130,11 @@ export default {
             total: newMessage.price * newMessage.num
           });
         }
+
+        // 遍历所有商品，更新总价
+        this.cartItems.forEach(item => this.updateTotal(item));
+
+        // 更新购物车商品数量
         this.cartCount = this.countNum();
       }
     },
@@ -168,6 +173,7 @@ export default {
     // 更新商品总价
     updateTotal(item) {
       item.total = item.price * item.quantity;
+      this.cartCount = this.countNum();  // 更新购物车商品数量
     },
 
     // 删除商品
@@ -216,7 +222,7 @@ export default {
   background-color: white;
   position: fixed;
   top: 68%;
-  right: 3%;
+  right: 5%;
   width: 55px;
   height: 165px;
   z-index: 999;

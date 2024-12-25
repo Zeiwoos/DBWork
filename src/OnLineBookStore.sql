@@ -52,15 +52,6 @@ CREATE TABLE books (
                        FOREIGN KEY (SeriesID) REFERENCES series(SeriesID)
 );
 
-# -- 书目供应商关系表（一本书可能有多个供应商）
-# DROP TABLE IF EXISTS `bookSuppliers`;
-# CREATE TABLE bookSuppliers (
-#                                BookID INT,
-#                                SupplierID INT,
-#                                PRIMARY KEY (BookID, SupplierID),
-#                                FOREIGN KEY (BookID) REFERENCES books(BookID),
-#                                FOREIGN KEY (SupplierID) REFERENCES suppliers(SupplierID)
-# );
 
 -- 缺书登记表
 DROP TABLE IF EXISTS `missingBooks`;
@@ -134,16 +125,6 @@ CREATE TABLE shipments (
                            FOREIGN KEY (OrderID) REFERENCES orders(OrderID)
 );
 
--- 浏览日志表
-DROP TABLE IF EXISTS `browsingLogs`;
-CREATE TABLE browsingLogs (
-                              LogID INT AUTO_INCREMENT PRIMARY KEY,
-                              CustomerID INT,
-                              BookID INT,
-                              BrowseDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                              FOREIGN KEY (CustomerID) REFERENCES customers(CustomerID) ,
-                              FOREIGN KEY (BookID) REFERENCES books(BookID)
-);
 
 
 
