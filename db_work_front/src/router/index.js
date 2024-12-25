@@ -64,6 +64,7 @@ const routes = [
         name: 'BookDetails',
         component: BookDetails,
         props: true, // 启用 props，方便将参数直接传递给组件
+    }
     },
     {
         path: '/book/:id',

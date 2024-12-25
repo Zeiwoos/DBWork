@@ -51,6 +51,6 @@ export function getBookByID(id: number) {
 export function deleteBook(id: number) {
     return request<BookData>({
         url: `/api/books/delete/${id}`,
-        method: 'post',
+        method: 'delete',
     });
 }

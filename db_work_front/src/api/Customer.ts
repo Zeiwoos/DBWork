@@ -1,77 +1,82 @@
 import { request} from '@/request';
 
-interface UserData {
+interface CustomerData {
     code: number;
     msg: string;
     data: any;
     // 其他属性
 }
 
-interface RegisterDTO {
+interface Customer {
+    // customerID:number;
+    customerName: string;
     email: string;
-    username: string;
+    phone: string;
+    address: string;
     password: string;
-    avatar?: string;
-    bio?: string;
-    wechatAccount?: string;
-    qqAccount?: string;
-    isLoggedOut?: number;
 }
-
-interface PageQueryDTO {
-    startTime: string;
-    endTime: string;
-    page: number;
-    pageSize: number;
+/*
+{
+    "customerName": "颜国平",
+    "email": "p1pscp_kdw52@qq.com",
+    "phone": "055 7504 1835",
+    "address": "安徽省 宁门市 四方台区 尉街16号 92单元",
+    "password": "UuMYimZ5qbCoPEW"
 }
-
-export function login(username:string,password:string){
-    return request<UserData>({
-        url:'/api/user/login',
+ */
+interface CustomerLoginDTO {
+    customerID: number;
+    password: string;
+}
+/*{
+    "customerID": 1,
+    "password": "4VBbRL4xSJbuv_I"
+}*/
+export function login(data:CustomerLoginDTO){
+    return request<CustomerData>({
+        url:'/api/customers/login',
         method: "post",
         data:{
-            username,
-            password
+            data
         }
     })
 }
 
-export function register(registerDTO:RegisterDTO){
-    return request<UserData>(
+export function register(customer:Customer){
+    return request<CustomerData>(
         {
-            url:'/api/user/register',
+            url:'/api/customers/register',
             method: "post",
-            data: registerDTO,
+            data: customer
         }
     )
 }
 export function logout(uid:number){
-    return request<UserData>(
+    return request<CustomerData>(
         {
-            url:'/api/user/logout',
+            url:'/api/customers/logout',
             method: "post",
             data: {uid},
         }
     )
 }
 
-export function getPageList(pageQueryDTO:PageQueryDTO){
-    return request<any>(
+// export function getPageList(pageQueryDTO:PageQueryDTO){
+//     return request<any>(
+//         {
+//             url:'/api/user/page',
+//             method: "post",
+//             data: pageQueryDTO,
+//         }
+//     )
+// }
+export function editBalance(id: number,balance:number){
+    return request<CustomerData>(
         {
-            url:'/api/user/page',
-            method: "post",
-            data: pageQueryDTO,
-        }
-    )
-}
-export function edit(username:string, uid: number){
-    return request<UserData>(
-        {
-            url:'/api/user/edit',
-            method: "post",
+            url:`/api/customers/updateBalance/${id}`,
+            method: "put",
             data: {
-                username,
-                uid
+                balance
             }
         }
     )

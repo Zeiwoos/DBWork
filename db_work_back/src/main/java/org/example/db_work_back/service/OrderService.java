@@ -103,8 +103,9 @@ public class OrderService {
         if(customer.getBalance().compareTo(orderRequest.getOrderTotalprice()) < 0){
             return Result.error("您的余额不足");
         }
-        customer.setBalance(customer.getBalance().min(orderRequest.getOrderTotalprice()));
-
+        customer.setBalance(customer.getBalance().subtract(orderRequest.getOrderTotalprice()));
+//        System.out.println(customer.getBalance());
+        customerDAO.updateCustomer(customerId,customer);
         orderDAO.updateOrder(order);
         return Result.success(orderRequest);
     }
