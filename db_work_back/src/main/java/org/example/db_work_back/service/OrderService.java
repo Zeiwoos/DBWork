@@ -1,5 +1,6 @@
 package org.example.db_work_back.service;
 import io.swagger.models.auth.In;
+import org.example.db_work_back.entity.Book;
 import org.example.db_work_back.entity.Customer;
 import org.springframework.transaction.annotation.Transactional;
 import org.example.db_work_back.entity.OrderDetail;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
 
@@ -87,22 +89,40 @@ public class OrderService {
         Integer orderId = order.getOrderId();
         Integer customerId = order.getCustomerId();
 //        System.out.println("main "+orderId + " total : " + order.getTotalAmount());
+        //算折扣
+        Customer customer = customerDAO.selectCustomerById(customerId);
+        Double discount = customer.getCreditLevel()*0.05;
         // 保存订单详情
         List<OrderDetail> orderDetails = orderRequest.getOrderDetails();
         for (OrderDetail detail : orderDetails) {
             detail.setOrder(orderId); // 关联订单
+
             Integer bookid=detail.getBookId();
             Integer number=detail.getQuantity();
-            detail.setPrice(bookDAO.selectBookById(bookid).getPrice().multiply(new BigDecimal(number)));
+            //减库存
+            Book thisbook = bookDAO.selectBookById(bookid);
+            thisbook.setStock(thisbook.getStock()-number);
+            bookDAO.updateBook(bookid,thisbook);
+
+            // 假设 thisbook.getPrice() 是 BigDecimal 类型，number 和 discount 是其他数值
+            BigDecimal price = thisbook.getPrice().multiply(new BigDecimal(number)).multiply(new BigDecimal(1 - discount));
+
+// 将结果限制为最多两位小数
+            BigDecimal finalPrice = price.setScale(2, RoundingMode.HALF_UP);
+
+// 设置 finalPrice 到 detail 的价格字段
+            detail.setPrice(finalPrice);
 //            detail.setPrice(new BigDecimal("0"));
 //            System.out.println("number "+detail.getPrice());
             orderDetailDAO.insertOrderDetail(detail); // 使用 OrderDetailDAO 插入订单详情
         }
+
         orderRequest.setOrderTotalprice();
-        Customer customer = customerDAO.selectCustomerById(customerId);
-        if(customer.getBalance().compareTo(orderRequest.getOrderTotalprice()) < 0){
+        //大于等于3级的信用等级可以赊账
+        if(customer.getCreditLevel()<3&&customer.getBalance().compareTo(orderRequest.getOrderTotalprice()) < 0){
             return Result.error("您的余额不足");
         }
+
         customer.setBalance(customer.getBalance().subtract(orderRequest.getOrderTotalprice()));
 //        System.out.println(customer.getBalance());
         customerDAO.updateCustomer(customerId,customer);

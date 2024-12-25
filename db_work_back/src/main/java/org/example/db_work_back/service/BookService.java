@@ -31,6 +31,9 @@ public class BookService {
         return Result.success("书目创建成功");
     }
 
+    public List<Book> SearchBook(String keywords){
+        return bookDAO.selectBookByNameSearch(keywords);
+    }
     // 更新客户
     public Result<Book> updateBook(Integer id, Book book) {
         bookDAO.updateBook(id, book);

@@ -27,6 +27,30 @@ public class BookDAO {
         String sql = "SELECT * FROM books WHERE BookID = ?";
         return jdbcTemplate.queryForObject(sql, new Object[]{id}, this::mapRowToBook);
     }
+
+    public List<Book> selectBookByNameSearch(String title) {
+        String sql = "SELECT * FROM books WHERE title LIKE ?";
+        title = "%" + title + "%";
+        System.out.println(sql);
+        return jdbcTemplate.query(sql, new Object[]{title}, (rs, rowNum) -> {
+            Book book = new Book();
+            book.setBookID(rs.getInt("BookID"));
+            book.setTitle(rs.getString("Title"));
+            book.setAuthor(rs.getString("Author"));
+            book.setPublisher(rs.getString("Publisher"));
+            book.setPrice(rs.getBigDecimal("Price"));
+            book.setKeywords(rs.getString("Keywords"));
+            book.setDescription(rs.getString("Description"));
+//        book.setCoverImage(rs.getBytes("CoverImage"));
+            book.setStock(rs.getInt("Stock"));
+            book.setStorageLocation(rs.getString("StorageLocation"));
+            book.setSeriesID(rs.getInt("SeriesID"));
+            book.setSupplierID(rs.getInt("SupplierID"));
+            return book;
+        });
+    }
+
+
     //根据系列id查询书籍
     public List<Book> selectBookBySeriesId(Integer SeriesID) {
         String sql = "SELECT * FROM books WHERE SeriesID = ?";
