@@ -70,16 +70,16 @@
         <el-input v-model="currentMissingBook.MissingBookID" disabled></el-input>
       </el-form-item>
       <el-form-item label="书ID">
-        <el-input v-model="currentMissingBook.BookID"></el-input>
+        <el-input v-model="currentMissingBook.BookID" disabled></el-input>
       </el-form-item>
       <el-form-item label="登记人ID">
-        <el-input v-model="currentMissingBook.CustomerID"></el-input>
+        <el-input v-model="currentMissingBook.CustomerID" disabled></el-input>
       </el-form-item>
       <el-form-item label="缺书数量">
         <el-input v-model="currentMissingBook.MissingQuantity"></el-input>
       </el-form-item>
       <el-form-item label="登记日期">
-        <el-input v-model="currentMissingBook.RegisterDate"></el-input>
+        <el-input v-model="currentMissingBook.RegisterDate" disabled></el-input>
       </el-form-item>
     </el-form>
     <template #footer>
@@ -209,4 +209,5 @@ const handleClickDeleteMissing = (MissingBookID: number) => {
 .el-table .danger-row {
   --el-table-tr-bg-color: var(--el-color-danger-light-9);
 }
+
 </style>

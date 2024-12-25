@@ -12,7 +12,8 @@
           <el-menu-item class="menu-item" index="1">用户管理</el-menu-item>
           <el-menu-item class="menu-item" index="2">书籍管理</el-menu-item>
           <el-menu-item class="menu-item" index="3">缺书管理</el-menu-item>
-          <el-menu-item class="menu-item" index="4">订单管理</el-menu-item>
+          <el-menu-item class="menu-item" index="4">采购单管理</el-menu-item>
+          <el-menu-item class="menu-item" index="5">客户订单管理</el-menu-item>
         </div>
       </el-menu>
     </div>
@@ -21,19 +22,20 @@
       <div v-if="menuActiveIndex === '1'" class="users-manage">
         <Table_Customer />
       </div>
-
       <!-- 书籍管理页面 -->
       <div v-if="menuActiveIndex === '2'" class="books-manage">
         <Table_Books />
       </div>
-
       <!-- 库存管理页面 -->
       <div v-if="menuActiveIndex === '3'" class="quantity-manage">
         <Table_MissingBooks />
       </div>
-
-      <!-- 订单管理页面 -->
-      <div v-if="menuActiveIndex === '4'" class="orders-manage">
+      <!-- 采购单管理页面-->
+      <div v-if="menuActiveIndex === '4'" class="purchaseOrders-manage">
+        <Table_PurchaseOrders />
+      </div>
+      <!-- 客户订单管理页面 -->
+      <div v-if="menuActiveIndex === '5'" class="orders-manage">
         <Table_Orders />
       </div>
     </div>
@@ -49,6 +51,7 @@ import Table_Customer from "@/components/Table_Customers.vue";
 import Table_Books from "@/components/Table_Books.vue";
 import Table_MissingBooks from "@/components/Table_MissingBooks.vue";
 import Table_Orders from "@/components/Table_Orders.vue";
+import Table_PurchaseOrders from "@/components/Table_PurchaseOrders.vue";
 
 // 引入图片路径
 const url = selfImg;
