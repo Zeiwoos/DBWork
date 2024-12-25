@@ -1,5 +1,6 @@
 package org.example.db_work_back.service;
 import io.swagger.models.auth.In;
+import org.example.db_work_back.entity.Book;
 import org.example.db_work_back.entity.Customer;
 import org.springframework.transaction.annotation.Transactional;
 import org.example.db_work_back.entity.OrderDetail;
@@ -93,7 +94,10 @@ public class OrderService {
             detail.setOrder(orderId); // 关联订单
             Integer bookid=detail.getBookId();
             Integer number=detail.getQuantity();
-            detail.setPrice(bookDAO.selectBookById(bookid).getPrice().multiply(new BigDecimal(number)));
+            Book thisbook = bookDAO.selectBookById(bookid);
+            thisbook.setStock(thisbook.getStock()-number);
+            bookDAO.updateBook(bookid,thisbook);
+            detail.setPrice(thisbook.getPrice().multiply(new BigDecimal(number)));
 //            detail.setPrice(new BigDecimal("0"));
 //            System.out.println("number "+detail.getPrice());
             orderDetailDAO.insertOrderDetail(detail); // 使用 OrderDetailDAO 插入订单详情
