@@ -1,71 +1,78 @@
 <template>
-  <div :class="tops ? 'navbar' : 'navbar-top'">
-    <!-- 购物车图标 -->
-      <el-tooltip class="tip" effect="dark" content="购物车" placement="left">
-        <el-badge :value="cartCount" class="badge">
-          <a @click="showPurchase"><el-icon><ShoppingCart /></el-icon></a>
-        </el-badge>
-      </el-tooltip>
-
-    <!-- 客服图标 -->
-    <el-tooltip class="tip" effect="dark" content="客服" placement="left">
-      <a><el-icon><Service /></el-icon></a>
-    </el-tooltip>
-
-    <!-- 二维码显示 -->
-    <div class="qrShow right" v-if="showQR">
-      <el-image
-          style="width: 100px; height: 100px; border-radius: 8px;"
-          :src="QrImage"
-          fit="cover">
-      </el-image>
-    </div>
-
-    <a @mouseover="showQRCode" @mouseleave="hideQRCode"><el-icon><CoffeeCup /></el-icon></a>
-
-    <!-- 返回顶部 -->
-    <el-tooltip class="item" effect="dark" content="返回顶部" placement="left" v-if="tops">
-      <a @click="gotop"><el-icon><CaretTop /></el-icon><br><span>顶部</span></a>
-    </el-tooltip>
-
-    <!-- 购物车详情对话框 -->
-    <el-dialog
-        :visible.sync="showCart"
-        title="购物车"
-        width="50%"
-        @close="clearCart"
-    >
-      <el-table :data="cartItems" style="width: 100%">
-        <el-table-column label="商品名称" prop="name"></el-table-column>
-        <el-table-column label="单价" prop="price"></el-table-column>
-        <el-table-column label="数量" prop="quantity"></el-table-column>
-        <el-table-column label="总价" prop="total"></el-table-column>
-      </el-table>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="showCart = false">取消</el-button>
-        <el-button type="primary" @click="checkout">结算</el-button>
+  <el-popover
+    :visible="visible"
+    placement="top"
+    title="购物车"
+    :width="300"
+    content="this is content, this is content, this is content">
+    <div class="cart-popover-content">
+      <div v-for="(item, index) in cartItems" :key="index" class="cart-item">
+        <div class="item-info">
+          <p style="font-weight: bold">{{ item.name }}</p>
+          <p>单价：{{ item.price }} RMB</p>
+          <div class="quantity-control">
+            <el-input-number v-model="item.quantity" :min="1" :max="99" label="数量" size="small"></el-input-number>
+            <el-button size="small" type="danger" @click="removeItem(index)">删除</el-button>
+          </div>
+        </div>
       </div>
-    </el-dialog>
-  </div>
+      <div class="cart-total">
+        <p>总价：￥{{ totalPrice }}</p>
+        <div class="charge-buttons">
+          <el-button @click="cancelPurchase" type="primary" size="small">取消支付</el-button>
+          <el-button @click="checkout" type="primary" size="small">提交支付</el-button>
+        </div>
+      </div>
+    </div>
+    <template #reference>
+      <div :class="tops ? 'navbar' : 'navbar-top'">
+        <!-- 购物车图标 -->
+        <el-tooltip class="tip" effect="dark" content="购物车" placement="left">
+          <el-badge :value="cartCount" class="badge">
+            <a @click="visible = !visible"><el-icon><ShoppingCart /></el-icon></a>
+          </el-badge>
+        </el-tooltip>
+        <!-- 客服图标 -->
+        <el-tooltip class="tip" effect="dark" content="客服" placement="left">
+          <a><el-icon><Service /></el-icon></a>
+        </el-tooltip>
+
+        <!-- 二维码显示 -->
+        <div class="qrShow right" v-if="showQR">
+          <el-image
+            style="width: 100px; height: 100px; border-radius: 8px;"
+            :src="QrImage"
+            fit="cover">
+          </el-image>
+        </div>
+        <a @mouseover="showQRCode" @mouseleave="hideQRCode"><el-icon><CoffeeCup /></el-icon></a>
+        <!-- 返回顶部 -->
+        <el-tooltip class="item" effect="dark" content="返回顶部" placement="left" v-if="tops">
+        <a @click="gotop"><el-icon><CaretTop /></el-icon><br><span>顶部</span></a>
+        </el-tooltip>
+      </div>
+    </template>
+  </el-popover>
 </template>
 
 <script>
-import {CaretTop, CoffeeCup, Service, ShoppingCart} from "@element-plus/icons-vue";
+import { CaretTop, CoffeeCup, Service, ShoppingCart } from "@element-plus/icons-vue";
 import QrImage from '@/assets/image/qrcode.png'
 
 export default {
   name: 'RightBar',
-  components: {CoffeeCup, CaretTop, Service, ShoppingCart},
-  data () {
+  components: { CoffeeCup, CaretTop, Service, ShoppingCart },
+  data() {
     return {
-      showQR:false,
-      tops:false,
-      heights:window.innerHeight,
-      scrolltop:'',
+      showQR: false,
+      tops: false,
+      heights: window.innerHeight,
+      scrolltop: '',
       showCart: false,  // 控制购物车详情对话框的显示
       cartItems: [],  // 存储购物车商品数据
       cartCount: 0,  // 购物车商品数量
-      QrImage:QrImage
+      QrImage: QrImage,
+      visible: false,
     };
   },
   mounted() {
@@ -77,15 +84,20 @@ export default {
     ];
     this.cartCount = this.cartItems.length;
   },
-  destroyed () {
-    window.removeEventListener('scroll', this.scrollToTop)
+  destroyed() {
+    window.removeEventListener('scroll', this.scrollToTop);
   },
-  methods:{
-    showQRCode(){//显示二维码
-      this.showQR = true
+  computed: {
+    totalPrice() {
+      return this.cartItems.reduce((total, item) => total + item.total, 0);
     },
-    hideQRCode(){//隐藏二维码
-      this.showQR = false
+  },
+  methods: {
+    showQRCode() { // 显示二维码
+      this.showQR = true;
+    },
+    hideQRCode() { // 隐藏二维码
+      this.showQR = false;
     },
     // 滚动处理
     scrollToTop() {
@@ -109,6 +121,20 @@ export default {
     showPurchase() {
       this.showCart = true;
     },
+    // 删除购物车商品
+    removeItem(item) {
+      const index = this.cartItems.indexOf(item);
+      if (index > -1) {
+        this.cartItems.splice(index, 1);
+        this.cartCount = this.cartItems.length;
+      }
+    },
+    // 更新商品总价
+    updateTotal() {
+      this.cartItems.forEach(item => {
+        item.total = item.price * item.quantity;
+      });
+    },
     // 清空购物车 (可选)
     clearCart() {
       this.cartItems = [];
@@ -119,10 +145,14 @@ export default {
       alert('结算功能待实现');
       this.showCart = false;
     },
+    // 取消支付
+    cancelPurchase() {
+      this.showCart = false;
+    },
   }
 }
 </script>
-style部分
+
 <style scoped>
 .navbar {
   text-align: center;
@@ -135,7 +165,7 @@ style部分
   z-index: 999;
   border-radius: 10px;
 }
-.navbar-top{
+.navbar-top {
   text-align: center;
   background-color: white;
   position: fixed;
@@ -155,7 +185,7 @@ style部分
   font-size: 30px;
   padding-top: 5px;
 }
-.navbar a:last-child{
+.navbar a:last-child {
   color: rgb(0, 0, 0);
   text-decoration: none;
   width: 100%;
@@ -164,7 +194,7 @@ style部分
   font-size: 15px;
   border-radius: 0px 0px 10px 10px;
 }
-.navbar a:first-child{
+.navbar a:first-child {
   color: rgb(0, 0, 0);
   text-decoration: none;
   width: 55px;
@@ -186,7 +216,7 @@ style部分
   font-size: 30px;
   padding-top: 5px;
 }
-.navbar-top a:last-child{
+.navbar-top a:last-child {
   color: rgb(0, 0, 0);
   text-decoration: none;
   width: 100%;
@@ -195,7 +225,7 @@ style部分
   font-size: 30px;
   border-radius: 0px 0px 10px 10px;
 }
-.navbar-top a:first-child{
+.navbar-top a:first-child {
   color: rgb(0, 0, 0);
   text-decoration: none;
   width: 55px;
@@ -208,7 +238,7 @@ style部分
   background-color: #d9534f;
   color: white;
 }
-.qrShow{
+.qrShow {
   position: fixed;
   top: calc(68% + 80px);
   right: calc(3% + 60px);
@@ -235,16 +265,30 @@ style部分
   top: 50%;
   margin-top: -7px;
 }
-/* 购物车详情对话框样式 */
-.el-dialog {
-  border-radius: 10px;
+.cart-popover-content{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
-
-.el-dialog .el-table {
-  margin-top: 20px;
+.cart-item{
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  border-bottom: 1px solid #f0f0f0;
 }
-
-.el-dialog .el-button {
-  margin-left: 10px;
+.cart-total{
+  display: flex;
+  gap:10px;
+  flex-direction: column;
+}
+.charge-buttons{
+  display: flex;
+  gap:20px;
+  justify-content: center;
+  align-items: center;
+}
+.quantity-control{
+  display: flex;
+  gap: 20px;
 }
 </style>

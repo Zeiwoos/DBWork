@@ -11,6 +11,7 @@ import MissingBookRegister from "@/views/MissingBookRegister.vue";
 import Orders from "@/views/Orders.vue"
 import BookDetails from "@/views/BookDetails.vue";
 import BookDetail from "@/views/BookDetail.vue";
+import Admin from "@/views/Admin.vue";
 
 
 const routes = [
@@ -59,17 +60,23 @@ const routes = [
         component: Orders
     },
     {
-        path: '/book/:id',
+        path: '/bookDetails/:id',
         name: 'BookDetails',
         component: BookDetails,
         props: true, // 启用 props，方便将参数直接传递给组件
+    }
     },
-    // {
-    //     path: '/book/:id',
-    //     name: 'BookDetail',
-    //     component: BookDetail,
-    //     props: true
-    // },
+    {
+        path: '/book/:id',
+        name: 'BookDetail',
+        component: BookDetail,
+        props: true
+    },
+    {
+        path: '/admin',
+        name: 'Admin',
+        component: Admin
+    }
 ];
 
 

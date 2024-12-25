@@ -109,7 +109,7 @@ export default defineComponent({
 
 /* Book list and card styles */
 .book-show {
-  padding-bottom: 40px;
+  padding: 20px 0 40px 0;
   width: 100vw;
   display: flex;
   justify-content: center;
@@ -155,6 +155,7 @@ export default defineComponent({
 .book-info {
   margin-bottom: 0;
   text-align: center;
+  gap: 5px;
 }
 .book-info h3 {
   width: 100%;
