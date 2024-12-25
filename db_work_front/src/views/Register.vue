@@ -37,7 +37,7 @@
 
       <!-- 注册按钮 -->
       <div>
-        <el-button type="primary" class="register-button">
+        <el-button type="primary" class="register-button" @click="handleRegister">
           <p class="button-font">注册</p>
         </el-button>
       </div>
@@ -48,7 +48,7 @@
       <el-image class="img" :src="url" fit="cover" />
       <div class="img-character-box">
         <p class="img-character-1">All You Want Is in</p>
-        <P class="img-character-2">OnlineBookStore</P>
+        <p class="img-character-2">OnlineBookStore</p>
       </div>
     </div>
   </div>
@@ -59,18 +59,19 @@
 import { defineComponent, ref, onMounted} from "vue";
 import Navbar from "@/components/Navbar.vue";
 import logo from "@/assets/image/logo.webp";
+import { register} from '@/api/Customer'
 
 export default defineComponent({
   components: { Navbar },
   setup() {
     // 定义输入项及其模型
-    const input_name = ref('')
-    const input_address = ref('')
-    const input_email = ref('')
-    const input_phone = ref('')
-    const input_password = ref('')
-    const input_password_again = ref('')
-    const regulation_checked = ref(false)
+    const input_name = ref('');
+    const input_address = ref('');
+    const input_email = ref('');
+    const input_phone = ref('');
+    const input_password = ref('');
+    const input_password_again = ref('');
+    const regulation_checked = ref(false);
 
     // 动态生成输入项数据
     const inputItems = [
@@ -86,11 +87,47 @@ export default defineComponent({
 
     const url = logo;
 
+    // 注册按钮的处理函数
+    const handleRegister = async () => {
+      // 检查是否同意服务协议
+      if (!regulation_checked.value) {
+        return alert("请先同意服务协议！");
+      }
+
+      // 检查密码是否一致
+      if (input_password.value !== input_password_again.value) {
+        return alert("两次输入的密码不一致！");
+      }
+
+      // 调用 register API，将用户输入的数据传递给 API
+      try {
+        const response = await register({
+          customerName: input_name.value,
+          email: input_email.value,
+          phone: input_phone.value,
+          address: input_address.value,
+          password: input_password.value,
+        });
+        console.log(response)
+        // 注册成功后的处理逻辑
+        if (response.data.code === 1) {
+          alert("注册成功！");
+          window.location.href = 'http://localhost:5173/login';
+        } else {
+          alert("注册失败！" + response.message);
+        }
+      } catch (error) {
+        console.error("注册请求失败：", error);
+        alert("请求失败，请重试！");
+      }
+    };
+
     return {
       inputItems,
       secretItems,
       regulation_checked,
       url,
+      handleRegister,
     };
   },
 });

@@ -36,9 +36,8 @@ export function login(data:CustomerLoginDTO){
     return request<CustomerData>({
         url:'/api/customers/login',
         method: "post",
-        data:{
-            data
-        }
+        data: data
+
     })
 }
 

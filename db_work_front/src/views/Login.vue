@@ -22,10 +22,12 @@
         <span class="character">{{ item.label }}</span>
         <el-input v-model="item.v_model.value" style="width: 240px" :placeholder="item.placeholder" />
       </div>
+
       <div v-for="(item, index) in secretItems" :key="index" class="input-box">
         <span class="character">{{ item.label }}</span>
         <el-input v-model="item.v_model.value" style="width: 240px" :placeholder="item.placeholder" type="password" show-password />
       </div>
+
       <!-- 服务协议 -->
       <div>
         <el-checkbox v-model="regulation_checked">
@@ -48,7 +50,7 @@
 
       <!-- 注册按钮 -->
       <div>
-        <el-button type="primary" class="login-button">
+        <el-button type="primary" class="login-button" @click="handleLogin">
           <p class="button-font">登录</p>
         </el-button>
       </div>
@@ -65,16 +67,19 @@
   </div>
 </template>
 
-
 <script lang="ts" setup>
 import { ref } from "vue";
 import Navbar from "@/components/Navbar.vue";
 import logo from "@/assets/image/logo.webp";
+import { login } from '@/api/Customer';  // 导入 login 函数
+import { useRouter } from 'vue-router';
 
 // 定义输入项及其模型
 const input_UserID = ref('');
 const input_password = ref('');
 const regulation_checked = ref(false);
+const errorMessage = ref('');
+const router = useRouter();  // 用于页面跳转
 
 // 动态生成输入项数据
 const inputItems = [
@@ -87,26 +92,38 @@ const secretItems = [
 // Logo 图片路径
 const url = logo;
 
-// 错误信息
-const errorMessage = ref("");
-
 // 登录逻辑
-const handleLogin = () => {
+const handleLogin = async () => {
   // 验证用户ID和密码是否为空
   if (!input_UserID.value || !input_password.value) {
     errorMessage.value = "用户ID或密码不能为空！";
     return;
   }
 
-  // 示例逻辑：模拟登录验证
-  if (input_UserID.value !== "admin" || input_password.value !== "123456") {
-    errorMessage.value = "用户ID或密码错误！";
-    return;
-  }
+  // 创建登录数据对象
+  const loginData = {
+    customerID: Number(input_UserID.value),  // 将用户ID转换为数字
+    password: input_password.value
+  };
 
-  // 如果验证成功，清除错误信息并处理其他逻辑
-  errorMessage.value = "";
-  alert("登录成功！"); // 这里可以替换为实际的登录逻辑
+  // 调用 API 进行登录验证
+  try {
+    const response = await login(loginData);
+
+    if (response.data.code === 1) {
+      // 登录成功，清除错误信息，跳转到主页
+      errorMessage.value = "";
+      alert("登录成功！");
+      localStorage.setItem('isLoggedIn', 'true');
+      router.push('/home'); // 跳转到首页或目标页面
+    } else {
+      // 登录失败，显示错误信息
+      errorMessage.value = response.data.msg || "登录失败！";
+    }
+  } catch (error) {
+    // 网络请求失败的处理
+    errorMessage.value = "登录请求失败，请稍后再试！";
+  }
 };
 </script>
 
@@ -165,7 +182,6 @@ const handleLogin = () => {
   display: flex;
   justify-content: left;
   align-items: center;
-
 }
 
 .button-font {
