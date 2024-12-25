@@ -80,16 +80,16 @@
           <el-input v-model="currentOrder.OrderID" disabled></el-input>
         </el-form-item>
         <el-form-item label="顾客ID">
-          <el-input v-model="currentOrder.CustomerID"></el-input>
+          <el-input v-model="currentOrder.CustomerID" disabled></el-input>
         </el-form-item>
         <el-form-item label="订单日期">
-          <el-input v-model="currentOrder.OrderDate"></el-input>
+          <el-input v-model="currentOrder.OrderDate" disabled></el-input>
         </el-form-item>
         <el-form-item label="总金额">
-          <el-input v-model="currentOrder.TotalAmount"></el-input>
+          <el-input v-model="currentOrder.TotalAmount" disabled></el-input>
         </el-form-item>
         <el-form-item label="送货地址">
-          <el-input v-model="currentOrder.ShippingAddress"></el-input>
+          <el-input v-model="currentOrder.ShippingAddress" disabled></el-input>
         </el-form-item>
         <el-form-item label="订单状态">
           <el-select v-model="currentOrder.Status" placeholder="请选择订单状态">

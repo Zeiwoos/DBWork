@@ -44,16 +44,16 @@
         <el-input v-model="currentCustomer.CustomerID" disabled></el-input>
       </el-form-item>
       <el-form-item label="CustomerName">
-        <el-input v-model="currentCustomer.CustomerName"></el-input>
+        <el-input v-model="currentCustomer.CustomerName" disabled></el-input>
       </el-form-item>
       <el-form-item label="Email">
-        <el-input v-model="currentCustomer.Email"></el-input>
+        <el-input v-model="currentCustomer.Email" disabled></el-input>
       </el-form-item>
       <el-form-item label="Phone">
-        <el-input v-model="currentCustomer.Phone"></el-input>
+        <el-input v-model="currentCustomer.Phone" disabled></el-input>
       </el-form-item>
       <el-form-item label="Balance">
-        <el-input v-model="currentCustomer.Balance"></el-input>
+        <el-input v-model="currentCustomer.Balance" disabled></el-input>
       </el-form-item>
       <el-form-item label="CreditLevel">
         <el-input v-model="currentCustomer.CreditLevel"></el-input>
