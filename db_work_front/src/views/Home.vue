@@ -101,11 +101,12 @@ export default defineComponent({
 .main-body {
   gap: 30px;
   display: flex;
+  height: auto;
   justify-content: center;
   align-items: flex-start;  /* Start alignment to avoid overlapping with the navbar */
   flex-direction: column;
   background-color: #f0f0f0;
-  padding-top: 60px; /* Ensuring space for Navbar */
+  padding-top: 80px; /* Ensuring space for Navbar */
 }
 
 /* Carousel box adjustment */
@@ -134,6 +135,7 @@ export default defineComponent({
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-bottom: 40px;
 }
 
 .book-list {
@@ -206,6 +208,7 @@ export default defineComponent({
   display: flex;
   justify-content: center;
   align-items: center;
+
 }
 
 .set-footer {

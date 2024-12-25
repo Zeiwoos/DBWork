@@ -144,7 +144,7 @@ const handleLogin = async () => {
   justify-content: center;
   flex-direction: column;
   gap: 20px;
-  margin: 150px auto auto 200px;
+  margin: 120px auto auto 200px;
 }
 
 .input-box {

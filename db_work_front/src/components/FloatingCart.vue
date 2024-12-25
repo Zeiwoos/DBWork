@@ -211,7 +211,7 @@ export default {
   background-color: white;
   position: fixed;
   top: 68%;
-  right: 3%;
+  right: 5%;
   width: 55px;
   height: 220px;
   z-index: 999;
@@ -293,7 +293,7 @@ export default {
 .qrShow {
   position: fixed;
   top: calc(68% + 80px);
-  right: calc(3% + 60px);
+  right: calc(5% + 65px);
   z-index: 999;
   background-color: rgb(179, 179, 179);
   width: 110px;
