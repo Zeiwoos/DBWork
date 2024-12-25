@@ -1,16 +1,22 @@
 <template>
   <div id="app">
     <div>
-      <router-view></router-view>
+      <router-view @add-to-cart="addToCart"></router-view>
     </div>
-    <FloatingCart />
+    <FloatingCart :message="purchaseMessage" />
+
   </div>
 </template>
 <script setup>
 import {RouterLink,RouterView} from "vue-router"
 import FloatingCart from "@/components/FloatingCart.vue";
+import {ref} from "vue";
+const purchaseMessage = ref('');
+const addToCart = (message) => {
+  console.log(message);
+  purchaseMessage.value = message;
+}
 </script>
 <style>
 
 </style>
-
