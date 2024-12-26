@@ -20,7 +20,6 @@
   >
     <el-table-column prop="orderId" label="OrderID" width="80" />
     <el-table-column prop="customerId" label="CustomerID" width="100"/>
-    <!-- Author 列，文本超长时显示省略号 -->
     <el-table-column label="OrderDate" width="140">
       <template #default="{ row }">
         <div class="ellipsis-text">{{ row.orderDate }}</div>
@@ -32,19 +31,44 @@
         <div class="ellipsis-text">{{ row.shippingAddress }}</div>
       </template>
     </el-table-column>
-    <!--    <el-table-column prop="keywords" label="Keywords" width="120" />-->
-    <!--    <el-table-column prop="description" label="Description" width="120"/>-->
+
     <el-table-column prop="status" label="Status" width="100"/>
 
+    <!-- 订单详情列 -->
+    <el-table-column label="Detail" width="100">
+      <template #default="{ row }">
+        <el-popover
+            placement="top-start"
+            title="订单详情"
+            :width="300"
+            trigger="click"
+        >
+          <div class="popover-content">
+            <el-row v-for="detail in orderDetails" :key="detail.orderDetailID">
+              <div class="detail-box">
+                <p>采购详情号：{{ detail.orderDetailID }}</p>
+                <p>书号：{{ detail.bookId }}</p>
+                <p>数量：{{ detail.quantity }}</p>
+                <p>总金额：{{ detail.price }}</p>
+              </div>
+              <el-divider></el-divider>
+            </el-row>
+          </div>
+          <template #reference>
+            <el-button link type="primary" @click="showOrderDetails(row.orderId)">Detail</el-button>
+          </template>
+        </el-popover>
+      </template>
+    </el-table-column>
+
+    <!-- 操作列 -->
     <el-table-column fixed="right" label="Operations" min-width="120">
       <template #default="{ row }">
-        <el-button link type="primary" size="small" plain @click="handleEditClick(row)">edit</el-button>
-        <el-button link type="danger" size="small" plain @click="handleDeleteClick(row.OrderID)">Delete</el-button>
+        <el-button link type="primary" plain @click="handleEditClick(row)">Edit</el-button>
+        <el-button link type="danger" plain @click="handleDeleteClick(row.orderId)">Delete</el-button>
       </template>
     </el-table-column>
   </el-table>
-
-  <el-button type="primary" @click="insertDialogVisible = true">添加订单</el-button>
 
   <!-- Edit Dialog -->
   <el-dialog
@@ -121,180 +145,115 @@
 
 <script lang="ts" setup>
 import { ElButton, ElInput, ElTable, ElTableColumn } from "element-plus";
-import {onBeforeMount, onMounted, ref} from "vue";
-import {
-  editOrder,
-  getDetailsByOrderID,
-  createWithDetails,
-  getAllOrders,
-  editStatus,
-  getOrderByCustomerID,
-  deleteOrder,
-  getOrderByID
-} from '@/api/Order';
+import { onBeforeMount, ref } from "vue";
+import { getAllOrders, getDetailsByOrderID, deleteOrder, editOrder, createWithDetails } from '@/api/Order';
 
-// 当前搜索框和对话框的控制
+// 控制弹出框
 const searchOrderID = ref('');
 const searchCustomerId = ref('');
 const editDialogVisible = ref(false);
 const insertDialogVisible = ref(false);
+const orderDetails = ref([]);
 
-export interface Order {
-  orderId:number;
-  customerId: number;
-  orderDate: string;
-  totalAmount: number;
-  shippingAddress: string;
-  status: string;
-}
-
-export interface OrderDTO {
-  customerId: number;
-  shippingAddress: string;
-}
-
-
-
-
-
-const currentOrder = ref<Order>({
+// 当前订单
+const currentOrder = ref({
   orderId: 0,
   customerId: 0,
   orderDate: '',
   totalAmount: 0,
   shippingAddress: '',
-  status: '',
+  status: ''
 });
 
-
-const newOrder = ref<Order>({
+// 新订单
+const newOrder = ref({
   orderId: 0,
   customerId: 0,
   orderDate: '',
   totalAmount: 0,
   shippingAddress: '',
-  status: '',
+  status: ''
 });
 
+// 过滤后的订单数据
 const filteredOrdersData = ref([]);
 
-// 获取所有书籍
+// 获取所有订单
 const fetchOrders = async () => {
   try {
     const response = await getAllOrders();
-    // console.info(response.data)
-    // 假设 response.data.data 是一个数组类型，但不一定是 Order[] 类型
     if (Array.isArray(response.data.data)) {
-      filteredOrdersData.value = response.data.data;  // 使用类型断言将其视为 Order[] 类型
-      // console.info('Filtered Orders data:', filteredOrdersData.value);
-
-    } else {
-      console.error('返回的数据格式错误，应该是一个数组');
-      filteredOrdersData.value = [];  // 如果数据格式不正确，赋予空数组
+      filteredOrdersData.value = response.data.data;
     }
   } catch (error) {
     console.error('获取订单失败', error);
   }
 };
 
-// ID搜索功能
+// 搜索功能
 const handleSearchOrder = () => {
-  // console.info(searchOrderID.value)
   if (searchOrderID.value) {
-    // 仅根据输入的 OrderID 过滤当前数据
-    filteredOrdersData.value = filteredOrdersData.value.filter(Order =>
-        Order.orderId.toString().includes(searchOrderID.value)
+    filteredOrdersData.value = filteredOrdersData.value.filter(order =>
+        order.orderId.toString().includes(searchOrderID.value)
     );
   } else {
-    // 如果没有输入搜索ID，则重新加载所有书籍数据
     fetchOrders();
   }
 };
-// 名字搜索功能
+
 const handleSearchOrderByCustomerId = () => {
-  // console.info(searchOrderID.value)
   if (searchCustomerId.value) {
-
-    filteredOrdersData.value = filteredOrdersData.value.filter(Order =>
-        Order.customerId.toString().includes(searchCustomerId.value)
+    filteredOrdersData.value = filteredOrdersData.value.filter(order =>
+        order.customerId.toString().includes(searchCustomerId.value)
     );
   } else {
-    // 如果没有输入搜索ID，则重新加载所有书籍数据
     fetchOrders();
   }
 };
 
-// 行样式
-const tableRowClassName = ({ row }: { row: Order }) => {
-  if (row.status == "Pending") {
-    return 'warning-row';
+// 显示订单详情
+const showOrderDetails = async (orderId) => {
+  try {
+    const response = await getDetailsByOrderID(orderId);
+    console.log(response)
+    if (response.data.code === 1) {
+      orderDetails.value = response.data.data;
+    }
+  } catch (error) {
+    console.error("获取订单详情失败", error);
   }
-  return '';
 };
 
-// 点击编辑按钮时，设置当前编辑的书籍
-const handleEditClick = (row: Order) => {
-  currentOrder.value = { ...row }; // 复制当前行的数据到编辑对象
+// 处理编辑订单
+const handleEditClick = (row) => {
+  currentOrder.value = { ...row };
   editDialogVisible.value = true;
 };
 
 const handleSaveEdit = async () => {
   try {
-    console.log(currentOrder.value)
     await editOrder(currentOrder.value.orderId, currentOrder.value);
-    await fetchOrders();
-    editDialogVisible.value = false; // 关闭编辑对话框
+    fetchOrders();
+    editDialogVisible.value = false;
   } catch (error) {
     console.error('更新订单失败', error);
   }
 };
 
-// 插入新书籍
-const handleInsertOrder = async () => {
+// 处理删除订单
+const handleDeleteClick = async (orderId) => {
   try {
-    await createWithDetails(newOrder.value);
-    await fetchOrders(); // 获取最新的书籍数据
-    insertDialogVisible.value = false;
-    newOrder.value = {
-      orderId: 0,
-      customerId: 0,
-      orderDate: '',
-      totalAmount: 0,
-      shippingAddress: '',
-      status: '',
-    };
-  } catch (error) {
-    console.error('添加订单失败', error);
-  }
-};
-
-// 删除书籍
-const handleDeleteClick = async (OrderID: number) => {
-  try {
-    // console.log(OrderID)
-    await deleteOrder(OrderID);
-    await fetchOrders(); // 删除后重新获取书籍数据
+    await deleteOrder(orderId);
+    fetchOrders();
   } catch (error) {
     console.error('删除订单失败', error);
-    alert("删除订单失败！可能有别的项目于依赖该书");
   }
 };
 
-// 删除书籍
-const handleGetOrderByIDClick = async (OrderID: number) => {
-  try {
-    // console.log(OrderID)
-    await getOrderByID(OrderID);
-    await fetchOrders(); // 删除后重新获取书籍数据
-  } catch (error) {
-    console.error('搜索订单失败', error);
-    alert("未查询到该订单！");
-  }
-};
-// 初始化加载书籍
+// 初始化加载订单
 onBeforeMount(() => {
   fetchOrders();
-})
+});
 </script>
 
 <style scoped>
@@ -303,10 +262,13 @@ onBeforeMount(() => {
 }
 
 .ellipsis-text {
-  white-space: nowrap;         /* 禁止换行 */
-  overflow: hidden;            /* 隐藏溢出的部分 */
-  text-overflow: ellipsis;     /* 超出部分显示省略号 */
-  display: inline-block;       /* 使 div 可以应用 text-overflow */
-  max-width: 100%;             /* 使文本自适应列的宽度 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.popover-content {
+  max-height: 300px; /* 设置最大高度 */
+  overflow-y: auto; /* 启用垂直滚动 */
+  padding-right: 10px; /* 增加右侧内边距以防止滚动条与内容重叠 */
 }
 </style>

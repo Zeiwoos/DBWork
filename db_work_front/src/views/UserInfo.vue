@@ -17,29 +17,28 @@
         <div class="input-box">
           <span class="character">用户ID</span>
           <el-input v-model="userInfo.customerId" style="width: 240px" disabled />
-          <el-button @click="handleUnchangable">修改</el-button>
+          <el-button @click="handleUnchangable">确认修改</el-button>
         </div>
         <div class="input-box">
           <span class="character">信用等级</span>
           <el-input v-model="userInfo.creditLevel" style="width: 240px" disabled />
-          <el-button @click="handleUnchangable">修改</el-button>
+          <el-button @click="handleUnchangable">确认修改</el-button>
         </div>
         <div v-for="(item, index) in showItems" :key="index" class="input-box">
           <span class="character">{{ item.label }}</span>
           <el-input v-model="item.v_model" style="width: 240px" />
-          <el-button @click="handleButtonClick(index)">修改</el-button>
+          <el-button @click="handleButtonClick(index)">确认修改</el-button>
         </div>
         <div class="input-box">
           <span class="character">密码</span>
           <el-input v-model="userInfo.password" style="width: 240px" type="password" show-password />
-          <el-button @click="handleButtonClick">修改</el-button>
+          <el-button @click="handleButtonClick(1)">确认修改</el-button>
         </div>
         <div class="input-box">
           <span class="character">余额</span>
           <el-input v-model="userInfo.balance" style="width: 240px" />
-          <el-button @click="handleBalanceRecharge">充值</el-button>
+          <el-button @click="handleBalanceRecharge">确认充值</el-button>
         </div>
-        <el-button type="primary" @click="handleSave">保存</el-button>
       </div>
       <div v-if="menuActiveIndex === '2'" class="orders-block">
         <div v-for="(order, index) in orders" :key="index" class="order">
@@ -164,7 +163,6 @@ const handleButtonClick = async (index: number) => {
   } else if (item.label === "电话号码") {
     userInfo.value.phone = item.v_model;
   }
-
   try {
     // 直接使用 userInfo 中的数据进行更新
     await editCustomerInfo(userInfo.value.customerId, userInfo.value);

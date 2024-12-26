@@ -36,21 +36,25 @@
       <!-- 第四行 -->
       <el-row class="row">
         <el-col class="item">
-
           <el-popover
               placement="top-start"
               title="订单详情"
-              :width="200"
-              trigger="hover"
-              content="this is content, this is content, this is content"
+              :width="300"
+              trigger="click"
           >
-            <el-col>
-              <elrow>
-
-              </elrow>
-            </el-col>
+            <div class="popover-content">
+              <el-row v-for="detail in orderDetails" :key="detail.orderDetailID">
+                <div class="detail-box">
+                  <p>采购详情号：{{ detail.orderDetailID }}</p>
+                  <p>书号：{{ detail.bookId }}</p>
+                  <p>数量：{{ detail.quantity }}</p>
+                  <p>总金额：{{ detail.price }}</p>
+                </div>
+                <el-divider></el-divider>
+              </el-row>
+            </div>
             <template #reference>
-              <el-button type="primary" @click="showOrderDetails">查看订单详情</el-button>
+              <el-button type="primary" @click="showOrderDetails" style="background-color: aquamarine; color: #181818">查看订单详情</el-button>
             </template>
           </el-popover>
         </el-col>
@@ -88,7 +92,7 @@ export default {
       internalOrderAddress: this.orderAddress,
       internalOrderStatus: this.orderStatus,
       dialogVisible: false,
-      orderDetails: null
+      orderDetails: []  // 初始化为空数组
     };
   },
   watch: {
@@ -121,23 +125,27 @@ export default {
   methods: {
     async handleModifyOrder() {
       try {
-        // 调用 API 删除订单
-        await DeleteOrder(this.internalOrderID);
-        this.$emit('orderDeleted', this.internalOrderID); // 通知父组件订单已删除
-        alert("订单已删除");
-        window.location.reload();
+        // 判断订单状态是否为已完成，如果不是已完成，则删除订单
+        if (this.internalOrderStatus !== "Completed") {
+          await DeleteOrder(this.internalOrderID);
+          this.$emit('orderDeleted', this.internalOrderID); // 通知父组件订单已删除
+          alert("订单已删除");
+          window.location.reload();
+        } else {
+          alert("订单已完成");
+        }
       } catch (error) {
         console.error("删除订单失败", error);
         alert("删除订单失败");
       }
     },
 
+
     async showOrderDetails() {
       try {
         const responseOrderDetail = await getDetailsByOrderID(this.internalOrderID);
-        console.log(responseOrderDetail)
         if (responseOrderDetail.data.code === 1) {
-          this.orderDetails = responseOrderDetail.data.data;
+          this.orderDetails = responseOrderDetail.data.data; // 设置订单详情数据
           this.dialogVisible = true;
         } else {
           alert("未找到订单详情");
@@ -172,7 +180,7 @@ export default {
 }
 
 .row {
-  display: contents; /* 保证每一行项在grid布局内 */
+  display: contents;
 }
 
 .item {
@@ -187,17 +195,27 @@ export default {
   color: #333;
 }
 
+.detail-box {
+  gap: 20px;
+}
+
 .el-input {
   width: 100%;
 }
 
 .btn-col {
-  grid-column: span 3; /* 按钮独占一行 */
+  grid-column: span 3;
   text-align: center;
 }
 
 .el-button {
   width: 240px;
   margin-top: 20px;
+}
+
+.popover-content {
+  max-height: 300px; /* 设置最大高度 */
+  overflow-y: auto; /* 启用垂直滚动 */
+  padding-right: 10px; /* 增加右侧内边距以防止滚动条与内容重叠 */
 }
 </style>
