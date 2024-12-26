@@ -20,37 +20,42 @@
       <!-- 第二行 -->
       <el-row class="row">
         <el-col class="item">
-          <span>书号</span>
-          <el-input v-model="internalBookID" style="width: 240px" disabled></el-input>
-        </el-col>
-        <el-col class="item">
-          <span>订货数量</span>
-          <el-input v-model="internalOrderAmount" style="width: 240px" disabled></el-input>
-        </el-col>
-        <el-col class="item">
           <span>订单总额</span>
           <el-input v-model="internalOrderPrice" style="width: 240px" disabled></el-input>
         </el-col>
-      </el-row>
-
-      <!-- 第三行 -->
-      <el-row class="row">
         <el-col class="item">
           <span>配送地址</span>
-          <el-input v-model=" internalOrderAddress" style="width: 240px" disabled></el-input>
+          <el-input v-model="internalOrderAddress" style="width: 240px" disabled></el-input>
         </el-col>
         <el-col class="item">
           <span>订单状态</span>
-          <el-input v-model=" internalOrderStatus" style="width: 240px" disabled></el-input>
+          <el-input v-model="internalOrderStatus" style="width: 240px" disabled></el-input>
         </el-col>
       </el-row>
 
       <!-- 第四行 -->
       <el-row class="row">
-        <el-col class="btn-col">
-          <el-form-item>
-            <el-button type="primary" @click="handleModifyOrder">取消订单</el-button>
-          </el-form-item>
+        <el-col class="item">
+
+          <el-popover
+              placement="top-start"
+              title="订单详情"
+              :width="200"
+              trigger="hover"
+              content="this is content, this is content, this is content"
+          >
+            <el-col>
+              <elrow>
+
+              </elrow>
+            </el-col>
+            <template #reference>
+              <el-button type="primary" @click="showOrderDetails">查看订单详情</el-button>
+            </template>
+          </el-popover>
+        </el-col>
+        <el-col class="item">
+          <el-button type="primary" @click="handleModifyOrder">取消订单</el-button>
         </el-col>
       </el-row>
     </el-form>
@@ -58,8 +63,9 @@
 </template>
 
 <script>
-import {DeleteOrder} from "@/api/Order";
-import router from "@/router/index.js";
+import { DeleteOrder, getDetailsByOrderID } from "@/api/Order";
+import { ref } from "vue";
+
 export default {
   props: {
     orderID: Number,
@@ -80,7 +86,9 @@ export default {
       internalOrderAmount: this.orderAmount,
       internalOrderPrice: this.orderPrice,
       internalOrderAddress: this.orderAddress,
-      internalOrderStatus: this.orderStatus
+      internalOrderStatus: this.orderStatus,
+      dialogVisible: false,
+      orderDetails: null
     };
   },
   watch: {
@@ -114,19 +122,38 @@ export default {
     async handleModifyOrder() {
       try {
         // 调用 API 删除订单
-        DeleteOrder(this.internalOrderID);
+        await DeleteOrder(this.internalOrderID);
         this.$emit('orderDeleted', this.internalOrderID); // 通知父组件订单已删除
         alert("订单已删除");
-        // 如果你不想使用 reload，应该更新父组件的状态，或者手动清空子组件状态
         window.location.reload();
       } catch (error) {
         console.error("删除订单失败", error);
         alert("删除订单失败");
       }
     },
+
+    async showOrderDetails() {
+      try {
+        const responseOrderDetail = await getDetailsByOrderID(this.internalOrderID);
+        console.log(responseOrderDetail)
+        if (responseOrderDetail.data.code === 1) {
+          this.orderDetails = responseOrderDetail.data.data;
+          this.dialogVisible = true;
+        } else {
+          alert("未找到订单详情");
+        }
+      } catch (error) {
+        console.error("获取订单详情失败", error);
+        alert("获取订单详情失败");
+      }
+    },
+
+    handleClose(done) {
+      this.dialogVisible = false;
+      done();
+    }
   }
 };
-
 </script>
 
 <style scoped>
