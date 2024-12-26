@@ -60,6 +60,15 @@ export function logout(uid:number){
     )
 }
 
+export function getCustomerByID(uid:number){
+    return request<CustomerData>(
+        {
+            url:`/api/customers/${uid}`,
+            method: "get"
+        }
+    )
+}
+
 // export function getPageList(pageQueryDTO:PageQueryDTO){
 //     return request<any>(
 //         {
