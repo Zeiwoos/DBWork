@@ -34,7 +34,7 @@ public class PurchaseOrderController {
     }
 
     @PutMapping("/update/{id}")
-    public Result updatePurchaseOrder(@RequestBody PurchaseOrder purchaseOrder) {
+    public Result updatePurchaseOrder(@PathVariable Integer id,@RequestBody PurchaseOrder purchaseOrder) {
         return Result.success(purchaseOrderService.updatePurchaseOrder(purchaseOrder));
     }
 

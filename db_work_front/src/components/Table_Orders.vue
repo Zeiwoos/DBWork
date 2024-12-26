@@ -66,6 +66,7 @@
       <template #default="{ row }">
         <el-button link type="primary" plain @click="handleEditClick(row)">Edit</el-button>
         <el-button link type="danger" plain @click="handleDeleteClick(row.orderId)">Delete</el-button>
+
       </template>
     </el-table-column>
   </el-table>

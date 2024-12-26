@@ -8,9 +8,9 @@ import java.util.Date;
 @Table(name = "purchaseorders")
 public class PurchaseOrder {
 
-    public enum PurchaseOrderStatus {
-        PENDING, SHIPPED, DELIVERED
-    }
+//    public enum PurchaseOrderStatus {
+//        PENDING, SHIPPED, DELIVERED
+//    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer purchaseID;
@@ -21,9 +21,8 @@ public class PurchaseOrder {
     @Column(name = "Orderdate")
     private Date orderDate;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "Status", columnDefinition = "ENUM('Pending', 'Shipped', 'Delivered')", nullable = false)
-    private PurchaseOrderStatus status = PurchaseOrderStatus.PENDING;
+    @Column(name = "Status")
+    private String status = "Pending";
 
     // Getters and Setters
     public Integer getPurchaseId() {
@@ -49,11 +48,11 @@ public class PurchaseOrder {
         this.orderDate = orderDate;
     }
 
-    public PurchaseOrderStatus getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(PurchaseOrderStatus status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 }

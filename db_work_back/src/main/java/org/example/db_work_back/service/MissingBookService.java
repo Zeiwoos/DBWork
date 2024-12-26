@@ -34,7 +34,7 @@ public class MissingBookService {
         }
     }
 
-    public Result updateMissingBookStatus(MissingBook missingBook) {
+    public Result updateMissingBookStatus(Integer id, MissingBook missingBook) {
         try {
             missingBookDAO.updateMissingBook(missingBook);
             return Result.success(missingBook);

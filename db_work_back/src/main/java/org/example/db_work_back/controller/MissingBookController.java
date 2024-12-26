@@ -42,7 +42,12 @@ public class MissingBookController {
     public Result updateMissingBookStatus(@PathVariable Integer id,@RequestParam String Status) {
         MissingBook missingBook = missingBookService.getMissingBookById(id);
         missingBook.setStatus(Status);
-        return Result.success(missingBookService.updateMissingBookStatus(missingBook));
+        return Result.success(missingBookService.updateMissingBookStatus(id,missingBook));
+    }
+
+    @PutMapping("/update/{id}")
+    public Result updateMissingBook(@PathVariable Integer id,@RequestBody MissingBook missingBook) {
+        return Result.success(missingBookService.updateMissingBookStatus(id,missingBook));
     }
 
     @DeleteMapping("/delete/{id}")

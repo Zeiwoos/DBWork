@@ -1,200 +1,271 @@
 <template>
-  <!-- 搜索框 -->
   <el-input
       v-model="searchPurchaseOrderID"
-      placeholder="请输入采购单ID进行查询"
+      placeholder="请输入PurchaseOrderID进行查询"
       clearable
       style="margin-bottom: 20px; width: 300px;"
       @input="handleSearchPurchaseOrder"
   />
-
-  <!-- 表格 -->
+<!--  <el-input-->
+<!--      v-model="searchPurchaseOrderTitle"-->
+<!--      placeholder="请输入PurchaseOrderTitle进行查询"-->
+<!--      clearable-->
+<!--      style="margin-bottom: 20px; width: 300px;"-->
+<!--      @input="handleSearchPurchaseOrderByName"-->
+<!--  />-->
   <el-table
       :data="filteredPurchaseOrdersData"
       style="width: 100%"
       :row-class-name="tableRowClassName"
   >
-    <el-table-column prop="PurchaseOrderID" label="采购单ID" width="100" />
-    <el-table-column prop="SupplierID" label="供应商ID" width="120" />
-    <el-table-column prop="OrderDate" label="采购时间" width="120" />
-    <el-table-column prop="Status" label="采购状态" width="150" />
-    <el-table-column fixed="right" label="操作" min-width="140">
+    <el-table-column prop="purchaseId" label="PurchaseOrderID" width="140" />
+    <el-table-column prop="supplierId" label="SupplierID" width="100" />
+    <el-table-column prop="orderDate" label="OrderDate" width="100" />
+    <el-table-column prop="status" label="Status" width="100" />
+
+
+    <el-table-column fixed="right" label="Operations" min-width="120">
       <template #default="{ row }">
-        <el-button link type="primary" @click="handleClickPurchaseOrder(row)">Edit</el-button>
-        <el-button link type="danger" @click="handleClickDeletePurchaseOrder(row.PurchaseOrderID)">Delete</el-button>
+        <el-button link type="primary" size="small" plain @click="handleEditClick(row)">Edit</el-button>
+        <el-button link type="danger" size="small" plain @click="handleDeleteClick(row.purchaseId)">Delete</el-button>
       </template>
     </el-table-column>
   </el-table>
+<!--  <el-button type="primary" @click="insertDialogVisible = true">添加采购单</el-button>-->
 
-  <!-- 添加缺书对话框 -->
+  <!-- Edit Dialog -->
   <el-dialog
-      v-model="addPurchaseOrderDialogVisible"
-      title="添加采购单"
+      v-model="editDialogVisible"
+      title="Edit PurchaseOrder"
       width="500"
       destroy-on-close
       center
   >
-    <el-form :model="newPurchaseOrder">
-      <el-form-item label="供应商ID">
-        <el-input v-model="newPurchaseOrder.SupplierID" placeholder="请输入供应商ID"></el-input>
+    <el-form>
+      <el-form-item label="PurchaseOrderID">
+        <el-input v-model="currentPurchaseOrder.purchaseId" disabled></el-input>
       </el-form-item>
-      <el-form-item label="采购时间">
-        <el-input v-model="newPurchaseOrder.OrderDate" placeholder="请输入采购时间"></el-input>
+      <el-form-item label="SupplierID">
+        <el-input v-model="currentPurchaseOrder.supplierId"></el-input>
       </el-form-item>
-      <el-form-item label="采购状态">
-        <el-select v-model="newPurchaseOrder.Status" placeholder="请选择采购状态">
-          <el-option label="Pending" value="Pending"></el-option>
-          <el-option label="Completed" value="Completed"></el-option>
-          <el-option label="Canceled" value="Canceled"></el-option>
-        </el-select>
+      <el-form-item label="OrderDate">
+        <el-input v-model="currentPurchaseOrder.orderDate"></el-input>
       </el-form-item>
+      <el-form-item label="Status">
+        <el-input v-model="currentPurchaseOrder.status"></el-input>
+      </el-form-item>
+
     </el-form>
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="addPurchaseOrderDialogVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="handleAddPurchaseOrder">Confirm</el-button>
+        <el-button @click="editDialogVisible = false">Cancel</el-button>
+        <el-button type="primary" @click="handleSaveEdit">Confirm</el-button>
       </div>
     </template>
   </el-dialog>
 
-  <!-- 编辑缺书对话框 -->
-  <el-dialog
-      v-model="editPurchaseOrderDialogVisible"
-      title="编辑采购单"
-      width="500"
-      destroy-on-close
-      center
-  >
-    <el-form :model="currentPurchaseOrder">
-      <el-form-item label="采购单ID">
-        <el-input v-model="currentPurchaseOrder.PurchaseOrderID" disabled></el-input>
-      </el-form-item>
-      <el-form-item label="供应商ID">
-        <el-input v-model="currentPurchaseOrder.SupplierID" disabled></el-input>
-      </el-form-item>
-      <el-form-item label="采购时间">
-        <el-input v-model="currentPurchaseOrder.OrderDate" disabled></el-input>
-      </el-form-item>
-      <el-form-item label="采购状态">
-        <el-select v-model="currentPurchaseOrder.Status" placeholder="请选择采购状态">
-          <el-option label="Pending" value="Pending"></el-option>
-          <el-option label="Completed" value="Completed"></el-option>
-          <el-option label="Canceled" value="Canceled"></el-option>
-        </el-select>
-      </el-form-item>
-    </el-form>
-    <template #footer>
-      <div class="dialog-footer">
-        <el-button @click="editPurchaseOrderDialogVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="handleEditPurchaseOrder">Confirm</el-button>
-      </div>
-    </template>
-  </el-dialog>
-
-  <!-- 添加缺书单按钮 -->
-  <el-button type="primary" @click="addPurchaseOrderDialogVisible = true">添加缺书单</el-button>
+<!--  &lt;!&ndash; Insert Dialog &ndash;&gt;-->
+<!--  <el-dialog-->
+<!--      v-model="insertDialogVisible"-->
+<!--      title="Add New PurchaseOrder"-->
+<!--      width="500"-->
+<!--      destroy-on-close-->
+<!--      center-->
+<!--  >-->
+<!--    <el-form :model="newPurchaseOrder">-->
+<!--      <el-form-item label="PurchaseOrderID">-->
+<!--        <el-input v-model="newPurchaseOrder.PurchaseOrderID" placeholder="Enter PurchaseOrderID" disabled></el-input>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="Title">-->
+<!--        <el-input v-model="newPurchaseOrder.title" placeholder="Enter Title"></el-input>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="Author">-->
+<!--        <el-input v-model="newPurchaseOrder.author" placeholder="Enter Author"></el-input>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="Publisher">-->
+<!--        <el-input v-model="newPurchaseOrder.publisher" placeholder="Enter Publisher"></el-input>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="Keywords">-->
+<!--        <el-input v-model="newPurchaseOrder.keywords" placeholder="Enter Keywords"></el-input>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="Description">-->
+<!--        <el-input v-model="newPurchaseOrder.description" placeholder="Enter Description"></el-input>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="Stock">-->
+<!--        <el-input v-model="newPurchaseOrder.stock" placeholder="Enter Stock"></el-input>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="StorageLocation">-->
+<!--        <el-input v-model="newPurchaseOrder.storageLocation" placeholder="Enter Storage Location"></el-input>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="SeriesID">-->
+<!--        <el-input v-model="newPurchaseOrder.seriesID" placeholder="Enter SeriesID"></el-input>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="SupplierID">-->
+<!--        <el-input v-model="newPurchaseOrder.supplierID" placeholder="Enter SeriesID"></el-input>-->
+<!--      </el-form-item>-->
+<!--    </el-form>-->
+<!--    <template #footer>-->
+<!--      <div class="dialog-footer">-->
+<!--        <el-button @click="insertDialogVisible = false">Cancel</el-button>-->
+<!--        <el-button type="primary" @click="handleInsertPurchaseOrder">Confirm</el-button>-->
+<!--      </div>-->
+<!--    </template>-->
+<!--  </el-dialog>-->
 </template>
 
-<script setup lang="ts">
-import { ref } from 'vue';
-import { ElButton, ElInput, ElTable, ElTableColumn, ElDialog, ElForm, ElFormItem } from 'element-plus';
+<script lang="ts" setup>
+import { ElButton, ElInput, ElTable, ElTableColumn } from "element-plus";
+import {onBeforeMount, onMounted, ref} from "vue";
+import {
+    getAllPurchaseOrder,
+    addPurchaseOrder,
+    getPurchaseOrder,
+    deletePurchaseOrder,
+    updatePuchaseOrder
+} from '@/api/PurchaseOrder';
 
+// 当前搜索框和对话框的控制
 const searchPurchaseOrderID = ref('');
-const addPurchaseOrderDialogVisible = ref(false);
-const editPurchaseOrderDialogVisible = ref(false);
-const currentPurchaseOrder = ref<PurchaseOrder>({
-  PurchaseOrderID: 0,
-  SupplierID: 0,
-  OrderDate: '',
-  Status: '',
-});
-const newPurchaseOrder = ref<PurchaseOrder>({
-  PurchaseOrderID: 0,
-  SupplierID: 0,
-  OrderDate: '',
-  Status: '',
-});
+const searchPurchaseOrderTitle = ref('');
+const editDialogVisible = ref(false);
+const insertDialogVisible = ref(false);
 
-interface PurchaseOrder {
-  PurchaseOrderID: number;
-  SupplierID: number;
-  OrderDate: string;
-  Status: string;
+export interface PurchaseOrder {
+  purchaseId:number;
+  supplierId:number;
+  orderDate:string;
+  status:string;
 }
+// 当前正在编辑的采购单
+const currentPurchaseOrder = ref<PurchaseOrder>({
+  purchaseId:0,
+  supplierId:0,
+  orderDate:'',
+  status:''
+});
 
-const PurchaseOrdersData: PurchaseOrder[] = [
-  {
-    PurchaseOrderID: 1,
-    SupplierID: 101,
-    OrderDate: '2024-12-15',
-    Status: 'Pending',
-  },
-];
+// 新采购单的数据对象
+const newPurchaseOrder = ref<PurchaseOrder>({
+  purchaseId:0,
+  supplierId:0,
+  orderDate:'',
+  status:''
+});
 
-const filteredPurchaseOrdersData = ref(PurchaseOrdersData);
+const filteredPurchaseOrdersData = ref([]);
 
-// 搜索功能
+// 获取所有采购单
+const fetchPurchaseOrders = async () => {
+  try {
+    const response = await getAllPurchaseOrder();
+    console.info(response.data)
+    // 假设 response.data.data 是一个数组类型，但不一定是 PurchaseOrder[] 类型
+    if (Array.isArray(response.data.data)) {
+      filteredPurchaseOrdersData.value = response.data.data;  // 使用类型断言将其视为 PurchaseOrder[] 类型
+      // console.info('Filtered PurchaseOrders data:', filteredPurchaseOrdersData.value);
+
+    } else {
+      console.error('返回的数据格式错误，应该是一个数组');
+      filteredPurchaseOrdersData.value = [];  // 如果数据格式不正确，赋予空数组
+    }
+  } catch (error) {
+    console.error('获取采购单失败', error);
+  }
+};
+
+// ID搜索功能
 const handleSearchPurchaseOrder = () => {
+  // console.info(searchPurchaseOrderID.value)
   if (searchPurchaseOrderID.value) {
-    filteredPurchaseOrdersData.value = PurchaseOrdersData.filter(
-        (item) => item.PurchaseOrderID.toString().includes(searchPurchaseOrderID.value)
+    // 仅根据输入的 PurchaseOrderID 过滤当前数据
+    filteredPurchaseOrdersData.value = filteredPurchaseOrdersData.value.filter(PurchaseOrder =>
+        PurchaseOrder.PurchaseOrderID.toString().includes(searchPurchaseOrderID.value)
     );
   } else {
-    filteredPurchaseOrdersData.value = PurchaseOrdersData;
+    // 如果没有输入搜索ID，则重新加载所有采购单数据
+    fetchPurchaseOrders();
+  }
+};
+// 名字搜索功能
+const handleSearchPurchaseOrderByName = () => {
+  // console.info(searchPurchaseOrderID.value)
+  if (searchPurchaseOrderTitle.value) {
+    // 仅根据输入的 PurchaseOrderID 过滤当前数据
+    filteredPurchaseOrdersData.value = filteredPurchaseOrdersData.value.filter(PurchaseOrder =>
+        PurchaseOrder.title.toString().includes(searchPurchaseOrderTitle.value)
+    );
+  } else {
+    // 如果没有输入搜索ID，则重新加载所有采购单数据
+    fetchPurchaseOrders();
   }
 };
 
 // 行样式
 const tableRowClassName = ({ row }: { row: PurchaseOrder }) => {
-  if (row.MissingQuantity > 5) {
-    return 'warning-row';
-  }
   return '';
 };
 
-// 点击编辑按钮
-const handleClickPurchaseOrder = (row: PurchaseOrder) => {
+// 点击编辑按钮时，设置当前编辑的采购单
+const handleEditClick = (row: PurchaseOrder) => {
   currentPurchaseOrder.value = { ...row }; // 复制当前行的数据到编辑对象
-  editPurchaseOrderDialogVisible.value = true;
+  editDialogVisible.value = true;
 };
 
-// 保存编辑后的缺书单
-const handleEditPurchaseOrder = () => {
-  const index = PurchaseOrdersData.findIndex(
-      (item) => item.PurchaseOrderID === currentPurchaseOrder.value.PurchaseOrderID
-  );
-  if (index !== -1) {
-    PurchaseOrdersData[index] = { ...currentPurchaseOrder.value }; // 更新缺书单数据
+// 保存编辑后的采购单
+const handleSaveEdit = async () => {
+  try {
+    await updatePuchaseOrder(currentPurchaseOrder.value.purchaseId, currentPurchaseOrder.value);
+    await fetchPurchaseOrders(); // 更新采购单数据
+    editDialogVisible.value = false; // 关闭编辑对话框
+  } catch (error) {
+    console.error('更新采购单失败', error);
   }
-  filteredPurchaseOrdersData.value = [...PurchaseOrdersData]; // 更新表格显示
-  editPurchaseOrderDialogVisible.value = false;
 };
 
-// 添加缺书单
-const handleAddPurchaseOrder = () => {
-  const newPurchaseOrderID = PurchaseOrdersData.length + 1;
-  const newPurchaseOrderData = { ...newPurchaseOrder.value, PurchaseOrderID: newPurchaseOrderID };
-  PurchaseOrdersData.push(newPurchaseOrderData);
-  filteredPurchaseOrdersData.value = [...PurchaseOrdersData];
-  addPurchaseOrderDialogVisible.value = false;
-  newPurchaseOrder.value = {
-    PurchaseOrderID: 0,
-    SupplierID: 0,
-    OrderDate: '',
-    Status: '',
-  };
-};
-
-// 删除缺书单
-const handleClickDeleteMissing = (PurchaseOrderID: number) => {
-  const index = PurchaseOrdersData.findIndex(
-      (item) => item.PurchaseOrderID === PurchaseOrderID
-  );
-  if (index !== -1) {
-    PurchaseOrdersData.splice(index, 1); // 删除缺书单
+// 插入新采购单
+const handleInsertPurchaseOrder = async () => {
+  try {
+    await addPurchaseOrder(newPurchaseOrder.value);
+    await fetchPurchaseOrders(); // 获取最新的采购单数据
+    insertDialogVisible.value = false;
+    newPurchaseOrder.value = {
+      purchaseId:0,
+      supplierId:0,
+      orderDate:'',
+      status:''
+    };
+  } catch (error) {
+    console.error('添加采购单失败', error);
   }
-  filteredPurchaseOrdersData.value = [...PurchaseOrdersData]; // 更新表格显示
 };
+
+// 删除采购单
+const handleDeleteClick = async (PurchaseOrderID: number) => {
+  try {
+    // console.log(PurchaseOrderID)
+    await deletePurchaseOrder(PurchaseOrderID);
+    await fetchPurchaseOrders(); // 删除后重新获取采购单数据
+  } catch (error) {
+    console.error('删除采购单失败', error);
+    alert("删除采购单失败！可能有别的项目于依赖该采购单");
+  }
+};
+
+// 删除采购单
+const handleGetPurchaseOrderByIDClick = async (PurchaseOrderID: number) => {
+  try {
+    // console.log(PurchaseOrderID)
+    await getPurchaseOrder(PurchaseOrderID);
+    await fetchPurchaseOrders(); // 删除后重新获取采购单数据
+  } catch (error) {
+    console.error('搜索采购单失败', error);
+    alert("未查询到这本采购单！");
+  }
+};
+// 初始化加载采购单
+onBeforeMount(() => {
+  fetchPurchaseOrders();
+})
 </script>
 
 <style scoped>
@@ -202,7 +273,11 @@ const handleClickDeleteMissing = (PurchaseOrderID: number) => {
   --el-table-tr-bg-color: var(--el-color-warning-light-9);
 }
 
-.el-table .danger-row {
-  --el-table-tr-bg-color: var(--el-color-danger-light-9);
+.ellipsis-text {
+  white-space: nowrap;         /* 禁止换行 */
+  overflow: hidden;            /* 隐藏溢出的部分 */
+  text-overflow: ellipsis;     /* 超出部分显示省略号 */
+  display: inline-block;       /* 使 div 可以应用 text-overflow */
+  max-width: 100%;             /* 使文本自适应列的宽度 */
 }
 </style>

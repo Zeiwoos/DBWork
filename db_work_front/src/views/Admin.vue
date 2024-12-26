@@ -137,7 +137,6 @@ const handleMenuSelect = (index: string) => {
   height: 100%;
   margin-top: 100px;
 }
-
 .books-manage{
   height: 100%;
   margin-top: 100px;

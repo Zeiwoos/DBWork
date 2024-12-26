@@ -59,7 +59,7 @@ public class PurchaseOrderDAO {
             purchaseOrder.setPurchaseId(rs.getInt("PurchaseID"));
             purchaseOrder.setSupplierId(rs.getInt("SupplierID"));
             purchaseOrder.setOrderDate(rs.getDate("OrderDate"));
-            purchaseOrder.setStatus(PurchaseOrder.PurchaseOrderStatus.valueOf(rs.getString("Status")));
+            purchaseOrder.setStatus(rs.getString("Status"));
             return purchaseOrder;
         };
     }
