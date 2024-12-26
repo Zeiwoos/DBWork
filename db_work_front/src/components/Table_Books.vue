@@ -122,8 +122,8 @@
 
 <script lang="ts" setup>
 import { ElButton, ElInput, ElTable, ElTableColumn } from "element-plus";
-import { ref } from "vue";
-
+import {onMounted, ref} from "vue";
+import { getAllBook,addBook,getBookByID,deleteBook,updateBook } from '@/api/Book'
 // 当前搜索框和对话框的控制
 const searchBookID = ref('');
 const editDialogVisible = ref(false);
@@ -171,31 +171,25 @@ interface Book {
   SeriesID: number;
 }
 
-const BooksData: Book[] = [
-  {
-    BookID: 1,
-    Title: 'Book1',
-    Author: 'Author1',
-    Publisher: 'Publisher1',
-    Price: 100,
-    Keywords: 'Keyword1',
-    Description: 'Description1',
-    Stock: 100,
-    StorageLocation: 'Location1',
-    SeriesID: 1,
-  },
-];
+const filteredBooksData = ref<Book[]>([]);
 
-const filteredBooksData = ref(BooksData);
+// 获取所有书籍
+const fetchBooks = async () => {
+  try {
+    const response = await getAllBook();
+    filteredBooksData.value = response.data; // 假设 API 返回的数据结构为 { data: Book[] }
+  } catch (error) {
+    console.error('获取书籍失败', error);
+  }
+};
 
 // 搜索功能
 const handleSearchBook = () => {
+  fetchBooks(); // 重新获取所有书籍数据
   if (searchBookID.value) {
-    filteredBooksData.value = BooksData.filter(book =>
+    filteredBooksData.value = filteredBooksData.value.filter(book =>
         book.BookID.toString().includes(searchBookID.value)
     );
-  } else {
-    filteredBooksData.value = BooksData;
   }
 };
 
@@ -214,44 +208,53 @@ const handleEditClick = (row: Book) => {
 };
 
 // 保存编辑后的书籍
-const handleSaveEdit = () => {
-  const index = BooksData.findIndex(book => book.BookID === currentBook.value.BookID);
-  if (index !== -1) {
-    BooksData[index] = { ...currentBook.value }; // 更新书籍数据
+const handleSaveEdit = async () => {
+  try {
+    await updateBook(currentBook.value.BookID, currentBook.value);
+    await fetchBooks(); // 更新书籍数据
+    editDialogVisible.value = false; // 关闭编辑对话框
+  } catch (error) {
+    console.error('更新书籍失败', error);
   }
-  filteredBooksData.value = [...BooksData]; // 更新表格显示
-  editDialogVisible.value = false; // 关闭编辑对话框
 };
 
 // 插入新书籍
-const handleInsertBook = () => {
-  const newBookID = BooksData.length + 1;
-  const newBookData = { ...newBook.value, BookID: newBookID };
-  BooksData.push(newBookData);
-  filteredBooksData.value = [...BooksData];
-  insertDialogVisible.value = false;
-  newBook.value = {
-    BookID: 0,
-    Title: '',
-    Author: '',
-    Publisher: '',
-    Price: 0,
-    Keywords: '',
-    Description: '',
-    Stock: 0,
-    StorageLocation: '',
-    SeriesID: 0,
-  };
+const handleInsertBook = async () => {
+  try {
+    await addBook(newBook.value);
+    await fetchBooks(); // 获取最新的书籍数据
+    insertDialogVisible.value = false;
+    newBook.value = {
+      BookID: 0,
+      Title: '',
+      Author: '',
+      Publisher: '',
+      Price: 0,
+      Keywords: '',
+      Description: '',
+      Stock: 0,
+      StorageLocation: '',
+      SeriesID: 0,
+    };
+  } catch (error) {
+    console.error('添加书籍失败', error);
+  }
 };
 
 // 删除书籍
-const handleDeleteClick = (bookID: number) => {
-  const index = BooksData.findIndex(book => book.BookID === bookID);
-  if (index !== -1) {
-    BooksData.splice(index, 1); // 从数据中移除书籍
-    filteredBooksData.value = [...BooksData]; // 更新表格显示
+const handleDeleteClick = async (bookID: number) => {
+  try {
+    await deleteBook(bookID);
+    await fetchBooks(); // 删除后重新获取书籍数据
+  } catch (error) {
+    console.error('删除书籍失败', error);
   }
 };
+
+// 初始化加载书籍
+onMounted(() => {
+  fetchBooks();
+});
 </script>
 
 <style scoped>

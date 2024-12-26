@@ -22,6 +22,7 @@ public class OrderDAO {
 
         // 使用 KeyHolder 获取自动生成的 ID
         KeyHolder keyHolder = new GeneratedKeyHolder();
+
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setInt(1, order.getCustomerId());

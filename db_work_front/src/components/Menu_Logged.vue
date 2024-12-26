@@ -29,7 +29,8 @@ const goToUserInfo = () => {
   router.push('/user-info');
 };
 const goToLogout = () => {
-  router.push('/');
+  localStorage.setItem('isLoggedIn', 'false');
+  router.push('/login');
 };
 </script>
 

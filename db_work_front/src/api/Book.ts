@@ -54,3 +54,11 @@ export function deleteBook(id: number) {
         method: 'delete',
     });
 }
+
+export function updateBook(id: number,book: Book) {
+    return request<BookData>({
+        url: `/api/books/update/${id}`,
+        method: 'put',
+        data: book
+    });
+}
