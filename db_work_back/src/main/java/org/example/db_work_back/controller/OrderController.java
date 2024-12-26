@@ -61,6 +61,11 @@ public class OrderController {
         return orderService.deleteOrder(id);
     }
 
+    @DeleteMapping("/deleteInvalid")
+    public Result deleteInvalidOrder() {
+        return Result.success(orderService.deleteInvalidOrder());
+    }
+
     @PostMapping("/createWithDetails")
     @ApiOperation("创建订单及其详情")
     public Result createOrderWithDetails(@RequestBody OrderRequestDTO orderRequest) {

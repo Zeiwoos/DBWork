@@ -76,6 +76,26 @@ public class OrderService {
         orderDAO.deleteOrder(id);
         return Result.success("订单删除成功");
     }
+    public Result deleteInvalidOrder() {
+        List<Order> invalidOrders  = orderDAO.selectInvalidOrders();
+
+        for (Order order : invalidOrders) {
+            Integer orderId = order.getOrderId();  // 获取订单 ID
+
+
+            List<OrderDetail> orderDetails = orderDetailDAO.selectOrderDetailsByOrderId(orderId);
+
+
+            for (OrderDetail detail : orderDetails) {
+                Integer detailID = detail.getOrderDetailID();
+                orderDetailDAO.deleteOrderDetail(detailID); // 删除订单详情
+            }
+
+
+            orderDAO.deleteOrder(orderId);  // 删除订单本身
+        }
+        return Result.success("订单删除成功");
+    }
 
     // 创建订单及详情
     @Transactional
