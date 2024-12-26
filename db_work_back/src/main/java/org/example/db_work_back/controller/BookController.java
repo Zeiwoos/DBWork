@@ -43,8 +43,23 @@ public class BookController {
         return bookService.deleteBook(id);
     }
 
-    @GetMapping("/Search/Book")
-    public Result<List<Book>> deleteBook(@RequestParam String keywords) {
+    @GetMapping("/SearchBook")
+    public Result<List<Book>> SearchBook(@RequestParam String keywords) {
         return Result.success(bookService.SearchBook(keywords));
+    }
+
+    @GetMapping("/SearchTitle")
+    public Result<List<Book>> SearchBookByTitle(@RequestParam String keywords) {
+        return Result.success(bookService.SearchBookByTitle(keywords));
+    }
+
+    @GetMapping("/SearchAuthor")
+    public Result<List<Book>> SearchBookByAuthor(@RequestParam String keywords) {
+        return Result.success(bookService.SearchBookByAuthor(keywords));
+    }
+
+    @GetMapping("/SearchKey")
+    public Result<List<Book>> SearchBookByKey(@RequestParam String keywords) {
+        return Result.success(bookService.SearchBookByKey(keywords));
     }
 }

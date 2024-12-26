@@ -34,7 +34,28 @@ export function searchBook(keywords : string) {
     return request<BookData>({
         url: '/api/books/SearchBook',
         method: 'get',
-        data: keywords
+        params: {keywords}
+    });
+}
+export function searchBookByTitle(keywords : string) {
+    return request<BookData>({
+        url: '/api/books/SearchTitle',
+        method: 'get',
+        params: {keywords}
+    });
+}
+export function searchBookByAuthor(keywords : string) {
+    return request<BookData>({
+        url: '/api/books/SearchAuthor',
+        method: 'get',
+        params:  {keywords}
+    });
+}
+export function searchBookBykeywords(keywords : string) {
+    return request<BookData>({
+        url: '/api/books/SearchKey',
+        method: 'get',
+        params: {keywords}
     });
 }
 // 添加书籍

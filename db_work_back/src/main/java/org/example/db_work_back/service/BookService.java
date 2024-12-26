@@ -32,7 +32,16 @@ public class BookService {
     }
 
     public List<Book> SearchBook(String keywords){
+        return bookDAO.BookSearch(keywords);
+    }
+    public List<Book> SearchBookByTitle(String keywords){
         return bookDAO.selectBookByNameSearch(keywords);
+    }
+    public List<Book> SearchBookByAuthor(String keywords){
+        return bookDAO.selectBookByAuthorSearch(keywords);
+    }
+    public List<Book> SearchBookByKey(String keywords){
+        return bookDAO.selectBookByKeySearch(keywords);
     }
     // 更新客户
     public Result<Book> updateBook(Integer id, Book book) {

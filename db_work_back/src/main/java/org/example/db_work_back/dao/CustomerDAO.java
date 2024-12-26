@@ -33,7 +33,7 @@ public class CustomerDAO {
             ps.setString(3, customer.getPhone());
             ps.setString(4, customer.getAddress());
             ps.setDouble(5, 0);  // balance 默认为 0
-            ps.setInt(6, 0);     // creditlevel 默认为 0
+            ps.setInt(6, 1);     // creditlevel 默认为 1
             ps.setString(7, customer.getPassword());
             return ps;
         }, keyHolder);

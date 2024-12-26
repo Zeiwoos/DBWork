@@ -2,7 +2,6 @@
   <el-menu class="menu" :default-active="activeIndex" mode="horizontal">
     <el-menu-item index="1" @click="goToHome">首页</el-menu-item>
     <el-menu-item index="2" @click="goToBookSearch">书籍搜索</el-menu-item>
-    <el-menu-item index="3" @click="goToMissingBookRegister">缺书登记</el-menu-item>
     <el-menu-item index="4" @click="goToLogout">退出登录</el-menu-item>
     <el-menu-item index="5" @click="goToUserInfo">个人中心</el-menu-item>
   </el-menu>

@@ -38,7 +38,7 @@
     </el-table-column>
     <!--    <el-table-column prop="keywords" label="Keywords" width="120" />-->
     <!--    <el-table-column prop="description" label="Description" width="120"/>-->
-    <el-table-column prop="balance" label="Balance" width="60"/>
+    <el-table-column prop="balance" label="Balance" width="100"/>
     <el-table-column label="Address" width="140">
       <template #default="{ row }">
         <div class="ellipsis-text">{{ row.address }}</div>
@@ -219,9 +219,9 @@ const fetchCustomers = async () => {
 const handleSearchCustomer = () => {
   // console.info(searchCustomerID.value)
   if (searchCustomerID.value) {
-    // 仅根据输入的 CustomerID 过滤当前数据
+
     filteredCustomersData.value = filteredCustomersData.value.filter(Customer =>
-        Customer.CustomerID.toString().includes(searchCustomerID.value)
+        Customer.customerID.toString().includes(searchCustomerID.value)
     );
   } else {
     // 如果没有输入搜索ID，则重新加载所有书籍数据
@@ -234,7 +234,7 @@ const handleSearchCustomerByName = () => {
   if (searchCustomerName.value) {
     // 仅根据输入的 CustomerID 过滤当前数据
     filteredCustomersData.value = filteredCustomersData.value.filter(Customer =>
-        Customer.title.toString().includes(searchCustomerName.value)
+        Customer.customerName.toString().includes(searchCustomerName.value)
     );
   } else {
     // 如果没有输入搜索ID，则重新加载所有书籍数据

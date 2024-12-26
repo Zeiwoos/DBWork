@@ -179,7 +179,7 @@ const handleSearchPurchaseOrder = () => {
   if (searchPurchaseOrderID.value) {
     // 仅根据输入的 PurchaseOrderID 过滤当前数据
     filteredPurchaseOrdersData.value = filteredPurchaseOrdersData.value.filter(PurchaseOrder =>
-        PurchaseOrder.PurchaseOrderID.toString().includes(searchPurchaseOrderID.value)
+        PurchaseOrder.purchaseId.toString().includes(searchPurchaseOrderID.value)
     );
   } else {
     // 如果没有输入搜索ID，则重新加载所有采购单数据
