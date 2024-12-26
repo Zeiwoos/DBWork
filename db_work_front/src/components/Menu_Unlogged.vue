@@ -18,7 +18,7 @@ const activeIndex = ref('1'); // 可以根据实际情况动态设置当前激�
 
 // 导航到不同页面
 const goToHome = () => {
-  router.push('/');
+c
 };
 const goToBookSearch = () => {
   router.push('/book-search');
@@ -26,14 +26,7 @@ const goToBookSearch = () => {
 const goToMissingBookRegister = () => {
   router.push('/missing-book-register');
 };
-const goToUserInfo = () => {
-  const loginStatus = localStorage.getItem('isLoggedIn');
-  if(loginStatus==='true'){
-    router.push('/user-info');
-  }else{
-    alert("您还没有登录，请登录后重试")
-  }
-};
+
 const goToLogin = () => {
   router.push('/login');
 };

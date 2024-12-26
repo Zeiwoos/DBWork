@@ -75,6 +75,7 @@ import { CaretTop, CoffeeCup, Service, ShoppingCart } from "@element-plus/icons-
 import QrImage from '@/assets/image/qrcode.png';
 import {createWithDetails} from "@/api/Order";
 import {getCustomerById} from "@/api/Customer";
+import router from "@/router/index.js";
 
 export default {
   name: 'RightBar',
@@ -203,16 +204,16 @@ export default {
     async checkout() {
       const loginStatus = localStorage.getItem('isLoggedIn');
       const customerId = localStorage.getItem('customerId'); // 从 localStorage 获取客户 ID
-
+      console.log(customerId, loginStatus);
       if (loginStatus === 'true') {  // 确保用户已登录
         try {
           // 等待获取客户信息
           const response = await getCustomerById(customerId);
-
+          console.log(response);
           // 确保返回成功，并且数据存在
-          if (response.code === 200) {
-            const customer = response.data;
-
+          if (response.data.code === 1) {
+            const customer = response.data.data;
+            // console.log(1);
             // 构建订单信息
             const order = {
               customerId: parseInt(customerId),  // 确保 customerId 是整数类型
@@ -220,21 +221,25 @@ export default {
             };
 
             // 构建订单详情信息（每个商品的数量和 bookId）
-            const orderDetails = this.cartItems.map(item => ({
-              quantity: item.quantity,  // 商品数量
-              bookId: item.bookID       // 商品 ID
-            }));
-
+            const orderDetails = this.cartItems.length > 0
+                ? this.cartItems.map(item => ({
+                  quantity: item.quantity,  // 商品数量
+                  bookId: item.bookID       // 商品 ID
+                }))
+                : [];  // 如果购物车为空，返回空数组
+            // console.log(orderDetails)
             // 构建订单请求 DTO
             const orderRequestDTO = {
               order: order,
-              OrderDetails: orderDetails
+              orderDetails: orderDetails
             };
-            console.log(order)
+            console.log(orderRequestDTO);
 
             // 调用 API 提交订单
             const orderResponse = await createWithDetails(orderRequestDTO);
-            console.log('订单提交成功', orderResponse);
+            alert("订单提交成功")
+            this.cancelPurchase();
+            await router.push('/');  // 跳转到主页
           } else {
             console.error('获取客户信息失败', response.msg);
           }
@@ -245,6 +250,7 @@ export default {
         alert("请先登录才能购买");
       }
     }
+
   }
 }
 </script>

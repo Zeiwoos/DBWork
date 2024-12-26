@@ -75,7 +75,6 @@ export default defineComponent({
             price: book.price,          // 价格 使用返回的 price
             img: default_book // 图片，若接口返回的 img 字段不存在，使用默认图
           }));
-          console.log(books.value);
         }
       } catch (error) {
         console.error('获取书籍信息失败', error);
@@ -84,7 +83,6 @@ export default defineComponent({
 
     // 组件挂载时调用获取书籍数据
     onMounted(() => {
-      console.log('mounted');
       getEightBooks();
     });
 

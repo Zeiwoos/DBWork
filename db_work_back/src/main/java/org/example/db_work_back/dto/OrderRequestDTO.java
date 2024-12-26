@@ -10,13 +10,18 @@ public class OrderRequestDTO {
     private Order order;
     private List<OrderDetail> orderDetails;
 
-    public void setOrderTotalprice(){
-        order.setTotalAmount(new BigDecimal("0"));
+    public void setOrderTotalprice() {
+        BigDecimal totalAmount = BigDecimal.ZERO;
 
-        for (OrderDetail orderDetail : orderDetails) {
-//            System.out.println(orderDetail.getPrice());
-            order.setTotalAmount(order.getTotalAmount().add(orderDetail.getPrice()));
+        if (orderDetails != null) {
+            for (OrderDetail orderDetail : orderDetails) {
+                if (orderDetail.getPrice() != null) { // 确保价格不为 null
+                    totalAmount = totalAmount.add(orderDetail.getPrice());
+                }
+            }
         }
+
+        order.setTotalAmount(totalAmount);
     }
 
     public BigDecimal getOrderTotalprice(){

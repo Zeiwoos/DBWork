@@ -28,7 +28,7 @@ export default {
     // 在组件挂载时获取登录状态
     onMounted(() => {
       const loggedInStatus = localStorage.getItem('isLoggedIn');
-      const id = localStorage.getItem("customerID")
+      const id = localStorage.getItem('customerId');
       isLoggedIn.value = loggedInStatus === 'true'; // 如果返回的值为 'true'，表示用户已登录
     });
 
