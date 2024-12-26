@@ -21,8 +21,8 @@
 
     <el-table-column fixed="right" label="Operations" min-width="120">
       <template #default="{ row }">
-        <el-button link type="primary" size="small" plain @click="handleEditClick(row)">Edit</el-button>
-        <el-button link type="danger" size="small" plain @click="handleDeleteClick(row.missingId)">Delete</el-button>
+        <el-button link type="primary" plain @click="handleEditClick(row)">Edit</el-button>
+        <el-button link type="danger" plain @click="handleDeleteClick(row.missingId)">Delete</el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -64,44 +64,6 @@
     </template>
   </el-dialog>
 
-<!--  &lt;!&ndash; Insert Dialog &ndash;&gt;-->
-<!--  <el-dialog-->
-<!--      v-model="insertDialogVisible"-->
-<!--      title="Add New MissingBook"-->
-<!--      width="500"-->
-<!--      destroy-on-close-->
-<!--      center-->
-<!--  >-->
-<!--    <el-form :model="newMissingBook">-->
-<!--      <el-form-item label="MissingBookID">-->
-<!--        <el-input v-model="newMissingBook.MissingBookID" placeholder="Enter MissingBookID" disabled></el-input>-->
-<!--      </el-form-item>-->
-<!--      <el-form-item label="MissingBookName">-->
-<!--        <el-input v-model="newMissingBook.MissingBookName" placeholder="Enter MissingBookName"></el-input>-->
-<!--      </el-form-item>-->
-<!--      <el-form-item label="Email">-->
-<!--        <el-input v-model="newMissingBook.email" placeholder="Enter Email"></el-input>-->
-<!--      </el-form-item>-->
-<!--      <el-form-item label="Phone">-->
-<!--        <el-input v-model="newMissingBook.phone" placeholder="Enter Phone"></el-input>-->
-<!--      </el-form-item>-->
-<!--      <el-form-item label="Address">-->
-<!--        <el-input v-model="newMissingBook.address" placeholder="Enter Address"></el-input>-->
-<!--      </el-form-item>-->
-<!--      <el-form-item label="Balance">-->
-<!--        <el-input v-model="newMissingBook.balance" placeholder="Enter Balance"></el-input>-->
-<!--      </el-form-item>-->
-<!--      <el-form-item label="Password">-->
-<!--        <el-input v-model="newMissingBook.password" placeholder="Enter Password"></el-input>-->
-<!--      </el-form-item>-->
-<!--    </el-form>-->
-<!--    <template #footer>-->
-<!--      <div class="dialog-footer">-->
-<!--        <el-button @click="insertDialogVisible = false">Cancel</el-button>-->
-<!--        <el-button type="primary" @click="handleInsertMissingBook">Confirm</el-button>-->
-<!--      </div>-->
-<!--    </template>-->
-<!--  </el-dialog>-->
 </template>
 
 <script lang="ts" setup>

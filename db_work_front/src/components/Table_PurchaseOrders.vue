@@ -6,13 +6,6 @@
       style="margin-bottom: 20px; width: 300px;"
       @input="handleSearchPurchaseOrder"
   />
-<!--  <el-input-->
-<!--      v-model="searchPurchaseOrderTitle"-->
-<!--      placeholder="请输入PurchaseOrderTitle进行查询"-->
-<!--      clearable-->
-<!--      style="margin-bottom: 20px; width: 300px;"-->
-<!--      @input="handleSearchPurchaseOrderByName"-->
-<!--  />-->
   <el-table
       :data="filteredPurchaseOrdersData"
       style="width: 100%"
@@ -22,12 +15,35 @@
     <el-table-column prop="supplierId" label="SupplierID" width="100" />
     <el-table-column prop="orderDate" label="OrderDate" width="100" />
     <el-table-column prop="status" label="Status" width="100" />
-
+    <el-table-column label="Detail" width="100">
+      <template #default="{ row }">
+        <el-popover
+            placement="top-start"
+            title="采购单详情"
+            :width="300"
+            trigger="click"
+        >
+          <div class="popover-content">
+            <el-row v-for="detail in purchaseDetails" :key="detail.purchaseDetailID">
+              <div class="detail-box">
+                <p>采购详情号：{{ detail.purchaseDetailID }}</p>
+                <p>书号：{{ detail.bookId }}</p>
+                <p>数量：{{ detail.quantity }}</p>
+              </div>
+              <el-divider></el-divider>
+            </el-row>
+          </div>
+          <template #reference>
+            <el-button link type="primary" @click="showPurchaseDetails(row.purchaseDetailID)">Detail</el-button>
+          </template>
+        </el-popover>
+      </template>
+    </el-table-column>
 
     <el-table-column fixed="right" label="Operations" min-width="120">
       <template #default="{ row }">
-        <el-button link type="primary" size="small" plain @click="handleEditClick(row)">Edit</el-button>
-        <el-button link type="danger" size="small" plain @click="handleDeleteClick(row.purchaseId)">Delete</el-button>
+        <el-button link type="primary" plain @click="handleEditClick(row)">Edit</el-button>
+        <el-button link type="danger" plain @click="handleDeleteClick(row.purchaseId)">Delete</el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -63,54 +79,6 @@
       </div>
     </template>
   </el-dialog>
-
-<!--  &lt;!&ndash; Insert Dialog &ndash;&gt;-->
-<!--  <el-dialog-->
-<!--      v-model="insertDialogVisible"-->
-<!--      title="Add New PurchaseOrder"-->
-<!--      width="500"-->
-<!--      destroy-on-close-->
-<!--      center-->
-<!--  >-->
-<!--    <el-form :model="newPurchaseOrder">-->
-<!--      <el-form-item label="PurchaseOrderID">-->
-<!--        <el-input v-model="newPurchaseOrder.PurchaseOrderID" placeholder="Enter PurchaseOrderID" disabled></el-input>-->
-<!--      </el-form-item>-->
-<!--      <el-form-item label="Title">-->
-<!--        <el-input v-model="newPurchaseOrder.title" placeholder="Enter Title"></el-input>-->
-<!--      </el-form-item>-->
-<!--      <el-form-item label="Author">-->
-<!--        <el-input v-model="newPurchaseOrder.author" placeholder="Enter Author"></el-input>-->
-<!--      </el-form-item>-->
-<!--      <el-form-item label="Publisher">-->
-<!--        <el-input v-model="newPurchaseOrder.publisher" placeholder="Enter Publisher"></el-input>-->
-<!--      </el-form-item>-->
-<!--      <el-form-item label="Keywords">-->
-<!--        <el-input v-model="newPurchaseOrder.keywords" placeholder="Enter Keywords"></el-input>-->
-<!--      </el-form-item>-->
-<!--      <el-form-item label="Description">-->
-<!--        <el-input v-model="newPurchaseOrder.description" placeholder="Enter Description"></el-input>-->
-<!--      </el-form-item>-->
-<!--      <el-form-item label="Stock">-->
-<!--        <el-input v-model="newPurchaseOrder.stock" placeholder="Enter Stock"></el-input>-->
-<!--      </el-form-item>-->
-<!--      <el-form-item label="StorageLocation">-->
-<!--        <el-input v-model="newPurchaseOrder.storageLocation" placeholder="Enter Storage Location"></el-input>-->
-<!--      </el-form-item>-->
-<!--      <el-form-item label="SeriesID">-->
-<!--        <el-input v-model="newPurchaseOrder.seriesID" placeholder="Enter SeriesID"></el-input>-->
-<!--      </el-form-item>-->
-<!--      <el-form-item label="SupplierID">-->
-<!--        <el-input v-model="newPurchaseOrder.supplierID" placeholder="Enter SeriesID"></el-input>-->
-<!--      </el-form-item>-->
-<!--    </el-form>-->
-<!--    <template #footer>-->
-<!--      <div class="dialog-footer">-->
-<!--        <el-button @click="insertDialogVisible = false">Cancel</el-button>-->
-<!--        <el-button type="primary" @click="handleInsertPurchaseOrder">Confirm</el-button>-->
-<!--      </div>-->
-<!--    </template>-->
-<!--  </el-dialog>-->
 </template>
 
 <script lang="ts" setup>
@@ -129,6 +97,7 @@ const searchPurchaseOrderID = ref('');
 const searchPurchaseOrderTitle = ref('');
 const editDialogVisible = ref(false);
 const insertDialogVisible = ref(false);
+const purchaseDetails = ref([]);
 
 export interface PurchaseOrder {
   purchaseId:number;
@@ -222,6 +191,20 @@ const handleSaveEdit = async () => {
   }
 };
 
+// 显示采购单单详情
+const showPurchaseDetails = async (purchaseDetailID) => {
+  try {
+    const response = await getDetailsByOrderID(purchaseDetailID);
+    console.log(response)
+    if (response.data.code === 1) {
+      orderDetails.value = response.data.data;
+    }
+  } catch (error) {
+    console.error("获取采购单详情失败", error);
+  }
+};
+
+
 // 插入新采购单
 const handleInsertPurchaseOrder = async () => {
   try {
@@ -279,5 +262,10 @@ onBeforeMount(() => {
   text-overflow: ellipsis;     /* 超出部分显示省略号 */
   display: inline-block;       /* 使 div 可以应用 text-overflow */
   max-width: 100%;             /* 使文本自适应列的宽度 */
+}
+.popover-content {
+  max-height: 300px; /* 设置最大高度 */
+  overflow-y: auto; /* 启用垂直滚动 */
+  padding-right: 10px; /* 增加右侧内边距以防止滚动条与内容重叠 */
 }
 </style>
