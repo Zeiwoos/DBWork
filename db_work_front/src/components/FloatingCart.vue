@@ -25,6 +25,7 @@
             </div>
           </div>
         </div>
+        <el-divider></el-divider>
       </div>
       <!-- 当购物车没有商品时显示提示信息 -->
       <div v-else>
@@ -371,6 +372,9 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  max-height: 300px; /* 设置最大高度 */
+  overflow-y: auto; /* 启用垂直滚动 */
+  padding-right: 10px; /* 增加右侧内边距以防止滚动条与内容重叠 */
 }
 .cart-item{
   display: flex;

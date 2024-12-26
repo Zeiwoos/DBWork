@@ -112,13 +112,9 @@ export default defineComponent({
         // 注册成功后的处理逻辑
         if (response.data.code === 1) {
           alert("注册成功！");
-
           localStorage.setItem('isLoggedIn', 'true');
-          // console.log(response.data.data.data.customerID)
           localStorage.setItem('customerId', response.data.data.data.customerID);
-          // console.log(localStorage)
           // console.log(response.response.data.data.customerId)
-          // await router.push('/home');
           window.location.href = 'http://localhost:5173/';
         } else {
           alert("注册失败！" + response.message);

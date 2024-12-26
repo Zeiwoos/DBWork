@@ -9,7 +9,7 @@
           <h2 class="book-title">《{{ book.title }}》</h2>
           <p class="book-price">￥{{ book.price }}</p>
           <div class="quantity-selector">
-            <el-input-number v-model="quantity" :min="1" :max="100" @change="handleChange" />
+            <el-input-number v-model="quantity" :min="1" :max="99" @change="handleChange" />
           </div>
           <div class="other-info">
             <div><strong style="font-weight: bold; width: 80px">作者：</strong><p>{{ book.author }}</p></div>
