@@ -52,7 +52,13 @@ import Table_Books from "@/components/Table_Books.vue";
 import Table_MissingBooks from "@/components/Table_MissingBooks.vue";
 import Table_Orders from "@/components/Table_Orders.vue";
 import Table_PurchaseOrders from "@/components/Table_PurchaseOrders.vue";
-
+import { } from '@/api/Customer'
+import { } from '@/api/Book'
+import { } from '@/api/MissingBook'
+import { } from '@/api/Order'
+import { } from '@/api/PurchaseOrder'
+import { } from '@/api/Series'
+import { } from '@/api/Supplier'
 // 引入图片路径
 const url = selfImg;
 

@@ -100,6 +100,9 @@ const handleLogin = async () => {
     return;
   }
 
+  if (!regulation_checked.value) {
+    return alert("请先同意服务协议！");
+  }
   // 创建登录数据对象
   const loginData = {
     customerID: Number(input_UserID.value),  // 将用户ID转换为数字

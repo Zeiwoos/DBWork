@@ -4,7 +4,10 @@ import org.example.db_work_back.entity.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -15,26 +18,29 @@ public class CustomerDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    // 插入客户
     public void insertCustomer(Customer customer) {
         String sql = "INSERT INTO customers (customername, email, phone, address, balance, creditlevel, password) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?);";
-//        System.out.println(sql);
-//        //    // 输出接收到的customer对象的数据
-//        System.out.println("Received customer data: " + customer);
-//
-//        // 如果你希望输出每个字段，可以手动访问它们：
-//        System.out.println("Customer Name: " + customer.getCustomerName());
-//        System.out.println("Email: " + customer.getEmail());
-//        System.out.println("Phone: " + customer.getPhone());
-//        System.out.println("Address: " + customer.getAddress());
-//        System.out.println("Balance: " + customer.getBalance());
-//        System.out.println("Credit Level: " + customer.getCreditLevel());
 
+        // 创建 KeyHolder 来保存生成的主键
+        KeyHolder keyHolder = new GeneratedKeyHolder();
 
-//        Integer creditLevel = (customer.getCreditLevel() != null) ? customer.getCreditLevel() : 1;
-        jdbcTemplate.update(sql, customer.getCustomerName(), customer.getEmail(), customer.getPhone(),
-                customer.getAddress(), 0, 0, customer.getPassword());
+        // 使用 jdbcTemplate.update 以便获取生成的主键
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, customer.getCustomerName());
+            ps.setString(2, customer.getEmail());
+            ps.setString(3, customer.getPhone());
+            ps.setString(4, customer.getAddress());
+            ps.setDouble(5, 0);  // balance 默认为 0
+            ps.setInt(6, 0);     // creditlevel 默认为 0
+            ps.setString(7, customer.getPassword());
+            return ps;
+        }, keyHolder);
+
+        // 获取生成的 ID
+        Number generatedId = keyHolder.getKey();
+        customer.setCustomerID(generatedId.intValue());  // 将生成的 ID 设置到 Customer 对象中
     }
 
     // 通过 ID 查询客户
