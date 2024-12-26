@@ -73,6 +73,8 @@
 <script>
 import { CaretTop, CoffeeCup, Service, ShoppingCart } from "@element-plus/icons-vue";
 import QrImage from '@/assets/image/qrcode.png';
+import {createWithDetails} from "@/api/Order";
+import {getCustomerById} from "@/api/Customer";
 
 export default {
   name: 'RightBar',
@@ -198,8 +200,50 @@ export default {
     },
 
     // 提交支付
-    checkout() {
-      alert('提交支付');
+    async checkout() {
+      const loginStatus = localStorage.getItem('isLoggedIn');
+      const customerId = localStorage.getItem('customerId'); // 从 localStorage 获取客户 ID
+
+      if (loginStatus === 'true') {  // 确保用户已登录
+        try {
+          // 等待获取客户信息
+          const response = await getCustomerById(customerId);
+
+          // 确保返回成功，并且数据存在
+          if (response.code === 200) {
+            const customer = response.data;
+
+            // 构建订单信息
+            const order = {
+              customerId: parseInt(customerId),  // 确保 customerId 是整数类型
+              shippingAddress: customer.address  // 示例地址，实际应从表单获取
+            };
+
+            // 构建订单详情信息（每个商品的数量和 bookId）
+            const orderDetails = this.cartItems.map(item => ({
+              quantity: item.quantity,  // 商品数量
+              bookId: item.bookID       // 商品 ID
+            }));
+
+            // 构建订单请求 DTO
+            const orderRequestDTO = {
+              order: order,
+              OrderDetails: orderDetails
+            };
+            console.log(order)
+
+            // 调用 API 提交订单
+            const orderResponse = await createWithDetails(orderRequestDTO);
+            console.log('订单提交成功', orderResponse);
+          } else {
+            console.error('获取客户信息失败', response.msg);
+          }
+        } catch (error) {
+          console.error('请求失败', error);  // 请求失败的错误处理
+        }
+      } else {
+        alert("请先登录才能购买");
+      }
     }
   }
 }
