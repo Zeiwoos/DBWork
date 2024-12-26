@@ -168,7 +168,7 @@ onMounted(fetchBooks);
 }
 .search-box{
   height: 100%;
-  margin-top: 10000px;
+  margin-top: 4000px;
   display: flex;
   width: 100%;
   align-items: center;
