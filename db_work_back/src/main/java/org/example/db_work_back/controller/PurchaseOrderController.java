@@ -2,7 +2,9 @@ package org.example.db_work_back.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.example.db_work_back.entity.OrderDetail;
 import org.example.db_work_back.entity.PurchaseOrder;
+import org.example.db_work_back.entity.PurchaseDetail;
 import org.example.db_work_back.service.PurchaseOrderService;
 import org.example.db_work_back.result.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,11 @@ public class PurchaseOrderController {
     @GetMapping("/{id}")
     public Result<PurchaseOrder> getPurchaseOrderById(@PathVariable Integer id) {
         return Result.success(purchaseOrderService.getPurchaseOrderById(id));
+    }
+
+    @GetMapping("/details/{orderid}")
+    public Result<List<PurchaseDetail>> getOrderDetailsByOrderId(@PathVariable Integer orderid) {
+        return Result.success(purchaseOrderService.getOrderDetailsByOrderId(orderid));
     }
 
     @PutMapping("/update/{id}")

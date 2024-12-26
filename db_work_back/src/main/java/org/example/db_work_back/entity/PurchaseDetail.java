@@ -10,13 +10,11 @@ public class PurchaseDetail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer purchasedetailID;
 
-    @ManyToOne
     @JoinColumn(name = "PurchaseID")
-    private PurchaseOrder purchaseOrder;
+    private Integer purchaseOrder;
 
-    @ManyToOne
     @JoinColumn(name = "BookID")
-    private Book book;
+    private Integer bookID;
 
     @Column(name = "Quantity", nullable = false)
     private Integer quantity;
@@ -30,20 +28,20 @@ public class PurchaseDetail {
         this.purchasedetailID = purchaseDetailID;
     }
 
-    public PurchaseOrder getPurchaseOrder() {
+    public Integer getPurchaseOrder() {
         return purchaseOrder;
     }
 
-    public void setPurchaseOrder(PurchaseOrder purchaseOrder) {
+    public void setPurchaseOrder(Integer purchaseOrder) {
         this.purchaseOrder = purchaseOrder;
     }
 
-    public Book getBook() {
-        return book;
+    public Integer getBook() {
+        return bookID;
     }
 
-    public void setBook(Book book) {
-        this.book = book;
+    public void setBook(Integer book) {
+        this.bookID = book;
     }
 
     public Integer getQuantity() {
