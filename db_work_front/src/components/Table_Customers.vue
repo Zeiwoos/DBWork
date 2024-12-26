@@ -52,8 +52,8 @@
     <el-table-column prop="creditLevel" label="CreditLevel" width="100"/>
     <el-table-column fixed="right" label="Operations" min-width="120">
       <template #default="{ row }">
-        <el-button link type="primary" size="small" plain @click="handleEditClick(row)">Edit</el-button>
-        <el-button link type="danger" size="small" plain @click="handleDeleteClick(row.customerID)">Delete</el-button>
+        <el-button link type="primary" plain @click="handleEditClick(row)">Edit</el-button>
+        <el-button link type="danger" plain @click="handleDeleteClick(row.customerID)">Delete</el-button>
       </template>
     </el-table-column>
   </el-table>

@@ -133,7 +133,24 @@ const handleMenuSelect = (index: string) => {
   justify-content: center;
   flex-grow: 1;
 }
+.users-manage{
+  height: 100%;
+  margin-top: 100px;
+}
+
 .books-manage{
+  height: 100%;
+  margin-top: 100px;
+}
+.quantity-manage{
+  height: 100%;
+  margin-top: 100px;
+}
+.purchaseOrders-manage{
+  height: 100%;
+  margin-top: 100px;
+}
+.orders-manage{
   height: 100%;
   margin-top: 100px;
 }

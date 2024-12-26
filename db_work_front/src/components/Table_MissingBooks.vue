@@ -21,8 +21,8 @@
     <el-table-column prop="RegisterDate" label="登记日期" width="120" />
     <el-table-column fixed="right" label="操作" min-width="140">
       <template #default="{ row }">
-        <el-button link type="primary" size="small" @click="handleClickMissingBook(row)">Edit</el-button>
-        <el-button link type="danger" size="small" @click="handleClickDeleteMissing(row.MissingBookID)">Delete</el-button>
+        <el-button link type="primary" @click="handleClickMissingBook(row)">Edit</el-button>
+        <el-button link type="danger" @click="handleClickDeleteMissing(row.MissingBookID)">Delete</el-button>
       </template>
     </el-table-column>
   </el-table>

@@ -20,8 +20,8 @@
     <el-table-column prop="Status" label="采购状态" width="150" />
     <el-table-column fixed="right" label="操作" min-width="140">
       <template #default="{ row }">
-        <el-button link type="primary" size="small" @click="handleClickPurchaseOrder(row)">Edit</el-button>
-        <el-button link type="danger" size="small" @click="handleClickDeletePurchaseOrder(row.PurchaseOrderID)">Delete</el-button>
+        <el-button link type="primary" @click="handleClickPurchaseOrder(row)">Edit</el-button>
+        <el-button link type="danger" @click="handleClickDeletePurchaseOrder(row.PurchaseOrderID)">Delete</el-button>
       </template>
     </el-table-column>
   </el-table>
