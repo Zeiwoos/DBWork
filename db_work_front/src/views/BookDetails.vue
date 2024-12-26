@@ -6,30 +6,27 @@
       <div class="content">
         <img :src="book1" alt="Book Image" class="book-img" />
         <div class="book-info">
-          <h2 class="book-title">{{ book.title }}</h2>
+          <h2 class="book-title">《{{ book.title }}》</h2>
           <p class="book-price">￥{{ book.price }}</p>
           <div class="quantity-selector">
-            <button class="quantity-btn" @click="decreaseQuantity">-</button>
-            <span>{{ quantity }}</span>
-            <button class="quantity-btn" @click="increaseQuantity">+</button>
+            <el-input-number v-model="quantity" :min="1" :max="10" @change="handleChange" />
           </div>
           <div class="other-info">
-            <p><strong>作者：</strong>{{ book.author }}</p>
-            <p><strong>关键词：</strong>{{ book.keywords }}</p>
-            <p><strong>描述：</strong>{{ book.description }}</p>
-            <p><strong>发货地址：</strong>{{ book.storageLocation }}</p>
-            <p><strong>出版社：</strong>{{ book.publisher }}</p>
+            <p><strong style="font-weight: bold">作者：</strong>{{ book.author }}</p>
+            <p><strong style="font-weight: bold">关键词：</strong>{{ book.keywords }}</p>
+            <p><div><strong style="font-weight: bold">描述：</strong>{{ book.description }}</div></p>
+            <p><strong style="font-weight: bold">发货地址：</strong>{{ book.storageLocation }}</p>
+            <p><strong style="font-weight: bold">出版社：</strong>{{ book.publisher }}</p>
           </div>
           <div class="details-footer">
-            <el-button @click="addToCart(book.bookID)" type="primary">加入购物车</el-button>
-            <el-button @click="buyNow(book.bookID)" type="success">立即购买</el-button>
+            <el-button @click="addToCart(book.bookID)" type="primary" style="width: 200px">加入购物车</el-button>
           </div>
         </div>
       </div>
     </div>
 
     <div>
-      <el-footer class="details-footer">
+      <el-footer class="set-footer">
         <el-col :span="12" class="set-footer">
           <p>&copy; 2024 网上书店 - 版权声明</p>
           <p>联系我们：info@bookstore.com</p>
@@ -43,9 +40,9 @@
 import { ref, onMounted } from 'vue';
 import { getBookByID } from '@/api/Book';
 import Navbar from '@/components/Navbar.vue';
-import { useRoute } from 'vue-router'; // 导入 useRoute 函数
+import { useRoute } from 'vue-router';
 import book1 from '@/assets/image/default.jpg';
-// 定义响应式变量
+
 const book = ref({
   bookID: 0,
   title: '',
@@ -58,47 +55,43 @@ const book = ref({
   storageLocation: '',
   seriesID: '',
   SupplierID: '',
-  // img: require('@/assets/images/book1.png'),
 });
 
 const quantity = ref(1);
 
-// 请求书籍数据
 const fetchBookDetails = async (id: number) => {
   try {
     const response = await getBookByID(id);
     if (response.data.code === 1) {
-      book.value = response.data.data; // 更新书籍数据
+      book.value = response.data.data;
     } else {
-      console.log(response.data.code);
       console.error('获取书籍详情失败:', response.data.msg);
     }
   } catch (error) {
     console.error('请求出错:', error);
   }
 };
+
 const route = useRoute();
-// 页面加载时获取书籍数据
 onMounted(() => {
-  const bookID = Number(route.params.id); // 替换为实际的书籍 ID
+  const bookID = Number(route.params.id);
   fetchBookDetails(bookID);
 });
 
-// 增加/减少数量逻辑
-const increaseQuantity = () => {
-  quantity.value++;
+const handleChange = (value: number) => {
+  quantity.value = value;
 };
 
-const decreaseQuantity = () => {
-  if (quantity.value > 1) quantity.value--;
-};
-
+// 向父组件发送事件
+const emit = defineEmits();
 const addToCart = (id: number) => {
-  console.log(`书籍ID ${id} 已加入购物车，数量：${quantity.value}`);
-};
-
-const buyNow = (id: number) => {
-  console.log(`立即购买书籍ID ${id}，数量：${quantity.value}`);
+  const bookToAdd = {
+    bookID: book.value.bookID,
+    title: book.value.title,
+    price: book.value.price,
+    num: quantity.value,
+  };
+  emit('add-to-cart', bookToAdd);
 };
 </script>
 
@@ -131,6 +124,7 @@ const buyNow = (id: number) => {
   background-color: #fff;
   border-radius: 10px;
   padding: 30px;
+  margin-top: 50px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   max-width: 900px;
   width: 80%;
@@ -147,7 +141,9 @@ const buyNow = (id: number) => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  height: 100%;
+  width:400px;
+  align-items: flex-start;
 }
 
 .book-title {
@@ -160,6 +156,7 @@ const buyNow = (id: number) => {
   font-weight: bold;
   color: red;
   margin-top: 5px;
+  display: flex;
 }
 
 .quantity-selector {
@@ -186,12 +183,29 @@ const buyNow = (id: number) => {
 
 .other-info {
   margin-top: 20px;
+  width: 90%;
+  gap:10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
+
+
+.other-info p {
+  font-size: large;
+  display: flex;
+  white-space: normal; /* 允许换行 */
+  word-wrap: break-word; /* 自动换行 */
+  word-break: break-all; /* 长单词强制换行 */
+}
+
 
 .details-footer {
   margin-top: 20px;
   display: flex;
   gap: 15px;
+  justify-content: flex-start;
+  align-items: center;
 }
 
 .set-footer {

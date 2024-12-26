@@ -26,11 +26,17 @@ const goToMissingBookRegister = () => {
   router.push('/missing-book-register');
 }
 const goToUserInfo = () => {
-  router.push('/user-info');
+  const loginStatus = localStorage.getItem('isLoggedIn');
+  if(loginStatus==='true'){
+    router.push('/user-info');
+  }else{
+    alert("您还没有登录，请登录后重试")
+  }
 };
 const goToLogout = () => {
   localStorage.setItem('isLoggedIn', 'false');
-  router.push('/login');
+  localStorage.setItem('customerId', null);
+  window.location.reload();
 };
 </script>
 

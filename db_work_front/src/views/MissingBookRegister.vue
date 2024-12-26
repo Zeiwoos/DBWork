@@ -88,7 +88,7 @@ const url = logo;
   justify-content: center;
   flex-direction: column;
   gap: 20px;
-  margin: 110px auto auto 200px;
+  margin: 50px auto auto 200px;
 }
 
 .input-box {

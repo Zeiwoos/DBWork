@@ -112,7 +112,10 @@ export default defineComponent({
         // 注册成功后的处理逻辑
         if (response.data.code === 1) {
           alert("注册成功！");
-          window.location.href = 'http://localhost:5173/login';
+          localStorage.setItem('isLoggedIn', 'true');
+          localStorage.setItem('customerId', response.data.data.customerID);
+          console.log(response.data)
+          window.location.href = 'http://localhost:5173/';
         } else {
           alert("注册失败！" + response.message);
         }
@@ -149,7 +152,7 @@ export default defineComponent({
   justify-content: center;
   flex-direction: column;
   gap: 20px;
-  margin: 150px auto auto 200px;
+  margin: 80px auto auto 200px;
 }
 .input-box{
   display: flex;
