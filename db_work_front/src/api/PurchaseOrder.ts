@@ -9,7 +9,7 @@ interface PurchaseOrderData {
 interface PurchaseOrder {
     // PurchaseOrderID:number;
 
-    supplierID: number;
+    supplierId: number;
     //orderDate
     //Status
 }
@@ -20,6 +20,15 @@ export function getAllPurchaseOrder() {
         method: 'get',
     });
 }
+
+export function updatePuchaseOrder(id:number,purchaseOrder:PurchaseOrder) {
+    return request<PurchaseOrderData>({
+        url: `/api/purchaseOrders/update/${id}`,
+        method: 'put',
+        data:  purchaseOrder
+    });
+}
+
 
 export function addPurchaseOrder(purchaseOrder: PurchaseOrder) {
     return request<PurchaseOrderData>({

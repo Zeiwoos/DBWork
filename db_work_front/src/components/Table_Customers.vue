@@ -7,8 +7,8 @@
       @input="handleSearchCustomer"
   />
   <el-input
-      v-model="searchCustomerTitle"
-      placeholder="请输入CustomerTitle进行查询"
+      v-model="searchCustomerName"
+      placeholder="请输入CustomerName进行查询"
       clearable
       style="margin-bottom: 20px; width: 300px;"
       @input="handleSearchCustomerByName"

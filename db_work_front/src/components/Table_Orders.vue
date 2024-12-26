@@ -39,7 +39,7 @@
     <el-table-column fixed="right" label="Operations" min-width="120">
       <template #default="{ row }">
         <el-button link type="primary" size="small" plain @click="handleEditClick(row)">edit</el-button>
-        <el-button link type="danger" size="small" plain @click="handleDeleteClick(row.OrderID)">Delete</el-button>
+        <el-button link type="danger" size="small" plain @click="handleDeleteClick(row.orderId)">Delete</el-button>
       </template>
     </el-table-column>
   </el-table>

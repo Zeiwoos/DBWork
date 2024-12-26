@@ -1,204 +1,274 @@
 <template>
-  <!-- 搜索框 -->
   <el-input
       v-model="searchMissingBookID"
-      placeholder="请输入缺书ID进行查询"
+      placeholder="请输入MissingBookID进行查询"
       clearable
       style="margin-bottom: 20px; width: 300px;"
       @input="handleSearchMissingBook"
   />
 
-  <!-- 表格 -->
   <el-table
       :data="filteredMissingBooksData"
       style="width: 100%"
       :row-class-name="tableRowClassName"
   >
-    <el-table-column prop="MissingBookID" label="缺书单ID" width="100" />
-    <el-table-column prop="BookID" label="书ID" width="120" />
-    <el-table-column prop="CustomerID" label="登记人ID" width="120" />
-    <el-table-column prop="MissingQuantity" label="缺书数量" width="150" />
-    <el-table-column prop="RegisterDate" label="登记日期" width="120" />
-    <el-table-column fixed="right" label="操作" min-width="140">
+    <el-table-column prop="missingId" label="MissingID" width="85" />
+    <el-table-column prop="bookId" label="BookID" width="70"/>
+    <el-table-column prop="customerId" label="CustomerID" width="100"/>
+    <el-table-column prop="quantity" label="Quantity" width="80"/>
+    <el-table-column prop="registerDate" label="RegisterDate" width="140"/>
+    <el-table-column prop="status" label="Status" width="100"/>
+
+    <el-table-column fixed="right" label="Operations" min-width="120">
       <template #default="{ row }">
-        <el-button link type="primary" size="small" @click="handleClickMissingBook(row)">Edit</el-button>
-        <el-button link type="danger" size="small" @click="handleClickDeleteMissing(row.MissingBookID)">Delete</el-button>
+        <el-button link type="primary" size="small" plain @click="handleEditClick(row)">Edit</el-button>
+        <el-button link type="danger" size="small" plain @click="handleDeleteClick(row.missingId)">Delete</el-button>
       </template>
     </el-table-column>
   </el-table>
+<!--  <el-button type="primary" @click="insertDialogVisible = true">添加客户</el-button>-->
 
-  <!-- 添加缺书对话框 -->
+  <!-- Edit Dialog -->
   <el-dialog
-      v-model="addMissingBookDialogVisible"
-      title="添加缺书单"
+      v-model="editDialogVisible"
+      title="Edit MissingBook"
       width="500"
       destroy-on-close
       center
   >
-    <el-form :model="newMissingBook">
-      <el-form-item label="书ID">
-        <el-input v-model="newMissingBook.BookID" placeholder="请输入书ID"></el-input>
+    <el-form>
+      <el-form-item label="MissingID">
+        <el-input v-model="currentMissingBook.missingId" disabled></el-input>
       </el-form-item>
-      <el-form-item label="登记人ID">
-        <el-input v-model="newMissingBook.CustomerID" placeholder="请输入登记人ID"></el-input>
+      <el-form-item label="BookID">
+        <el-input v-model="currentMissingBook.bookId" disabled></el-input>
       </el-form-item>
-      <el-form-item label="缺书数量">
-        <el-input v-model="newMissingBook.MissingQuantity" placeholder="请输入缺书数量"></el-input>
+      <el-form-item label="CustomerID">
+        <el-input v-model="currentMissingBook.customerId" disabled></el-input>
       </el-form-item>
-      <el-form-item label="登记日期">
-        <el-input v-model="newMissingBook.RegisterDate" placeholder="请输入登记日期"></el-input>
+      <el-form-item label="Quantity">
+        <el-input v-model="currentMissingBook.quantity"></el-input>
       </el-form-item>
-    </el-form>
-    <template #footer>
-      <div class="dialog-footer">
-        <el-button @click="addMissingBookDialogVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="handleAddMissingBook">Confirm</el-button>
-      </div>
-    </template>
-  </el-dialog>
-
-  <!-- 编辑缺书对话框 -->
-  <el-dialog
-      v-model="editMissingBookDialogVisible"
-      title="编辑缺书单"
-      width="500"
-      destroy-on-close
-      center
-  >
-    <el-form :model="currentMissingBook">
-      <el-form-item label="缺书单ID">
-        <el-input v-model="currentMissingBook.MissingBookID" disabled></el-input>
+      <el-form-item label="RegisterDate">
+        <el-input v-model="currentMissingBook.registerDate" disabled></el-input>
       </el-form-item>
-      <el-form-item label="书ID">
-        <el-input v-model="currentMissingBook.BookID" disabled></el-input>
-      </el-form-item>
-      <el-form-item label="登记人ID">
-        <el-input v-model="currentMissingBook.CustomerID" disabled></el-input>
-      </el-form-item>
-      <el-form-item label="缺书数量">
-        <el-input v-model="currentMissingBook.MissingQuantity"></el-input>
-      </el-form-item>
-      <el-form-item label="登记日期">
-        <el-input v-model="currentMissingBook.RegisterDate" disabled></el-input>
+      <el-form-item label="Status">
+        <el-input v-model="currentMissingBook.status"></el-input>
       </el-form-item>
     </el-form>
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="editMissingBookDialogVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="handleEditMissingBook">Confirm</el-button>
+        <el-button @click="editDialogVisible = false">Cancel</el-button>
+        <el-button type="primary" @click="handleSaveEdit">Confirm</el-button>
       </div>
     </template>
   </el-dialog>
 
-  <!-- 添加缺书单按钮 -->
-  <el-button type="primary" @click="addMissingBookDialogVisible = true">添加缺书单</el-button>
+<!--  &lt;!&ndash; Insert Dialog &ndash;&gt;-->
+<!--  <el-dialog-->
+<!--      v-model="insertDialogVisible"-->
+<!--      title="Add New MissingBook"-->
+<!--      width="500"-->
+<!--      destroy-on-close-->
+<!--      center-->
+<!--  >-->
+<!--    <el-form :model="newMissingBook">-->
+<!--      <el-form-item label="MissingBookID">-->
+<!--        <el-input v-model="newMissingBook.MissingBookID" placeholder="Enter MissingBookID" disabled></el-input>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="MissingBookName">-->
+<!--        <el-input v-model="newMissingBook.MissingBookName" placeholder="Enter MissingBookName"></el-input>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="Email">-->
+<!--        <el-input v-model="newMissingBook.email" placeholder="Enter Email"></el-input>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="Phone">-->
+<!--        <el-input v-model="newMissingBook.phone" placeholder="Enter Phone"></el-input>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="Address">-->
+<!--        <el-input v-model="newMissingBook.address" placeholder="Enter Address"></el-input>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="Balance">-->
+<!--        <el-input v-model="newMissingBook.balance" placeholder="Enter Balance"></el-input>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="Password">-->
+<!--        <el-input v-model="newMissingBook.password" placeholder="Enter Password"></el-input>-->
+<!--      </el-form-item>-->
+<!--    </el-form>-->
+<!--    <template #footer>-->
+<!--      <div class="dialog-footer">-->
+<!--        <el-button @click="insertDialogVisible = false">Cancel</el-button>-->
+<!--        <el-button type="primary" @click="handleInsertMissingBook">Confirm</el-button>-->
+<!--      </div>-->
+<!--    </template>-->
+<!--  </el-dialog>-->
 </template>
 
-<script setup lang="ts">
-import { ref } from 'vue';
-import { ElButton, ElInput, ElTable, ElTableColumn, ElDialog, ElForm, ElFormItem } from 'element-plus';
+<script lang="ts" setup>
+import { ElButton, ElInput, ElTable, ElTableColumn } from "element-plus";
+import {onBeforeMount, onMounted, ref} from "vue";
+import {
+  getAllMissingBook,
+  addMissingBook,
+  getMissingBookByCustomerID,
+  editStatus,
+  deleteMissingBook,
+  editMissing
+} from '@/api/MissingBook';
 
+// 当前搜索框和对话框的控制
 const searchMissingBookID = ref('');
-const addMissingBookDialogVisible = ref(false);
-const editMissingBookDialogVisible = ref(false);
-const currentMissingBook = ref<MissingBook>({
-  MissingBookID: 0,
-  BookID: 0,
-  CustomerID: 0,
-  MissingQuantity: 0,
-  RegisterDate: '',
-});
-const newMissingBook = ref<MissingBook>({
-  MissingBookID: 0,
-  BookID: 0,
-  CustomerID: 0,
-  MissingQuantity: 0,
-  RegisterDate: '',
-});
+const searchMissingBookName = ref('');
+const editDialogVisible = ref(false);
+const insertDialogVisible = ref(false);
 
-interface MissingBook {
-  MissingBookID: number;
-  BookID: number;
-  CustomerID: number;
-  MissingQuantity: number;
-  RegisterDate: string;
+export interface MissingBook {
+  missingId:number;
+  bookId: number;
+  quantity: number;
+  registerDate: string;
+  customerId  : number;
+  status: string;
 }
+// 当前正在编辑的缺书记录
+const currentMissingBook = ref<MissingBook>({
+  missingId: 0,
+  bookId: 0,
+  quantity: 0,
+  registerDate: '',
+  customerId: 0,
+  status: '',
+});
 
-const MissingBooksData: MissingBook[] = [
-  {
-    MissingBookID: 1,
-    BookID: 101,
-    CustomerID: 1,
-    MissingQuantity: 10,
-    RegisterDate: '2024-12-15',
-  },
-];
+// 新缺书记录的数据对象
+const newMissingBook = ref<MissingBook>({
+  missingId: 0,
+  bookId: 0,
+  quantity: 0,
+  registerDate: '',
+  customerId: 0,
+  status: '',
+});
 
-const filteredMissingBooksData = ref(MissingBooksData);
+const filteredMissingBooksData = ref([]);
 
-// 搜索功能
-const handleSearchMissingBook = () => {
-  if (searchMissingBookID.value) {
-    filteredMissingBooksData.value = MissingBooksData.filter(
-        (item) => item.MissingBookID.toString().includes(searchMissingBookID.value)
-    );
-  } else {
-    filteredMissingBooksData.value = MissingBooksData;
+// 获取所有缺书记录
+const fetchMissingBooks = async () => {
+  try {
+    const response = await getAllMissingBook();
+    // console.info(response.data)
+    // 假设 response.data.data 是一个数组类型，但不一定是 MissingBook[] 类型
+    if (Array.isArray(response.data.data)) {
+      filteredMissingBooksData.value = response.data.data;  // 使用类型断言将其视为 MissingBook[] 类型
+      // console.info('Filtered MissingBooks data:', filteredMissingBooksData.value);
+
+    } else {
+      console.error('返回的数据格式错误，应该是一个数组');
+      filteredMissingBooksData.value = [];  // 如果数据格式不正确，赋予空数组
+    }
+  } catch (error) {
+    console.error('获取缺书记录失败', error);
   }
 };
+
+// ID搜索功能
+const handleSearchMissingBook = () => {
+  // console.info(searchMissingBookID.value)
+  if (searchMissingBookID.value) {
+    // 仅根据输入的 MissingBookID 过滤当前数据
+    filteredMissingBooksData.value = filteredMissingBooksData.value.filter(MissingBook =>
+        MissingBook.missingId.toString().includes(searchMissingBookID.value)
+    );
+  } else {
+    // 如果没有输入搜索ID，则重新加载所有缺书记录数据
+    fetchMissingBooks();
+  }
+};
+// 名字搜索功能
+// const handleSearchMissingBookByName = () => {
+//   // console.info(searchMissingBookID.value)
+//   if (searchMissingBookName.value) {
+//     // 仅根据输入的 MissingBookID 过滤当前数据
+//     filteredMissingBooksData.value = filteredMissingBooksData.value.filter(MissingBook =>
+//         MissingBook.title.toString().includes(searchMissingBookName.value)
+//     );
+//   } else {
+//     // 如果没有输入搜索ID，则重新加载所有缺书记录数据
+//     fetchMissingBooks();
+//   }
+// };
 
 // 行样式
 const tableRowClassName = ({ row }: { row: MissingBook }) => {
-  if (row.MissingQuantity > 5) {
-    return 'warning-row';
-  }
+  // if (row.status =="UNSOLVED") {
+  //   return 'warning-row';
+  // }
   return '';
 };
 
-// 点击编辑按钮
-const handleClickMissingBook = (row: MissingBook) => {
+// 点击编辑按钮时，设置当前编辑的缺书记录
+const handleEditClick = (row: MissingBook) => {
   currentMissingBook.value = { ...row }; // 复制当前行的数据到编辑对象
-  editMissingBookDialogVisible.value = true;
+  editDialogVisible.value = true;
 };
 
-// 保存编辑后的缺书单
-const handleEditMissingBook = () => {
-  const index = MissingBooksData.findIndex(
-      (item) => item.MissingBookID === currentMissingBook.value.MissingBookID
-  );
-  if (index !== -1) {
-    MissingBooksData[index] = { ...currentMissingBook.value }; // 更新缺书单数据
+// 保存编辑后的缺书记录
+const handleSaveEdit = async () => {
+  try {
+    console.info(currentMissingBook.value)
+    await editMissing(currentMissingBook.value.missingId,currentMissingBook.value);
+    await fetchMissingBooks(); // 更新缺书记录数据
+    editDialogVisible.value = false; // 关闭编辑对话框
+  } catch (error) {
+    console.error('更新缺书记录失败', error);
   }
-  filteredMissingBooksData.value = [...MissingBooksData]; // 更新表格显示
-  editMissingBookDialogVisible.value = false;
 };
 
-// 添加缺书单
-const handleAddMissingBook = () => {
-  const newMissingBookID = MissingBooksData.length + 1;
-  const newMissingBookData = { ...newMissingBook.value, MissingBookID: newMissingBookID };
-  MissingBooksData.push(newMissingBookData);
-  filteredMissingBooksData.value = [...MissingBooksData];
-  addMissingBookDialogVisible.value = false;
-  newMissingBook.value = {
-    MissingBookID: 0,
-    BookID: 0,
-    CustomerID: 0,
-    MissingQuantity: 0,
-    RegisterDate: '',
-  };
-};
+// // 插入新缺书记录
+// const handleInsertMissingBook = async () => {
+//   try {
+//     await addMissingBook(newMissingBook.value);
+//     await fetchMissingBooks(); // 获取最新的缺书记录数据
+//     insertDialogVisible.value = false;
+//     newMissingBook.value = {
+//       missingId: 0,
+//       bookId: 0,
+//       quantity: 0,
+//       registerDate: '',
+//       customerId: 0,
+//       status: '',
+//     };
+//   } catch (error) {
+//     console.error('添加缺书记录失败', error);
+//   }
+// };
 
-// 删除缺书单
-const handleClickDeleteMissing = (MissingBookID: number) => {
-  const index = MissingBooksData.findIndex(
-      (item) => item.MissingBookID === MissingBookID
-  );
-  if (index !== -1) {
-    MissingBooksData.splice(index, 1); // 删除缺书单
+// 删除缺书记录
+const handleDeleteClick = async (MissingBookID: number) => {
+  try {
+    // console.log(MissingBookID)
+    await deleteMissingBook(MissingBookID);
+    await fetchMissingBooks(); // 删除后重新获取缺书记录数据
+  } catch (error) {
+    console.error('删除缺书记录失败', error);
+    alert("删除缺书记录失败！可能有别的项目依赖于该缺书记录");
   }
-  filteredMissingBooksData.value = [...MissingBooksData]; // 更新表格显示
 };
+
+// const handleGetMissingBookByIDClick = async (MissingBookID: number) => {
+//   try {
+//     // console.log(MissingBookID)
+//     await getMissingBook(MissingBookID);
+//     await fetchMissingBooks(); // 删除后重新获取缺书记录数据
+//   } catch (error) {
+//     console.error('搜索缺书记录失败', error);
+//     alert("未查询到该缺书记录！");
+//   }
+// };
+// 初始化加载缺书记录
+onBeforeMount(() => {
+  fetchMissingBooks();
+})
 </script>
 
 <style scoped>
@@ -206,8 +276,11 @@ const handleClickDeleteMissing = (MissingBookID: number) => {
   --el-table-tr-bg-color: var(--el-color-warning-light-9);
 }
 
-.el-table .danger-row {
-  --el-table-tr-bg-color: var(--el-color-danger-light-9);
+.ellipsis-text {
+  white-space: nowrap;         /* 禁止换行 */
+  overflow: hidden;            /* 隐藏溢出的部分 */
+  text-overflow: ellipsis;     /* 超出部分显示省略号 */
+  display: inline-block;       /* 使 div 可以应用 text-overflow */
+  max-width: 100%;             /* 使文本自适应列的宽度 */
 }
-
 </style>

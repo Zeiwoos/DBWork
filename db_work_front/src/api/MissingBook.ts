@@ -7,13 +7,12 @@ interface MissingBookData {
 }
 
 interface MissingBook {
-    // MissingID:number;
-
-    BookID: number;
-    CustomerID: number;
-    phone: string;
-    email: string;
-    address: string;
+    // missingId:number;
+    bookId: number;
+    customerId: number;
+    quantity: number;
+    registerDate: string;
+    status: string;
 }
 
 export function getAllMissingBook() {
@@ -51,6 +50,15 @@ export function editStatus(customerid: number,status:string){
             data: {
                 status
             }
+        }
+    )
+}
+export function editMissing(id:number, missingBook: MissingBook){
+    return request<MissingBookData>(
+        {
+            url:`/api/missingBooks/update/${id}`,
+            method: "put",
+            data: missingBook
         }
     )
 }
