@@ -155,38 +155,45 @@ onMounted(fetchBooks);
 
 <style>
 /* Main layout adjustments */
+/* Main layout adjustments */
 .main-body {
   gap: 30px;
   display: flex;
   width: 100vw;
   height: 100vh;
-  justify-content: center;
-  align-items: center;  /* Start alignment to avoid overlapping with the navbar */
+  justify-content: flex-start; /* 开始对齐，避免与 navbar 重叠 */
   flex-direction: column;
   background-color: #f0f0f0;
-  padding-top: 60px; /* Ensuring space for Navbar */
+  padding-top: 60px; /* 为了确保内容不被顶部 Navbar 遮挡 */
 }
-.search-box{
-  height: 100%;
-  margin-top: 4000px;
+
+/* 固定在顶部的搜索框 */
+.search-box {
+  position: fixed; /* 固定定位 */
+  top: 100px; /* 调整为顶部距离 navbar 的位置 */
+  left: 0;
+  right: 0;
   display: flex;
-  width: 100%;
-  align-items: center;
   justify-content: center;
-  flex-direction: row;
-  gap:40px;
+  align-items: center;
+  gap: 40px;
+  padding: 10px;
+  background-color: white; /* 确保背景颜色不透明，便于显示 */
+  z-index: 10; /* 确保它位于其他内容之上 */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 为了视觉效果添加阴影 */
 }
 
-/* Book list and card styles */
+/* 书籍展示区域 */
 .book-show {
-
   padding: 20px 0 40px 0;
   width: 100vw;
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-top: 120px; /* 给内容增加一些顶部间距，避免被固定的搜索框遮挡 */
 }
 
+/* Book list and card styles */
 .book-list {
   width: 90vw;
   display: flex;
@@ -207,6 +214,7 @@ onMounted(fetchBooks);
   justify-content: center;
   align-items: center;
 }
+
 .book-card {
   width: 200px;
   height: 300px;
@@ -231,6 +239,7 @@ onMounted(fetchBooks);
   text-align: center;
   gap: 5px;
 }
+
 .book-info h3 {
   width: 100%;
   white-space: nowrap;
@@ -239,7 +248,8 @@ onMounted(fetchBooks);
   text-align: center;
   font-size: 14px;
 }
-.book-info p{
+
+.book-info p {
   width: 100%;
   white-space: nowrap;
   overflow: hidden;
@@ -276,4 +286,5 @@ onMounted(fetchBooks);
   text-align: center;
   margin-top: 20px;
 }
+
 </style>
