@@ -113,7 +113,7 @@ export default defineComponent({
         if (response.data.code === 1) {
           alert("注册成功！");
           localStorage.setItem('isLoggedIn', 'true');
-          localStorage.setItem('customerId', response.data.data.customerID);
+          localStorage.setItem('customerId', response.data.data.data.customerID);
           // console.log(response.response.data.data.customerId)
           window.location.href = 'http://localhost:5173/';
         } else {

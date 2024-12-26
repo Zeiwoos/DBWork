@@ -127,236 +127,199 @@ CREATE TABLE shipments (
 
 
 
+CREATE TRIGGER check_stock_before_update
+    BEFORE UPDATE ON books
+    FOR EACH ROW
+BEGIN
 
-# -- 创建书存量检查触发器，如果库存量低于最低存书量，则插入缺书记录
-# CREATE TRIGGER check_stock_before_update
-#     BEFORE UPDATE ON books
-#     FOR EACH ROW
-# BEGIN
-#     -- 如果库存量低于最低存书量
-#     IF NEW.Stock < 10 THEN
-#         -- 如果缺书记录不存在，则插入缺书记录
-#         INSERT INTO missingBooks (BookID, Quantity, RegisterDate)
-#     SELECT NEW.BookID, 10 - NEW.Stock, CURDATE()
-#         WHERE NOT EXISTS (
-#             SELECT 1
-#             FROM missingBooks
-#             WHERE BookID = NEW.BookID AND RequestedByCustomerID IS NULL
-#         );
-# END IF;
-# END ;
-#
-#
-#
-# -- 创建触发器，当插入订单明细时，检查库存量是否足够，如果不够则插入缺书记录
-# CREATE TRIGGER create_missing_book_record
-#     AFTER INSERT ON orderDetails
-#     FOR EACH ROW
-# BEGIN
-#     DECLARE stock INT;
-#     DECLARE missing_quantity INT;
-#
-#     -- 获取库存量
-#     SELECT Stock INTO stock FROM books WHERE BookID = NEW.BookID;
-#
-#     -- 判断库存是否足够(每次下单后库存量先减少)
-#     IF stock < NEW.Quantity THEN
-#         -- 计算缺书的数量
-#         SET missing_quantity = NEW.Quantity - stock;
-#
-#         -- 插入缺书记录（如果没有重复记录）
-#         INSERT INTO missingBooks (BookID, RequestedByCustomerID, Quantity, RegisterDate)
-#         SELECT NEW.BookID, (SELECT CustomerID FROM orders WHERE OrderID = NEW.OrderID), missing_quantity, CURDATE()
-#         WHERE NOT EXISTS (
-#             SELECT 1 FROM missingBooks WHERE BookID = NEW.BookID AND RequestedByCustomerID = (SELECT CustomerID FROM orders WHERE OrderID = NEW.OrderID)
-#         );
-#     END IF;
-# END ;
-#
-#
-#
-# -- 创建触发器，当插入缺书记录时，自动创建或更新采购单
-# CREATE TRIGGER create_or_update_purchase_order_from_missing_book
-#     AFTER INSERT ON missingBooks
-#     FOR EACH ROW
-# BEGIN
-#     DECLARE supplierID INT;
-#     DECLARE purchaseID INT;
-#     DECLARE existingQty INT;
-#
-#     -- 根据缺书的书籍信息，选择一个供应商（假设选择第一个供应商）
-#     SELECT SupplierID INTO supplierID
-#     FROM bookSuppliers
-#     WHERE BookID = NEW.BookID
-#     LIMIT 1;
-#
-#     -- 如果找到供应商
-#     IF supplierID IS NOT NULL THEN
-#         -- 检查是否存在一个状态为 'Pending' 的采购单
-#         SELECT PurchaseID INTO purchaseID
-#         FROM purchaseOrders
-#         WHERE SupplierID = supplierID AND Status = 'Pending'
-#         LIMIT 1;
-#
-#         -- 如果找到已有的 'Pending' 采购单，则将缺书的书籍添加到该采购单的采购详情中
-#         IF purchaseID IS NOT NULL THEN
-#             -- 计算采购详情中该书籍的现有数量（如果有的话）
-#             SELECT SUM(Quantity) INTO existingQty
-#             FROM purchaseDetails
-#             WHERE PurchaseID = purchaseID AND BookID = NEW.BookID;
-#
-#             -- 如果已有数量，则增加数量，否则插入新的采购详情
-#             IF existingQty IS NOT NULL THEN
-#                 UPDATE purchaseDetails
-#                 SET Quantity = Quantity + NEW.Quantity
-#                 WHERE PurchaseID = purchaseID AND BookID = NEW.BookID;
-#             ELSE
-#                 INSERT INTO purchaseDetails (PurchaseID, BookID, Quantity)
-#                 VALUES (purchaseID, NEW.BookID, NEW.Quantity);
-#             END IF;
-#
-#             -- 如果没有找到现有的 'Pending' 采购单，则创建一个新的采购单
-#         ELSE
-#             -- 创建新的采购单
-#             INSERT INTO purchaseOrders (SupplierID, OrderDate, Status)
-#             VALUES (supplierID, CURDATE(), 'Pending');
-#
-#             -- 获取刚刚插入的采购单ID
-#             SET purchaseID = LAST_INSERT_ID();
-#
-#             -- 插入采购详情
-#             INSERT INTO purchaseDetails (PurchaseID, BookID, Quantity)
-#             VALUES (purchaseID, NEW.BookID, NEW.Quantity);
-#         END IF;
-#     END IF;
-# END ;
+    DECLARE quantityDiff INT;
+    -- 如果新的库存量低于最低存书量（20）
+    IF NEW.Stock < 20 THEN
+        -- 如果缺书记录不存在，则插入缺书记录
+        IF NOT EXISTS (
+            SELECT 1
+            FROM missingBooks
+            WHERE BookID = NEW.BookID AND Status = 'UNSOLVED'
+        ) THEN
+            -- 插入一条新的缺书记录，假设数量为20
+            INSERT INTO missingBooks (BookID, CustomerID, Quantity, RegisterDate, Status)
+            VALUES (NEW.BookID, NULL, 20, CURDATE(), 'UNSOLVED');
+        ELSE
+            -- 如果缺书记录已存在，插入差值数量的缺书记录
+            -- 计算库存量的差值
+            SET quantityDiff = OLD.Stock - NEW.Stock;
+
+            -- 如果差值大于0，则插入缺书记录
+            IF quantityDiff > 0 THEN
+                INSERT INTO missingBooks (BookID, CustomerID, Quantity, RegisterDate, Status)
+                VALUES (NEW.BookID, NULL, quantityDiff, CURDATE(), 'UNSOLVED');
+            END IF;
+        END IF;
+    END IF;
+END;
 
 
 
--- 创建触发器，当解决采购单时，更新库存量
+CREATE TRIGGER create_missing_book_record
+    AFTER INSERT ON orderDetails
+    FOR EACH ROW
+BEGIN
+    DECLARE stock INT;
+    DECLARE missing_quantity INT;
+    DECLARE customer_id INT;
 
-# CREATE TRIGGER after_purchase_order_delivered
-#     AFTER UPDATE ON purchaseOrders
-#     FOR EACH ROW
-# BEGIN
-#     -- 检查采购单状态是否已更改为 "Delivered"
-#     IF NEW.Status = 'Delivered' AND OLD.Status != 'Delivered' THEN
-#         DECLARE bookID INT;
-#         DECLARE orderQuantity INT;
-#
-#         -- 遍历采购单明细，增加库存并删除缺书记录
-#         DECLARE done INT DEFAULT 0;
-#         DECLARE cur CURSOR FOR
-#         SELECT BookID, Quantity FROM purchaseDetails WHERE PurchaseID = NEW.PurchaseID;
-#
-#         -- 打开游标
-#         OPEN cur;
-#
-#         -- 循环处理每条采购单明细
-#         read_loop: LOOP
-#             FETCH cur INTO bookID, orderQuantity;
-#             IF done THEN
-#                 LEAVE read_loop;
-#             END IF;
-#
-#             -- 增加库存量
-#             UPDATE books
-#             SET Stock = Stock + orderQuantity
-#             WHERE BookID = bookID;
-#
-#             -- 删除缺书记录
-#             DELETE FROM missingBooks
-#             WHERE BookID = bookID
-#               AND Quantity = orderQuantity
-#               AND RequestedByCustomerID IS NULL;  -- 删除没有指定顾客的缺书记录
-#
-#         END LOOP;
-#
-#         -- 关闭游标
-#         CLOSE cur;
-#     END IF;
-# END ;
+    -- 获取库存量
+    SELECT Stock INTO stock FROM books WHERE BookID = NEW.BookID;
+
+    -- 获取顾客ID
+    SELECT CustomerID INTO customer_id FROM orders WHERE OrderID = NEW.OrderID;
+
+    -- 判断库存是否足够
+    IF stock < NEW.Quantity THEN
+        -- 计算缺书的数量
+        SET missing_quantity = NEW.Quantity - stock + 20;
+
+        -- 插入缺书记录（如果没有重复记录）
+    INSERT INTO missingBooks (BookID, RequestedByCustomerID, Quantity, RegisterDate, Status)
+    SELECT NEW.BookID, customer_id, missing_quantity, CURDATE(), 'UNSOLVED'
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM missingBooks
+            WHERE BookID = NEW.BookID AND RequestedByCustomerID = customer_id
+        );
+END IF;
+END;
+
+CREATE TRIGGER create_or_update_purchase_order_from_missing_book
+    AFTER INSERT ON missingBooks
+    FOR EACH ROW
+BEGIN
+    DECLARE supplierID INT;
+    DECLARE purchaseID INT;
+    DECLARE existingQty INT;
+
+    -- 根据缺书的书籍信息，从 books 表获取供应商ID
+    SELECT SupplierID INTO supplierID
+    FROM books
+    WHERE BookID = NEW.BookID;
+
+    -- 如果找到供应商ID
+    IF supplierID IS NOT NULL THEN
+        -- 检查是否存在一个状态为 'Pending' 的采购单
+        SELECT PurchaseID INTO purchaseID
+        FROM purchaseOrders
+        WHERE SupplierID = supplierID AND Status = 'Pending'
+        LIMIT 1;
+
+        -- 如果找到已有的 'Pending' 采购单，则将缺书的书籍添加到该采购单的采购详情中
+        IF purchaseID IS NOT NULL THEN
+            -- 检查该采购单明细中是否已存在此书籍
+            SELECT COUNT(*) INTO existingQty
+            FROM purchaseDetails
+            WHERE PurchaseID = purchaseID AND BookID = NEW.BookID;
+
+            -- 如果已有数量，则增加数量，否则插入新的采购详情
+            IF existingQty > 0 THEN
+                UPDATE purchaseDetails
+                SET Quantity = Quantity + NEW.Quantity
+                WHERE PurchaseID = purchaseID AND BookID = NEW.BookID;
+            ELSE
+                INSERT INTO purchaseDetails (PurchaseID, BookID, Quantity)
+                VALUES (purchaseID, NEW.BookID, NEW.Quantity);
+            END IF;
+        ELSE
+            -- 如果没有找到现有的 'Pending' 采购单，则创建一个新的采购单
+            INSERT INTO purchaseOrders (SupplierID, OrderDate, Status)
+            VALUES (supplierID, CURDATE(), 'Pending');
+
+            -- 获取刚刚插入的采购单ID
+            SET purchaseID = LAST_INSERT_ID();
+
+            -- 插入采购详情
+            INSERT INTO purchaseDetails (PurchaseID, BookID, Quantity)
+            VALUES (purchaseID, NEW.BookID, NEW.Quantity);
+        END IF;
+    ELSE
+        -- 如果没有找到对应的供应商ID，记录异常或执行其他操作
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'SupplierID not found for the given BookID';
+    END IF;
+END;
 
 
-# CREATE TRIGGER after_purchase_order_delivered
-#     AFTER UPDATE ON purchaseOrders
-#     FOR EACH ROW
-# BEGIN
-#     -- 声明所需的变量
-#     DECLARE bookID INT;
-#     DECLARE orderQuantity INT;
-#     DECLARE done INT DEFAULT 0;
-#     DECLARE cur CURSOR FOR
-#         SELECT BookID, Quantity FROM purchaseDetails WHERE PurchaseID = NEW.PurchaseID;
-#
-#     -- 检查采购单状态是否已更改为 "Delivered"
-#     IF NEW.Status = 'Delivered' AND OLD.Status != 'Delivered' THEN
-#         -- 打开游标
-#         OPEN cur;
-#
-#         -- 循环处理每条采购单明细
-#         read_loop: LOOP
-#             FETCH cur INTO bookID, orderQuantity;
-#             IF done THEN
-#                 LEAVE read_loop;
-#             END IF;
-#
-#             -- 确保变量值有效
-#             IF bookID IS NOT NULL AND orderQuantity IS NOT NULL THEN
-#                 -- 增加库存量
-#                 UPDATE books
-#                 SET Stock = Stock + orderQuantity
-#                 WHERE BookID = bookID;
-#
-#                 -- 删除缺书记录
-#                 DELETE FROM missingBooks
-#                 WHERE BookID = bookID
-#                   AND Quantity = orderQuantity
-#                   AND RequestedByCustomerID IS NULL;  -- 删除没有指定顾客的缺书记录
-#             END IF;
-#         END LOOP;
-#
-#         -- 关闭游标
-#         CLOSE cur;
-#     END IF;
-# END ;
+
+
+CREATE TRIGGER after_purchase_order_delivered
+    AFTER UPDATE ON purchaseOrders
+    FOR EACH ROW
+BEGIN
+    -- 声明所需的变量
+    DECLARE bookID INT;
+    DECLARE orderQuantity INT;
+    DECLARE done INT DEFAULT 0;
+    DECLARE cur CURSOR FOR
+    SELECT BookID, Quantity FROM purchaseDetails WHERE PurchaseID = NEW.PurchaseID;
+
+    -- 检查采购单状态是否已更改为 "Delivered"
+    IF NEW.Status = 'Delivered' AND OLD.Status != 'Delivered' THEN
+        -- 打开游标
+        OPEN cur;
+
+        -- 循环处理每条采购单明细
+        read_loop: LOOP
+            FETCH cur INTO bookID, orderQuantity;
+            IF NOT FOUND THEN
+                LEAVE read_loop; -- 如果没有数据，则退出循环
+END IF;
+
+-- 增加库存量
+UPDATE books
+SET Stock = Stock + orderQuantity
+WHERE BookID = bookID;
+
+-- 删除缺书记录（如果没有指定顾客的缺书记录）
+DELETE FROM missingBooks
+WHERE BookID = bookID
+  AND Quantity = orderQuantity
+  AND RequestedByCustomerID IS NULL;  -- 删除没有指定顾客的缺书记录
+END LOOP;
+
+        -- 关闭游标
+CLOSE cur;
+END IF;
+END;
 
 
 SHOW VARIABLES LIKE 'event_scheduler';
-
 SHOW VARIABLES LIKE 'character_set%';
-
 SET GLOBAL event_scheduler = ON;
-
 CREATE EVENT adjust_customer_credit
     ON SCHEDULE
         EVERY 1 MONTH
-            STARTS '2025-01-01 00:00:00'  -- 从2025年1月1号开始执行
+        STARTS '2025-01-01 00:00:00'
     DO
-    BEGIN
-    UPDATE customers
-    SET CreditLevel =
-    CASE
-        WHEN Balance + (SELECT COALESCE(SUM(Price * Quantity), 0)
-                        FROM orderDetails
-                                 JOIN books ON orderDetails.BookID = books.BookID
-                        WHERE orderDetails.CustomerID = customers.CustomerID) <= 500 THEN 1
-        WHEN Balance + (SELECT COALESCE(SUM(Price * Quantity), 0)
-                        FROM orderDetails
-                                 JOIN books ON orderDetails.BookID = books.BookID
-                        WHERE orderDetails.CustomerID = customers.CustomerID) <= 1500 THEN 2
-        WHEN Balance + (SELECT COALESCE(SUM(Price * Quantity), 0)
-                        FROM orderDetails
-                                 JOIN books ON orderDetails.BookID = books.BookID
-                        WHERE orderDetails.CustomerID = customers.CustomerID) <= 2500 THEN 3
-        WHEN Balance + (SELECT COALESCE(SUM(Price * Quantity), 0)
-                        FROM orderDetails
-                                 JOIN books ON orderDetails.BookID = books.BookID
-                        WHERE orderDetails.CustomerID = customers.CustomerID) <= 3500 THEN 4
+BEGIN
+        -- 计算每个顾客的总购买金额
+        CREATE TEMPORARY TABLE customer_totals AS
+SELECT orderDetails.CustomerID,
+       COALESCE(SUM(orderDetails.Quantity * books.Price), 0) AS total_spent
+FROM orderDetails
+         JOIN books ON orderDetails.BookID = books.BookID
+GROUP BY orderDetails.CustomerID;
+
+-- 更新信用等级
+UPDATE customers c
+    JOIN customer_totals ct ON c.CustomerID = ct.CustomerID
+    SET c.CreditLevel =
+        CASE
+        WHEN c.Balance + ct.total_spent <= 500 THEN 1
+        WHEN c.Balance + ct.total_spent <= 1500 THEN 2
+        WHEN c.Balance + ct.total_spent <= 2500 THEN 3
+        WHEN c.Balance + ct.total_spent <= 3500 THEN 4
         ELSE 5
-        END;
-END ;
+END;
 
-
+        -- 删除临时表
+        DROP TEMPORARY TABLE IF EXISTS customer_totals;
+END;
 
 
