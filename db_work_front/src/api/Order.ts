@@ -11,13 +11,13 @@ interface Order {
     customerId: number;
     shippingAddress: string;
 }
-interface OrderDetail {
+interface orderDetails {
     quantity: number;
     bookId: number;
 }
 interface OrderRequestDTO {
     order:Order;
-    OrderDetails: Array<OrderDetail>;
+    OrderDetails: Array<orderDetails>;
 }
 
 export function getAllOrders(){

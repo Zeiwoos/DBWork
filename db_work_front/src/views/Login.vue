@@ -112,14 +112,13 @@ const handleLogin = async () => {
   // 调用 API 进行登录验证
   try {
     const response = await login(loginData);
-
     if (response.data.code === 1) {
       // 登录成功，清除错误信息，跳转到主页
       errorMessage.value = "";
       alert("登录成功！");
       localStorage.setItem('isLoggedIn', 'true');
-      localStorage.setItem('customerId',input_UserID.value)
-      router.push('/home'); // 跳转到首页或目标页面
+      localStorage.setItem('customerId',input_UserID.value);
+      await router.push('/home'); // 跳转到首页或目标页面
     } else {
       // 登录失败，显示错误信息
       errorMessage.value = response.data.msg || "登录失败！";
