@@ -21,6 +21,12 @@ export function getAllPurchaseOrder() {
     });
 }
 
+export function getDetailsByPurchaseID(orderid:number) {
+    return request<PurchaseOrderData>({
+        url: `/api/purchaseOrders/details/${orderid}`,
+        method: 'get',
+    });
+}
 export function updatePuchaseOrder(id:number,purchaseOrder:PurchaseOrder) {
     return request<PurchaseOrderData>({
         url: `/api/purchaseOrders/update/${id}`,
