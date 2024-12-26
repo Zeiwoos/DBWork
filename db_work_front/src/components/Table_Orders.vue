@@ -1,245 +1,312 @@
 <template>
-  <div style="gap: 20px">
-    <!-- 搜索框 -->
-    <el-input
-        v-model="searchOrderID"
-        placeholder="请输入订单ID进行查询"
-        clearable
-        style="margin-bottom: 20px; width: 300px;"
-        @input="handleSearchOrder"
-    />
-
-    <!-- 表格 -->
-    <el-table
-        :data="filteredOrdersData"
-        style="width: 100%"
-        :row-class-name="tableRowClassName"
-    >
-      <el-table-column prop="OrderID" label="订单ID" width="100" />
-      <el-table-column prop="CustomerID" label="顾客ID" width="120" />
-      <el-table-column prop="OrderDate" label="订单日期" width="120" />
-      <el-table-column prop="TotalAmount" label="总金额" width="100" />
-      <el-table-column prop="ShippingAddress" label="送货地址" width="140" />
-      <el-table-column prop="Status" label="订单状态" width="100" />
-      <el-table-column fixed="right" label="操作" min-width="140">
-        <template #default="{ row }">
-          <el-button link type="primary" size="small" @click="handleClickEditOrder(row)">Edit</el-button>
-          <el-button link type="danger" size="small" @click="handleClickDeleteOrder(row.OrderID)">Delete</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <!-- 添加订单按钮 -->
-    <el-button type="primary" @click="addOrderDialogVisible = true">添加订单</el-button>
-    <!-- 添加订单对话框 -->
-    <el-dialog
-        v-model="addOrderDialogVisible"
-        title="添加订单"
-        width="500"
-        destroy-on-close
-        center
-    >
-      <el-form :model="newOrder">
-        <el-form-item label="顾客ID">
-          <el-input v-model="newOrder.CustomerID" placeholder="请输入顾客ID"></el-input>
-        </el-form-item>
-        <el-form-item label="订单日期">
-          <el-input v-model="newOrder.OrderDate" placeholder="请输入订单日期"></el-input>
-        </el-form-item>
-        <el-form-item label="总金额">
-          <el-input v-model="newOrder.TotalAmount" placeholder="请输入总金额"></el-input>
-        </el-form-item>
-        <el-form-item label="送货地址">
-          <el-input v-model="newOrder.ShippingAddress" placeholder="请输入送货地址"></el-input>
-        </el-form-item>
-        <el-form-item label="订单状态">
-          <el-select v-model="newOrder.Status" placeholder="请选择订单状态">
-            <el-option label="Pending" value="Pending"></el-option>
-            <el-option label="Completed" value="Completed"></el-option>
-            <el-option label="Canceled" value="Canceled"></el-option>
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="addOrderDialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="handleAddOrder">确认</el-button>
-        </div>
+  <el-input
+      v-model="searchOrderID"
+      placeholder="请输入OrderID进行查询"
+      clearable
+      style="margin-bottom: 20px; width: 300px;"
+      @input="handleSearchOrder"
+  />
+  <el-input
+      v-model="searchCustomerId"
+      placeholder="请输入CustomerId进行查询"
+      clearable
+      style="margin-bottom: 20px; width: 300px;"
+      @input="handleSearchOrderByCustomerId"
+  />
+  <el-table
+      :data="filteredOrdersData"
+      style="width: 100%"
+      :row-class-name="tableRowClassName"
+  >
+    <el-table-column prop="orderId" label="OrderID" width="80" />
+    <el-table-column prop="customerId" label="CustomerID" width="100"/>
+    <!-- Author 列，文本超长时显示省略号 -->
+    <el-table-column label="OrderDate" width="140">
+      <template #default="{ row }">
+        <div class="ellipsis-text">{{ row.orderDate }}</div>
       </template>
-    </el-dialog>
+    </el-table-column>
 
-    <!-- 编辑订单对话框 -->
-    <el-dialog
-        v-model="editOrderDialogVisible"
-        title="编辑订单"
-        width="500"
-        destroy-on-close
-        center
-    >
-      <el-form :model="currentOrder">
-        <el-form-item label="订单ID">
-          <el-input v-model="currentOrder.OrderID" disabled></el-input>
-        </el-form-item>
-        <el-form-item label="顾客ID">
-          <el-input v-model="currentOrder.CustomerID" disabled></el-input>
-        </el-form-item>
-        <el-form-item label="订单日期">
-          <el-input v-model="currentOrder.OrderDate" disabled></el-input>
-        </el-form-item>
-        <el-form-item label="总金额">
-          <el-input v-model="currentOrder.TotalAmount" disabled></el-input>
-        </el-form-item>
-        <el-form-item label="送货地址">
-          <el-input v-model="currentOrder.ShippingAddress" disabled></el-input>
-        </el-form-item>
-        <el-form-item label="订单状态">
-          <el-select v-model="currentOrder.Status" placeholder="请选择订单状态">
-            <el-option label="Pending" value="Pending"></el-option>
-            <el-option label="Completed" value="Completed"></el-option>
-            <el-option label="Canceled" value="Canceled"></el-option>
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="editOrderDialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="handleEditOrder">确认</el-button>
-        </div>
+    <el-table-column label="ShippingAddress" width="140">
+      <template #default="{ row }">
+        <div class="ellipsis-text">{{ row.shippingAddress }}</div>
       </template>
-    </el-dialog>
+    </el-table-column>
+    <!--    <el-table-column prop="keywords" label="Keywords" width="120" />-->
+    <!--    <el-table-column prop="description" label="Description" width="120"/>-->
+    <el-table-column prop="status" label="Status" width="100"/>
 
-  </div>
+    <el-table-column fixed="right" label="Operations" min-width="120">
+      <template #default="{ row }">
+        <el-button link type="primary" size="small" plain @click="handleEditClick(row)">edit</el-button>
+        <el-button link type="danger" size="small" plain @click="handleDeleteClick(row.OrderID)">Delete</el-button>
+      </template>
+    </el-table-column>
+  </el-table>
+
+  <el-button type="primary" @click="insertDialogVisible = true">添加订单</el-button>
+
+  <!-- Edit Dialog -->
+  <el-dialog
+      v-model="editDialogVisible"
+      title="Edit Order"
+      width="500"
+      destroy-on-close
+      center
+  >
+    <el-form>
+      <el-form-item label="OrderID">
+        <el-input v-model="currentOrder.orderId" disabled></el-input>
+      </el-form-item>
+      <el-form-item label="CustomerID">
+        <el-input v-model="currentOrder.customerId" disabled></el-input>
+      </el-form-item>
+      <el-form-item label="OrderDate">
+        <el-input v-model="currentOrder.orderDate" disabled></el-input>
+      </el-form-item>
+      <el-form-item label="TotalAmount">
+        <el-input v-model="currentOrder.totalAmount" disabled></el-input>
+      </el-form-item>
+      <el-form-item label="ShippingAddress">
+        <el-input v-model="currentOrder.shippingAddress"></el-input>
+      </el-form-item>
+      <el-form-item label="Status">
+        <el-input v-model="currentOrder.status"></el-input>
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="editDialogVisible = false">Cancel</el-button>
+        <el-button type="primary" @click="handleSaveEdit">Confirm</el-button>
+      </div>
+    </template>
+  </el-dialog>
+
+  <!-- Insert Dialog -->
+  <el-dialog
+      v-model="insertDialogVisible"
+      title="Add New Order"
+      width="500"
+      destroy-on-close
+      center
+  >
+    <el-form :model="newOrder">
+      <el-form-item label="OrderID">
+        <el-input v-model="newOrder.orderId" placeholder="Enter OrderID" disabled></el-input>
+      </el-form-item>
+      <el-form-item label="CustomerId">
+        <el-input v-model="newOrder.customerId" placeholder="Enter CustomerId"></el-input>
+      </el-form-item>
+      <el-form-item label="OrderDate">
+        <el-input v-model="newOrder.orderDate" placeholder="Enter OrderDate"></el-input>
+      </el-form-item>
+      <el-form-item label="TotalAmount">
+        <el-input v-model="newOrder.totalAmount" placeholder="Enter TotalAmount"></el-input>
+      </el-form-item>
+      <el-form-item label="ShippingAddress">
+        <el-input v-model="newOrder.shippingAddress" placeholder="Enter ShippingAddress"></el-input>
+      </el-form-item>
+      <el-form-item label="Status">
+        <el-input v-model="newOrder.status" placeholder="Enter Status"></el-input>
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="insertDialogVisible = false">Cancel</el-button>
+        <el-button type="primary" @click="handleInsertOrder">Confirm</el-button>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 
-<script setup lang="ts">
-import { ref } from 'vue';
-import { ElButton, ElInput, ElTable, ElTableColumn, ElDialog, ElForm, ElFormItem, ElSelect, ElOption } from 'element-plus';
+<script lang="ts" setup>
+import { ElButton, ElInput, ElTable, ElTableColumn } from "element-plus";
+import {onBeforeMount, onMounted, ref} from "vue";
+import {
+  editOrder,
+  getDetailsByOrderID,
+  createWithDetails,
+  getAllOrders,
+  editStatus,
+  getOrderByCustomerID,
+  deleteOrder,
+  getOrderByID
+} from '@/api/Order';
 
-// 搜索框绑定值
+// 当前搜索框和对话框的控制
 const searchOrderID = ref('');
+const searchCustomerId = ref('');
+const editDialogVisible = ref(false);
+const insertDialogVisible = ref(false);
 
-// 订单数据接口
-interface Order {
-  OrderID: number;
-  CustomerID: number;
-  OrderDate: string;
-  TotalAmount: number;
-  ShippingAddress: string;
-  Status: string;
+export interface Order {
+  orderId:number;
+  customerId: number;
+  orderDate: string;
+  totalAmount: number;
+  shippingAddress: string;
+  status: string;
 }
-const OrdersData: Order[] = [
-  {
-    OrderID: 1,
-    CustomerID: 1,
-    OrderDate: '2024-12-15',
-    TotalAmount: 150,
-    ShippingAddress: 'Address1',
-    Status: 'Pending',
-  },
-];
-const filteredOrdersData = ref(OrdersData);
 
-// 添加订单的对话框可见性
-const addOrderDialogVisible = ref(false);
-const editOrderDialogVisible = ref(false);
+export interface OrderDTO {
+  customerId: number;
+  shippingAddress: string;
+}
 
-// 当前订单编辑数据
+
+
+
+
 const currentOrder = ref<Order>({
-  OrderID: 0,
-  CustomerID: 0,
-  OrderDate: '',
-  TotalAmount: 0,
-  ShippingAddress: '',
-  Status: 'Pending',
+  orderId: 0,
+  customerId: 0,
+  orderDate: '',
+  totalAmount: 0,
+  shippingAddress: '',
+  status: '',
 });
 
-// 新订单数据
+
 const newOrder = ref<Order>({
-  OrderID: 0,
-  CustomerID: 0,
-  OrderDate: '',
-  TotalAmount: 0,
-  ShippingAddress: '',
-  Status: 'Pending',
+  orderId: 0,
+  customerId: 0,
+  orderDate: '',
+  totalAmount: 0,
+  shippingAddress: '',
+  status: '',
 });
 
-// 搜索功能
+const filteredOrdersData = ref([]);
+
+// 获取所有书籍
+const fetchOrders = async () => {
+  try {
+    const response = await getAllOrders();
+    // console.info(response.data)
+    // 假设 response.data.data 是一个数组类型，但不一定是 Order[] 类型
+    if (Array.isArray(response.data.data)) {
+      filteredOrdersData.value = response.data.data;  // 使用类型断言将其视为 Order[] 类型
+      // console.info('Filtered Orders data:', filteredOrdersData.value);
+
+    } else {
+      console.error('返回的数据格式错误，应该是一个数组');
+      filteredOrdersData.value = [];  // 如果数据格式不正确，赋予空数组
+    }
+  } catch (error) {
+    console.error('获取订单失败', error);
+  }
+};
+
+// ID搜索功能
 const handleSearchOrder = () => {
+  // console.info(searchOrderID.value)
   if (searchOrderID.value) {
-    filteredOrdersData.value = OrdersData.filter(
-        (item) => item.OrderID.toString().includes(searchOrderID.value)
+    // 仅根据输入的 OrderID 过滤当前数据
+    filteredOrdersData.value = filteredOrdersData.value.filter(Order =>
+        Order.orderId.toString().includes(searchOrderID.value)
     );
   } else {
-    filteredOrdersData.value = OrdersData;
+    // 如果没有输入搜索ID，则重新加载所有书籍数据
+    fetchOrders();
+  }
+};
+// 名字搜索功能
+const handleSearchOrderByCustomerId = () => {
+  // console.info(searchOrderID.value)
+  if (searchCustomerId.value) {
+
+    filteredOrdersData.value = filteredOrdersData.value.filter(Order =>
+        Order.customerId.toString().includes(searchCustomerId.value)
+    );
+  } else {
+    // 如果没有输入搜索ID，则重新加载所有书籍数据
+    fetchOrders();
   }
 };
 
 // 行样式
 const tableRowClassName = ({ row }: { row: Order }) => {
-  if (row.Status === 'Pending') {
-    return 'info-row'; // 待处理订单
-  } else if (row.Status === 'Completed') {
-    return 'success-row'; // 已完成订单
+  if (row.status == "Pending") {
+    return 'warning-row';
   }
   return '';
 };
 
-// 编辑订单
-const handleClickEditOrder = (row: Order) => {
-  currentOrder.value = { ...row }; // 复制当前订单的数据到编辑对象
-  editOrderDialogVisible.value = true;
+// 点击编辑按钮时，设置当前编辑的书籍
+const handleEditClick = (row: Order) => {
+  currentOrder.value = { ...row }; // 复制当前行的数据到编辑对象
+  editDialogVisible.value = true;
 };
 
-// 更新订单
-const handleEditOrder = () => {
-  const index = OrdersData.findIndex(
-      (item) => item.OrderID === currentOrder.value.OrderID
-  );
-  if (index !== -1) {
-    OrdersData[index] = { ...currentOrder.value }; // 更新订单数据
+const handleSaveEdit = async () => {
+  try {
+    console.log(currentOrder.value)
+    await editOrder(currentOrder.value.orderId, currentOrder.value);
+    await fetchOrders();
+    editDialogVisible.value = false; // 关闭编辑对话框
+  } catch (error) {
+    console.error('更新订单失败', error);
   }
-  filteredOrdersData.value = [...OrdersData]; // 更新表格显示
-  editOrderDialogVisible.value = false;
 };
 
-// 添加订单
-const handleAddOrder = () => {
-  const newOrderID = OrdersData.length + 1;
-  const newOrderData = { ...newOrder.value, OrderID: newOrderID };
-  OrdersData.push(newOrderData);
-  filteredOrdersData.value = [...OrdersData];
-  addOrderDialogVisible.value = false;
-  newOrder.value = {
-    OrderID: 0,
-    CustomerID: 0,
-    OrderDate: '',
-    TotalAmount: 0,
-    ShippingAddress: '',
-    Status: 'Pending',
-  };
-};
-
-// 删除订单
-const handleClickDeleteOrder = (OrderID: number) => {
-  const index = OrdersData.findIndex(
-      (item) => item.OrderID === OrderID
-  );
-  if (index !== -1) {
-    OrdersData.splice(index, 1); // 删除订单
+// 插入新书籍
+const handleInsertOrder = async () => {
+  try {
+    await createWithDetails(newOrder.value);
+    await fetchOrders(); // 获取最新的书籍数据
+    insertDialogVisible.value = false;
+    newOrder.value = {
+      orderId: 0,
+      customerId: 0,
+      orderDate: '',
+      totalAmount: 0,
+      shippingAddress: '',
+      status: '',
+    };
+  } catch (error) {
+    console.error('添加订单失败', error);
   }
-  filteredOrdersData.value = [...OrdersData]; // 更新表格显示
 };
+
+// 删除书籍
+const handleDeleteClick = async (OrderID: number) => {
+  try {
+    // console.log(OrderID)
+    await deleteOrder(OrderID);
+    await fetchOrders(); // 删除后重新获取书籍数据
+  } catch (error) {
+    console.error('删除订单失败', error);
+    alert("删除订单失败！可能有别的项目于依赖该书");
+  }
+};
+
+// 删除书籍
+const handleGetOrderByIDClick = async (OrderID: number) => {
+  try {
+    // console.log(OrderID)
+    await getOrderByID(OrderID);
+    await fetchOrders(); // 删除后重新获取书籍数据
+  } catch (error) {
+    console.error('搜索订单失败', error);
+    alert("未查询到该订单！");
+  }
+};
+// 初始化加载书籍
+onBeforeMount(() => {
+  fetchOrders();
+})
 </script>
 
 <style scoped>
-.el-table .info-row {
-  --el-table-tr-bg-color: var(--el-color-info-light-9);
+.el-table .warning-row {
+  --el-table-tr-bg-color: var(--el-color-warning-light-9);
 }
 
-.el-table .success-row {
-  --el-table-tr-bg-color: var(--el-color-success-light-9);
-}
-
-.el-table .danger-row {
-  --el-table-tr-bg-color: var(--el-color-danger-light-9);
+.ellipsis-text {
+  white-space: nowrap;         /* 禁止换行 */
+  overflow: hidden;            /* 隐藏溢出的部分 */
+  text-overflow: ellipsis;     /* 超出部分显示省略号 */
+  display: inline-block;       /* 使 div 可以应用 text-overflow */
+  max-width: 100%;             /* 使文本自适应列的宽度 */
 }
 </style>

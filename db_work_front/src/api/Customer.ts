@@ -32,6 +32,12 @@ interface CustomerLoginDTO {
     "customerID": 1,
     "password": "4VBbRL4xSJbuv_I"
 }*/
+export function getAllCustomer() {
+    return request<CustomerData>({
+        url: `/api/customers/getAllCustomer`,
+        method: 'get',  // GET 请求
+    });
+}
 
 
 export function getCustomerById(id: number) {
@@ -69,6 +75,23 @@ export function logout(uid:number){
     )
 }
 
+export function getCustomerByID(uid:number){
+    return request<CustomerData>(
+        {
+            url:`/api/customers/${uid}`,
+            method: "get"
+        }
+    )
+}
+
+export function deleteCustomer(id:number){
+    return request<CustomerData>(
+        {
+            url:`/api/customers/delete/${id}`,
+            method: "delete"
+        }
+    )
+}
 
 // export function getPageList(pageQueryDTO:PageQueryDTO){
 //     return request<any>(
@@ -100,3 +123,4 @@ export function editCustomerInfo(id: number,customer:Customer){
         }
     )
 }
+

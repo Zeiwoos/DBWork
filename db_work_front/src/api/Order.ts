@@ -11,6 +11,14 @@ interface Order {
     customerId: number;
     shippingAddress: string;
 }
+interface updateOrderDTO {
+    orderId:number;
+    customerId: number;
+    orderDate:string;
+    totalAmount:number;
+    shippingAddress: string;
+    status: string;
+}
 interface orderDetails {
     quantity: number;
     bookId: number;
@@ -52,8 +60,16 @@ export function editStatus(id: number,status:string){
         }
     )
 }
-
-export function deleteBook(id:number){
+export function editOrder(id: number,order:updateOrderDTO){
+    return request<OrderData>(
+        {
+            url:`/api/orders/update/${id}`,
+            method: "put",
+            data: order
+        }
+    )
+}
+export function deleteOrder(id:number){
     return request<OrderData>(
         {
             url:`/api/orders/delete/${id}`,
@@ -71,6 +87,14 @@ export function getOrderByCustomerID(customerid:number){
     )
 }
 
+export function getOrderByID(id:number){
+    return request<OrderData>(
+        {
+            url:`/api/orders/${id}`,
+            method: "get",
+        }
+    )
+}
 // export function getPageList(pageQueryDTO:PageQueryDTO){
 //     return request<any>(
 //         {

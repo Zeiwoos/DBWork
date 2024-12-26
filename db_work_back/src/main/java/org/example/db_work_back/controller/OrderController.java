@@ -51,6 +51,10 @@ public class OrderController {
         order.setStatus(status);
         return Result.success(orderService.updateOrder(order));
     }
+    @PutMapping("/update/{id}")
+    public Result updateOrder(@PathVariable Integer id, @RequestBody Order order) {
+        return Result.success(orderService.updateOrder(order));
+    }
 
     @DeleteMapping("/delete/{id}")
     public Result deleteOrder(@PathVariable Integer id) {

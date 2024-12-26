@@ -122,7 +122,7 @@ public class OrderService {
         orderRequest.setOrderTotalprice();
         //大于等于3级的信用等级可以赊账
         if(customer.getCreditLevel()<3&&customer.getBalance().compareTo(orderRequest.getOrderTotalprice()) < 0){
-            orderDAO.deleteOrder(orderId);
+//            orderDAO.deleteOrder(orderId);
             return Result.error("您的余额不足");
         }
 
