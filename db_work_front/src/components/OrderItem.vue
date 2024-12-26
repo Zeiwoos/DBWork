@@ -49,7 +49,7 @@
       <el-row class="row">
         <el-col class="btn-col">
           <el-form-item>
-            <el-button type="primary" @click="handleModifyOrder">删除订单</el-button>
+            <el-button type="primary" @click="handleModifyOrder">取消订单</el-button>
           </el-form-item>
         </el-col>
       </el-row>
@@ -58,6 +58,8 @@
 </template>
 
 <script>
+import {DeleteOrder} from "@/api/Order";
+import router from "@/router/index.js";
 export default {
   props: {
     orderID: Number,
@@ -106,8 +108,25 @@ export default {
     internalOrderStatus(newValue) {
       this.$emit('update:orderStatus', newValue);
     }
+  },
+
+  methods: {
+    async handleModifyOrder() {
+      try {
+        // 调用 API 删除订单
+        DeleteOrder(this.internalOrderID);
+        this.$emit('orderDeleted', this.internalOrderID); // 通知父组件订单已删除
+        alert("订单已删除");
+        // 如果你不想使用 reload，应该更新父组件的状态，或者手动清空子组件状态
+        window.location.reload();
+      } catch (error) {
+        console.error("删除订单失败", error);
+        alert("删除订单失败");
+      }
+    },
   }
 };
+
 </script>
 
 <style scoped>

@@ -80,3 +80,10 @@ export function getOrderByCustomerID(customerid:number){
 //         }
 //     )
 // }
+export function DeleteOrder(orderid: number) {
+    return request<any>({
+        url: `api/orders/delete/${orderid}`,
+        method: "DELETE", // HTTP 方法应该是大写
+    });
+}
+
