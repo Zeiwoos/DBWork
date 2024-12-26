@@ -27,14 +27,14 @@
             <el-row v-for="detail in purchaseDetails" :key="detail.purchaseDetailID">
               <div class="detail-box">
                 <p>采购详情号：{{ detail.purchaseDetailID }}</p>
-                <p>书号：{{ detail.bookId }}</p>
+                <p>书号：{{ detail.book }}</p>
                 <p>数量：{{ detail.quantity }}</p>
               </div>
               <el-divider></el-divider>
             </el-row>
           </div>
           <template #reference>
-            <el-button link type="primary" @click="showPurchaseDetails(row.purchaseDetailID)">Detail</el-button>
+            <el-button link type="primary" @click="showPurchaseDetails(row.purchaseId)">Detail</el-button>
           </template>
         </el-popover>
       </template>
@@ -85,11 +85,11 @@
 import { ElButton, ElInput, ElTable, ElTableColumn } from "element-plus";
 import {onBeforeMount, onMounted, ref} from "vue";
 import {
-    getAllPurchaseOrder,
-    addPurchaseOrder,
-    getPurchaseOrder,
-    deletePurchaseOrder,
-    updatePuchaseOrder
+  getAllPurchaseOrder,
+  addPurchaseOrder,
+  getPurchaseOrder,
+  deletePurchaseOrder,
+  updatePuchaseOrder, getDetailsByPurchaseID
 } from '@/api/PurchaseOrder';
 
 // 当前搜索框和对话框的控制
@@ -192,12 +192,12 @@ const handleSaveEdit = async () => {
 };
 
 // 显示采购单单详情
-const showPurchaseDetails = async (purchaseDetailID) => {
+const showPurchaseDetails = async (purchaseID) => {
   try {
-    const response = await getDetailsByOrderID(purchaseDetailID);
+    const response = await getDetailsByPurchaseID(purchaseID);
     console.log(response)
     if (response.data.code === 1) {
-      orderDetails.value = response.data.data;
+      purchaseDetails.value = response.data.data;
     }
   } catch (error) {
     console.error("获取采购单详情失败", error);
