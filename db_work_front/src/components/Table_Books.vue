@@ -6,24 +6,50 @@
       style="margin-bottom: 20px; width: 300px;"
       @input="handleSearchBook"
   />
+  <el-input
+      v-model="searchBookTitle"
+      placeholder="请输入BookTitle进行查询"
+      clearable
+      style="margin-bottom: 20px; width: 300px;"
+      @input="handleSearchBookByName"
+  />
   <el-table
       :data="filteredBooksData"
       style="width: 100%"
       :row-class-name="tableRowClassName"
   >
-    <el-table-column prop="BookID" label="BookID" width="80" />
-    <el-table-column prop="Title" label="Title" width="80" />
-    <el-table-column prop="Author" label="Author" width="80" />
-    <el-table-column prop="Publisher" label="Publisher" width="100" />
-    <el-table-column prop="Keywords" label="Keywords" width="120" />
-    <el-table-column prop="Description" label="Description" width="120"/>
-    <el-table-column prop="Stock" label="Stock" width="60"/>
-    <el-table-column prop="StorageLocation" label="StorageLocation" width="140"/>
-    <el-table-column prop="SeriesID" label="SeriesID" width="80"/>
+    <el-table-column prop="bookID" label="BookID" width="75" />
+    <!-- Title 列，文本超长时显示省略号 -->
+    <el-table-column label="Title" width="140">
+      <template #default="{ row }">
+        <div class="ellipsis-text">{{ row.title }}</div>
+      </template>
+    </el-table-column>
+    <!-- Author 列，文本超长时显示省略号 -->
+    <el-table-column label="Author" width="80">
+      <template #default="{ row }">
+        <div class="ellipsis-text">{{ row.author }}</div>
+      </template>
+    </el-table-column>
+    <el-table-column label="Publisher" width="100">
+      <template #default="{ row }">
+        <div class="ellipsis-text">{{ row.publisher }}</div>
+      </template>
+    </el-table-column>
+<!--    <el-table-column prop="keywords" label="Keywords" width="120" />-->
+<!--    <el-table-column prop="description" label="Description" width="120"/>-->
+    <el-table-column prop="stock" label="Stock" width="60"/>
+    <el-table-column label="StorageLocation" width="140">
+      <template #default="{ row }">
+        <div class="ellipsis-text">{{ row.storageLocation }}</div>
+      </template>
+    </el-table-column>
+    <el-table-column prop="seriesID" label="SeriesID" width="80"/>
+    <el-table-column prop="supplierID" label="SupplierID" width="100"/>
     <el-table-column fixed="right" label="Operations" min-width="120">
       <template #default="{ row }">
         <el-button link type="primary" size="small" plain @click="handleEditClick(row)">Edit</el-button>
-        <el-button link type="danger" size="small" plain @click="handleDeleteClick(row.BookID)">Delete</el-button>
+        <el-button link type="danger" size="small" plain @click="handleDeleteClick(row.bookID)">Delete</el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -39,7 +65,7 @@
   >
     <el-form>
       <el-form-item label="BookID">
-        <el-input v-model="currentBook.BookID" disabled></el-input>
+        <el-input v-model="currentBook.bookID" disabled></el-input>
       </el-form-item>
       <el-form-item label="Title">
         <el-input v-model="currentBook.title"></el-input>
@@ -66,7 +92,7 @@
         <el-input v-model="currentBook.seriesID"></el-input>
       </el-form-item>
       <el-form-item label="SupplierID">
-        <el-input v-model="newBook.supplierID" placeholder="Enter SeriesID"></el-input>
+        <el-input v-model="currentBook.supplierID"></el-input>
       </el-form-item>
     </el-form>
     <template #footer>
@@ -87,7 +113,7 @@
   >
     <el-form :model="newBook">
       <el-form-item label="BookID">
-        <el-input v-model="newBook.BookID" placeholder="Enter BookID"></el-input>
+        <el-input v-model="newBook.bookID" placeholder="Enter BookID" disabled></el-input>
       </el-form-item>
       <el-form-item label="Title">
         <el-input v-model="newBook.title" placeholder="Enter Title"></el-input>
@@ -133,11 +159,12 @@ import { getAllBook, addBook, getBookByID, deleteBook, updateBook } from '@/api/
 
 // 当前搜索框和对话框的控制
 const searchBookID = ref('');
+const searchBookTitle = ref('');
 const editDialogVisible = ref(false);
 const insertDialogVisible = ref(false);
 
 export interface Book {
-  BookID:number;
+  bookID:number;
   title: string;
   author: string;
   publisher: string;
@@ -151,7 +178,7 @@ export interface Book {
 }
 // 当前正在编辑的书籍
 const currentBook = ref<Book>({
-  BookID: 0,
+  bookID: 0,
   title: '',
   author: '',
   publisher: '',
@@ -166,7 +193,7 @@ const currentBook = ref<Book>({
 
 // 新书籍的数据对象
 const newBook = ref<Book>({
-  BookID: 0,
+  bookID: 0,
   title: '',
   author: '',
   publisher: '',
@@ -185,11 +212,11 @@ const filteredBooksData = ref([]);
 const fetchBooks = async () => {
   try {
     const response = await getAllBook();
-    console.info(response.data)
+    // console.info(response.data)
     // 假设 response.data.data 是一个数组类型，但不一定是 Book[] 类型
     if (Array.isArray(response.data.data)) {
       filteredBooksData.value = response.data.data;  // 使用类型断言将其视为 Book[] 类型
-      console.info('Filtered books data:', filteredBooksData.value);
+      // console.info('Filtered books data:', filteredBooksData.value);
 
     } else {
       console.error('返回的数据格式错误，应该是一个数组');
@@ -200,13 +227,30 @@ const fetchBooks = async () => {
   }
 };
 
-// 搜索功能
+// ID搜索功能
 const handleSearchBook = () => {
-  fetchBooks(); // 重新获取所有书籍数据
+  // console.info(searchBookID.value)
   if (searchBookID.value) {
+    // 仅根据输入的 bookID 过滤当前数据
     filteredBooksData.value = filteredBooksData.value.filter(book =>
-        book.BookID.toString().includes(searchBookID.value)
+        book.bookID.toString().includes(searchBookID.value)
     );
+  } else {
+    // 如果没有输入搜索ID，则重新加载所有书籍数据
+    fetchBooks();
+  }
+};
+// 名字搜索功能
+const handleSearchBookByName = () => {
+  // console.info(searchBookID.value)
+  if (searchBookTitle.value) {
+    // 仅根据输入的 bookID 过滤当前数据
+    filteredBooksData.value = filteredBooksData.value.filter(book =>
+        book.title.toString().includes(searchBookTitle.value)
+    );
+  } else {
+    // 如果没有输入搜索ID，则重新加载所有书籍数据
+    fetchBooks();
   }
 };
 
@@ -227,7 +271,7 @@ const handleEditClick = (row: Book) => {
 // 保存编辑后的书籍
 const handleSaveEdit = async () => {
   try {
-    await updateBook(currentBook.value.BookID, currentBook.value);
+    await updateBook(currentBook.value.bookID, currentBook.value);
     await fetchBooks(); // 更新书籍数据
     editDialogVisible.value = false; // 关闭编辑对话框
   } catch (error) {
@@ -242,7 +286,7 @@ const handleInsertBook = async () => {
     await fetchBooks(); // 获取最新的书籍数据
     insertDialogVisible.value = false;
     newBook.value = {
-      BookID: 0,
+      bookID: 0,
       title: '',
       author: '',
       publisher: '',
@@ -262,13 +306,26 @@ const handleInsertBook = async () => {
 // 删除书籍
 const handleDeleteClick = async (bookID: number) => {
   try {
+    // console.log(bookID)
     await deleteBook(bookID);
     await fetchBooks(); // 删除后重新获取书籍数据
   } catch (error) {
     console.error('删除书籍失败', error);
+    alert("删除书籍失败！可能有别的项目于依赖该书");
   }
 };
 
+// 删除书籍
+const handleGetBookByIDClick = async (bookID: number) => {
+  try {
+    // console.log(bookID)
+    await getBookByID(bookID);
+    await fetchBooks(); // 删除后重新获取书籍数据
+  } catch (error) {
+    console.error('搜索书籍失败', error);
+    alert("未查询到这本书！");
+  }
+};
 // 初始化加载书籍
 onBeforeMount(() => {
   fetchBooks();
@@ -278,5 +335,13 @@ onBeforeMount(() => {
 <style scoped>
 .el-table .warning-row {
   --el-table-tr-bg-color: var(--el-color-warning-light-9);
+}
+
+.ellipsis-text {
+  white-space: nowrap;         /* 禁止换行 */
+  overflow: hidden;            /* 隐藏溢出的部分 */
+  text-overflow: ellipsis;     /* 超出部分显示省略号 */
+  display: inline-block;       /* 使 div 可以应用 text-overflow */
+  max-width: 100%;             /* 使文本自适应列的宽度 */
 }
 </style>

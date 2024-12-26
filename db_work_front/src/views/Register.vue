@@ -108,12 +108,13 @@ export default defineComponent({
           address: input_address.value,
           password: input_password.value,
         });
-        console.log(response)
+        // console.log(response)
         // 注册成功后的处理逻辑
         if (response.data.code === 1) {
           alert("注册成功！");
           localStorage.setItem('isLoggedIn', 'true');
           localStorage.setItem('customerId', response.data.data.customerID);
+          // console.log(response.response.data.data.customerId)
           window.location.href = 'http://localhost:5173/';
         } else {
           alert("注册失败！" + response.message);

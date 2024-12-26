@@ -29,7 +29,14 @@ export function getAllBook() {
         method: 'get',
     });
 }
-
+//SearchBook
+export function searchBook(keywords : string) {
+    return request<BookData>({
+        url: '/api/books/SearchBook',
+        method: 'get',
+        data: keywords
+    });
+}
 // 添加书籍
 export function addBook(book: Book) {
     return request<BookData>({

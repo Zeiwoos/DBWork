@@ -26,7 +26,12 @@ export function getAllOrders(){
         method: "get"
     })
 }
-
+export function getDetailsByOrderID(orderid: number){
+    return request<OrderData>({
+        url: `/api/orders/details/${orderid}`,
+        method: "get"
+    })
+}
 export function createWithDetails(orderRequestDTO:OrderRequestDTO){
     return request<OrderData>(
         {

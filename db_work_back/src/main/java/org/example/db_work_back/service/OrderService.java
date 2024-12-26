@@ -63,7 +63,9 @@ public class OrderService {
         orderDAO.updateOrder(order);
         return Result.success(order);
     }
-
+    public List<OrderDetail> getOrderDetailsByOrderId(Integer id) {
+        return orderDetailDAO.selectOrderDetailsByOrderId(id);
+    }
     // 删除订单
     public Result deleteOrder(Integer id) {
         List<OrderDetail> orderDetails = orderDetailDAO.selectOrderDetailsByOrderId(id);
@@ -120,6 +122,7 @@ public class OrderService {
         orderRequest.setOrderTotalprice();
         //大于等于3级的信用等级可以赊账
         if(customer.getCreditLevel()<3&&customer.getBalance().compareTo(orderRequest.getOrderTotalprice()) < 0){
+            orderDAO.deleteOrder(orderId);
             return Result.error("您的余额不足");
         }
 
