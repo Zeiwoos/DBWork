@@ -6,17 +6,17 @@
       <div class="content">
         <img :src="book1" alt="Book Image" class="book-img" />
         <div class="book-info">
-          <h2 class="book-title">{{ book.title }}</h2>
+          <h2 class="book-title">《{{ book.title }}》</h2>
           <p class="book-price">￥{{ book.price }}</p>
           <div class="quantity-selector">
             <el-input-number v-model="quantity" :min="1" :max="10" @change="handleChange" />
           </div>
           <div class="other-info">
-            <p><strong>作者：</strong>{{ book.author }}</p>
-            <p><strong>关键词：</strong>{{ book.keywords }}</p>
-            <p><strong>描述：</strong>{{ book.description }}</p>
-            <p><strong>发货地址：</strong>{{ book.storageLocation }}</p>
-            <p><strong>出版社：</strong>{{ book.publisher }}</p>
+            <p><strong style="font-weight: bold">作者：</strong>{{ book.author }}</p>
+            <p><strong style="font-weight: bold">关键词：</strong>{{ book.keywords }}</p>
+            <p><div><strong style="font-weight: bold">描述：</strong>{{ book.description }}</div></p>
+            <p><strong style="font-weight: bold">发货地址：</strong>{{ book.storageLocation }}</p>
+            <p><strong style="font-weight: bold">出版社：</strong>{{ book.publisher }}</p>
           </div>
           <div class="details-footer">
             <el-button @click="addToCart(book.bookID)" type="primary" style="width: 200px">加入购物车</el-button>
@@ -141,7 +141,9 @@ const addToCart = (id: number) => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  height: 100%;
+  width:400px;
+  align-items: flex-start;
 }
 
 .book-title {
@@ -154,6 +156,7 @@ const addToCart = (id: number) => {
   font-weight: bold;
   color: red;
   margin-top: 5px;
+  display: flex;
 }
 
 .quantity-selector {
@@ -180,7 +183,22 @@ const addToCart = (id: number) => {
 
 .other-info {
   margin-top: 20px;
+  width: 90%;
+  gap:10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
+
+
+.other-info p {
+  font-size: large;
+  display: flex;
+  white-space: normal; /* 允许换行 */
+  word-wrap: break-word; /* 自动换行 */
+  word-break: break-all; /* 长单词强制换行 */
+}
+
 
 .details-footer {
   margin-top: 20px;

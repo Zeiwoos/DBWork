@@ -35,7 +35,7 @@
     </div>
     <!-- 底部信息 -->
     <div>
-      <el-footer class="home-footer">
+      <el-footer class="set-footer">
         <el-col :span="12" class="set-footer">
           <p>&copy; 2024 网上书店 - 版权声明</p>
           <p>联系我们：info@bookstore.com</p>
@@ -199,21 +199,11 @@ export default defineComponent({
   font-size: 12px;
 }
 
-/* Footer styles */
-.home-footer {
-  background-color: aliceblue;
-  width: 100vw;
-  padding: 10px;
+.set-footer {
   text-align: center;
   display: flex;
-  justify-content: center;
-  align-items: center;
-
-}
-
-.set-footer {
-  display: inline-block;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
 }
 </style>
