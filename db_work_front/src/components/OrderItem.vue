@@ -5,15 +5,15 @@
       <el-row class="row">
         <el-col class="item">
           <span>订单号</span>
-          <el-input v-model="orderID" style="width: 240px" disabled></el-input>
+          <el-input v-model="internalOrderID" style="width: 240px" disabled></el-input>
         </el-col>
         <el-col class="item">
           <span>用户ID</span>
-          <el-input v-model="userID" style="width: 240px" disabled></el-input>
+          <el-input v-model="internalUserID" style="width: 240px" disabled></el-input>
         </el-col>
         <el-col class="item">
           <span>订货时间</span>
-          <el-input v-model="orderTime" style="width: 240px" disabled></el-input>
+          <el-input v-model="internalOrderTime" style="width: 240px" disabled></el-input>
         </el-col>
       </el-row>
 
@@ -21,15 +21,15 @@
       <el-row class="row">
         <el-col class="item">
           <span>书号</span>
-          <el-input v-model="bookID" style="width: 240px" disabled></el-input>
+          <el-input v-model="internalBookID" style="width: 240px" disabled></el-input>
         </el-col>
         <el-col class="item">
           <span>订货数量</span>
-          <el-input v-model="orderAmount" style="width: 240px" disabled></el-input>
+          <el-input v-model="internalOrderAmount" style="width: 240px" disabled></el-input>
         </el-col>
         <el-col class="item">
-          <span>订单价格</span>
-          <el-input v-model="orderPrice" style="width: 240px" disabled></el-input>
+          <span>订单总额</span>
+          <el-input v-model="internalOrderPrice" style="width: 240px" disabled></el-input>
         </el-col>
       </el-row>
 
@@ -37,11 +37,11 @@
       <el-row class="row">
         <el-col class="item">
           <span>配送地址</span>
-          <el-input v-model="orderAddress" style="width: 240px" disabled></el-input>
+          <el-input v-model=" internalOrderAddress" style="width: 240px" disabled></el-input>
         </el-col>
         <el-col class="item">
           <span>订单状态</span>
-          <el-input v-model="orderStatus" style="width: 240px" disabled></el-input>
+          <el-input v-model=" internalOrderStatus" style="width: 240px" disabled></el-input>
         </el-col>
       </el-row>
 
@@ -57,21 +57,56 @@
   </div>
 </template>
 
-<script lang="ts" setup>
-import { ref } from 'vue';
-
-const orderID = ref('');
-const orderTime = ref('');
-const userID = ref('');
-const bookID = ref('');
-const orderAmount = ref('');
-const orderPrice = ref('');
-const orderAddress = ref('');
-const orderStatus = ref('');
-
-const handleModifyOrder = () => {
-  console.log("订单修改逻辑");
-  // 执行订单修改逻辑
+<script>
+export default {
+  props: {
+    orderID: Number,
+    orderTime: String,
+    userID: String,
+    bookID: Number,
+    orderAmount: Number,
+    orderPrice: Number,
+    orderAddress: String,
+    orderStatus: String
+  },
+  data() {
+    return {
+      internalOrderID: this.orderID,
+      internalOrderTime: this.orderTime,
+      internalUserID: this.userID,
+      internalBookID: this.bookID,
+      internalOrderAmount: this.orderAmount,
+      internalOrderPrice: this.orderPrice,
+      internalOrderAddress: this.orderAddress,
+      internalOrderStatus: this.orderStatus
+    };
+  },
+  watch: {
+    internalOrderID(newValue) {
+      this.$emit('update:orderID', newValue);
+    },
+    internalOrderTime(newValue) {
+      this.$emit('update:orderTime', newValue);
+    },
+    internalUserID(newValue) {
+      this.$emit('update:userID', newValue);
+    },
+    internalBookID(newValue) {
+      this.$emit('update:bookID', newValue);
+    },
+    internalOrderAmount(newValue) {
+      this.$emit('update:orderAmount', newValue);
+    },
+    internalOrderPrice(newValue) {
+      this.$emit('update:orderPrice', newValue);
+    },
+    internalOrderAddress(newValue) {
+      this.$emit('update:orderAddress', newValue);
+    },
+    internalOrderStatus(newValue) {
+      this.$emit('update:orderStatus', newValue);
+    }
+  }
 };
 </script>
 

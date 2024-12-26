@@ -2,9 +2,7 @@
   <Navbar />
   <div class="main-body">
     <div class="sidebar">
-      <el-menu :default-active="menuActiveIndex"
-               @select="handleMenuSelect"
-               mode="vertical" class="sidebar-box">
+      <el-menu :default-active="menuActiveIndex" @select="handleMenuSelect" mode="vertical" class="sidebar-box">
         <div>
           <img class="self-img" :src="url" alt=""/>
         </div>
@@ -33,7 +31,7 @@
         </div>
         <div class="input-box">
           <span class="character">密码</span>
-          <el-input v-model="show_password" style="width: 240px" type="password" />
+          <el-input v-model="show_password" style="width: 240px" type="password" show-password />
           <el-button @click="handlePasswordChange">修改</el-button>
         </div>
         <div class="input-box">
@@ -44,37 +42,42 @@
         <el-button type="primary" @click="handleSave">保存</el-button>
       </div>
       <div v-if="menuActiveIndex === '2'" class="orders-block">
-        <!-- 使用 v-for 循环渲染多个订单 -->
         <div v-for="(order, index) in orders" :key="index" class="order">
           <OrderItem
-              v-model:orderID="order.orderID"
-              v-model:orderTime="order.orderTime"
-              v-model:userID="order.userID"
+              v-model:orderID="order.orderId"
+              v-model:orderTime="order.orderDate"
+              v-model:userID=CustomerId
               v-model:bookID="order.bookID"
-              v-model:orderAmount="order.orderAmount"
-              v-model:orderPrice="order.orderPrice"
-              v-model:orderAddress="order.orderAddress"
-              v-model:orderStatus="order.orderStatus" />
+              v-model:orderAmount="order.totalAmount"
+              v-model:orderPrice="order.totalAmount"
+              v-model:orderAddress="order.skippingAddress"
+              v-model:orderStatus="order.status" />
         </div>
       </div>
     </div>
   </div>
 </template>
 
+
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
 import Navbar from "@/components/Navbar.vue";
-import { ElMenu, ElMenuItem } from "element-plus";
-import selfImg from "@/assets/image/self-img.jpg";
-import OrderItem from "@/components/OrderItem.vue";
+import { getCustomerById } from "@/api/Customer";
+import { getOrderByCustomerID } from "@/api/Order";
+
 
 // 引入图片路径
-const url = selfImg;
+import selfImg from "@/assets/image/self-img.jpg";
+const url = selfImg
 
-// 使用响应式变量来跟踪当前选中的菜单项
-const menuActiveIndex = ref('1');
+// 引入组件
+import { ElMenu, ElMenuItem } from "element-plus";
+import OrderItem from "@/components/OrderItem.vue";
 
-// 定义显示的项
+// 获取用户ID
+const CustomerId = localStorage.getItem('customerId');
+
+// 存储用户信息
 const show_ID = ref('');
 const show_name = ref('');
 const show_password = ref('');
@@ -84,6 +87,9 @@ const show_email = ref('');
 const show_phone = ref('');
 const show_balance = ref('');
 
+// 存储订单信息
+const orders = ref([]);
+
 // 用于绑定到表单的显示项
 const showItems = [
   { label: "用户名称", v_model: show_name },
@@ -92,40 +98,57 @@ const showItems = [
   { label: "电话号码", v_model: show_phone },
 ];
 
-// 初始化数据
-const init = () => {
-  show_ID.value = '123456';
-  show_name.value = '张三';
-  show_Level.value = '1';
-  show_address.value = '北京市海淀区';
-  show_email.value = '123456789@qq.com'
-  show_phone.value = '12345678901';
-  show_password.value = '123456';
-  show_balance.value = '1000';
-}
+// 响应式菜单索引
+const menuActiveIndex = ref('1');
 
-const orders = ref([
-  {
-    orderID: '1001',
-    orderTime: '2024-12-23',
-    userID: 'user123',
-    bookID: 'book001',
-    orderAmount: '2',
-    orderPrice: '50',
-    orderAddress: '北京市海淀区',
-    orderStatus: '已发货'
-  },
-  {
-    orderID: '1002',
-    orderTime: '2024-12-22',
-    userID: 'user456',
-    bookID: 'book002',
-    orderAmount: '1',
-    orderPrice: '30',
-    orderAddress: '上海市浦东新区',
-    orderStatus: '待发货'
+// 获取用户信息和订单信息
+const fetchUserData = async () => {
+  if (CustomerId) {
+    try {
+      const responseCustomer = await getCustomerById(CustomerId);
+      console.log(responseCustomer)
+      if (responseCustomer.data.code===1) {
+        const customer = responseCustomer.data.data;
+        show_ID.value = customer.customerID;
+        show_name.value = customer.customerName;
+        show_Level.value = customer.creditLevel.toString();
+        show_address.value = customer.address;
+        show_email.value = customer.email;
+        show_phone.value = customer.phone;
+        show_balance.value = customer.balance.toString();
+        show_password.value = customer.password
+      }
+    } catch (error) {
+      console.error("获取用户信息失败:", error);
+    }
   }
-]);
+};
+
+// 获取订单信息
+const fetchOrders = async () => {
+  if (CustomerId) {
+    try {
+      const responseOrders = await getOrderByCustomerID(CustomerId);
+      console.log(responseOrders)
+      if (responseOrders.data.code===1) {
+        orders.value = responseOrders.data.data;
+        console.log(orders)
+      }
+    } catch (error) {
+      console.error("获取订单信息失败:", error);
+    }
+  }
+};
+
+// 初始化页面数据
+const init = async () => {
+  await fetchUserData();
+  await fetchOrders();
+};
+
+onMounted(() => {
+  init();
+});
 
 // 处理菜单选择事件，更新当前选中的菜单项
 const handleMenuSelect = (index: string) => {
@@ -152,15 +175,41 @@ const handleBalanceRecharge = () => {
 };
 
 // 保存按钮的点击事件
-const handleSave = () => {
-  console.log('保存数据');
-  // 执行保存操作
+const handleSave = async () => {
+  try {
+    const updatedCustomer = {
+      id: show_ID.value,
+      name: show_name.value,
+      creditLevel: show_Level.value,
+      address: show_address.value,
+      email: show_email.value,
+      phone: show_phone.value,
+      balance: show_balance.value,
+    };
+
+    // 调用API保存修改后的用户信息
+    await updateCustomer(updatedCustomer);
+
+    console.log('保存成功');
+  } catch (error) {
+    console.error('保存失败:', error);
+  }
 };
 
-onMounted(() => {
-  init();
-});
+// 更新用户信息 API 请求
+const updateCustomer = async (customerData: any) => {
+  // 这里应该根据后端的API来发送PUT或PATCH请求
+  try {
+    const response = await updateCustomerById(customerData);
+    return response.data;
+  } catch (error) {
+    console.error("更新用户信息失败:", error);
+    throw error;
+  }
+};
+
 </script>
+
 
 <style scoped>
 .main-body {
@@ -248,7 +297,6 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   background-color: #f0f0f0;
-  padding-top: 20%;
 }
 .order{
   width:90%;
