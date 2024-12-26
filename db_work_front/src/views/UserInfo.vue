@@ -50,7 +50,7 @@
               v-model:bookID="order.bookID"
               v-model:orderAmount="order.totalAmount"
               v-model:orderPrice="order.totalAmount"
-              v-model:orderAddress="order.skippingAddress"
+              v-model:orderAddress="order.shippingAddress"
               v-model:orderStatus="order.status" />
         </div>
       </div>
@@ -128,6 +128,7 @@ const fetchOrders = async () => {
       const responseOrders = await getOrderByCustomerID(CustomerId);
       if (responseOrders.data.code === 1) {
         orders.value = responseOrders.data.data;
+        console.log(orders)
       }
     } catch (error) {
       console.error("获取订单信息失败:", error);
