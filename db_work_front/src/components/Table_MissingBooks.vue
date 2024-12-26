@@ -12,10 +12,10 @@
       style="width: 100%"
       :row-class-name="tableRowClassName"
   >
-    <el-table-column prop="missingId" label="MissingID" width="85" />
-    <el-table-column prop="bookId" label="BookID" width="70"/>
-    <el-table-column prop="customerId" label="CustomerID" width="100"/>
-    <el-table-column prop="quantity" label="Quantity" width="80"/>
+    <el-table-column prop="missingId" label="MissingID" width="90" />
+    <el-table-column prop="bookId" label="BookID" width="80"/>
+<!--    <el-table-column prop="customerId" label="CustomerID" width="100"/>-->
+    <el-table-column prop="quantity" label="Quantity" width="90"/>
     <el-table-column prop="registerDate" label="RegisterDate" width="140"/>
     <el-table-column prop="status" label="Status" width="100"/>
 
