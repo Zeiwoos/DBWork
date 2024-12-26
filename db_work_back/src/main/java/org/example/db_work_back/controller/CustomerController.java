@@ -54,14 +54,19 @@ public class CustomerController {
         return Result.success(customerService.getCustomerById(id));
     }
 
-    // 更新客户信息
+    // 更新客户余额
     @PutMapping("/updateBalance/{id}")
-    public Result updateCustomer(@PathVariable Integer id, @RequestParam BigDecimal balance) {
+    public Result updateCustomerBalance(@PathVariable Integer id, @RequestParam BigDecimal balance) {
         Customer customer = customerService.getCustomerById(id);
         customer.setBalance(balance);
         return customerService.updateCustomer(id, customer);
     }
-
+    // 更新客户信息
+    @PutMapping("/update/{id}")
+    public Result updateCustomer(@PathVariable Integer id,@RequestBody Customer customer) {
+//        Integer id =  customer.getCustomerID();
+        return customerService.updateCustomer(id, customer);
+    }
     // 删除客户
     @DeleteMapping("/delete/{id}")
     public Result deleteCustomer(@PathVariable Integer id) {

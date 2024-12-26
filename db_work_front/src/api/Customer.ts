@@ -98,3 +98,13 @@ export function editBalance(id: number,balance:number){
         }
     )
 }
+
+export function editCustomerInfo(id: number,customer:Customer){
+    return request<CustomerData>(
+        {
+            url:`/api/customers/update/${id}`,
+            method: "put",
+            data:customer
+        }
+    )
+}

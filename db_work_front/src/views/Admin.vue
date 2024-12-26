@@ -133,5 +133,8 @@ const handleMenuSelect = (index: string) => {
   justify-content: center;
   flex-grow: 1;
 }
-
+.books-manage{
+  height: 100%;
+  margin-top: 100px;
+}
 </style>

@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.example.db_work_back.dto.OrderRequestDTO;
 import org.example.db_work_back.entity.Order;
+import org.example.db_work_back.entity.OrderDetail;
 import org.example.db_work_back.service.OrderService;
 import org.example.db_work_back.result.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,11 @@ public class OrderController {
     @GetMapping("/{id}")
     public Result<Order> getOrderById(@PathVariable Integer id) {
         return Result.success(orderService.getOrderById(id));
+    }
+
+    @GetMapping("/details/{orderid}")
+    public Result<List<OrderDetail>> getOrderDetailsByOrderId(@PathVariable Integer orderid) {
+        return Result.success(orderService.getOrderDetailsByOrderId(orderid));
     }
 
     @GetMapping("/customer/{customerid}")
