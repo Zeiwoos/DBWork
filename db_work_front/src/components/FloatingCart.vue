@@ -74,7 +74,7 @@
 <script>
 import { CaretTop, CoffeeCup, Service, ShoppingCart } from "@element-plus/icons-vue";
 import QrImage from '@/assets/image/qrcode.png';
-import {createWithDetails} from "@/api/Order";
+import {createWithDetails, deleteInvalidOrder} from "@/api/Order";
 import {getCustomerById} from "@/api/Customer";
 import router from "@/router/index.js";
 
@@ -210,7 +210,8 @@ export default {
         try {
           // 等待获取客户信息
           const response = await getCustomerById(customerId);
-          console.log(response);
+          // console.log(response);
+          // console.log("response.data :"+ response.data);
           // 确保返回成功，并且数据存在
           if (response.data.code === 1) {
             const customer = response.data.data;
@@ -238,13 +239,20 @@ export default {
 
             // 调用 API 提交订单
             const orderResponse = await createWithDetails(orderRequestDTO);
-            alert("订单提交成功")
-            this.cancelPurchase();
+            // console.log(orderResponse)
+            if(orderResponse.data.data.code===0){
+              alert("订单提交失败，余额不足喵")
+              const cancelResponse = await deleteInvalidOrder();
+            }else{
+              alert("订单提交成功")
+              this.cancelPurchase();
+            }
             await router.push('/');  // 跳转到主页
           } else {
             console.error('获取客户信息失败', response.msg);
           }
         } catch (error) {
+          // alert("订单提交失败，余额不足喵")
           console.error('请求失败', error);  // 请求失败的错误处理
         }
       } else {

@@ -60,6 +60,19 @@ public class OrderDAO {
             return order;
         });
     }
+    public List<Order> selectInvalidOrders() {
+        String sql = "SELECT * FROM orders WHERE totalAmount = 0";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Order order = new Order();
+            order.setOrderId(rs.getInt("OrderID"));
+            order.setCustomerId(rs.getInt("CustomerID"));
+            order.setOrderDate(rs.getDate("OrderDate"));
+            order.setTotalAmount(rs.getBigDecimal("TotalAmount"));
+            order.setShippingAddress(rs.getString("ShippingAddress"));
+            order.setStatus(rs.getString("Status"));
+            return order;
+        });
+    }
 
     // 获取所有订单
     public List<Order> selectAllOrders() {

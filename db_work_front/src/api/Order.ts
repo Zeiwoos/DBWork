@@ -77,6 +77,14 @@ export function deleteOrder(id:number){
         }
     )
 }
+export function deleteInvalidOrder(){
+    return request<OrderData>(
+        {
+            url:`/api/orders/deleteInvalid`,
+            method: "delete"
+        }
+    )
+}
 
 export function getOrderByCustomerID(customerid:number){
     return request<OrderData>(
