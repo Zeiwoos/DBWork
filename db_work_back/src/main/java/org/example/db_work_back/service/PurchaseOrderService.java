@@ -1,7 +1,10 @@
 package org.example.db_work_back.service;
 
+import org.example.db_work_back.dao.PurchaseDetailDAO;
 import org.example.db_work_back.dao.PurchaseOrderDAO;
 import org.example.db_work_back.entity.PurchaseOrder;
+import org.example.db_work_back.entity.PurchaseDetail;
+import org.example.db_work_back.dao.PurchaseOrderDAO;
 import org.example.db_work_back.result.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,7 +16,8 @@ public class PurchaseOrderService {
 
     @Autowired
     private PurchaseOrderDAO purchaseOrderDAO;
-
+    @Autowired
+    private PurchaseDetailDAO purchaseDetailDAO;
     // 获取所有采购单
     public List<PurchaseOrder> getAllPurchaseOrders() {
         return purchaseOrderDAO.selectAllPurchaseOrders();
@@ -22,6 +26,9 @@ public class PurchaseOrderService {
     // 根据ID获取采购单
     public PurchaseOrder getPurchaseOrderById(Integer id) {
         return purchaseOrderDAO.selectPurchaseOrderById(id);
+    }
+    public List<PurchaseDetail> getOrderDetailsByOrderId(Integer id) {
+        return purchaseDetailDAO.selectDetailsByOrderId(id);
     }
 
     // 创建新的采购单
