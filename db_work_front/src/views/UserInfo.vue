@@ -16,27 +16,27 @@
       <div v-if="menuActiveIndex === '1'" class="info-box">
         <div class="input-box">
           <span class="character">用户ID</span>
-          <el-input v-model="show_ID" style="width: 240px" disabled />
-          <el-button @click="">修改</el-button>
+          <el-input v-model="userInfo.customerId" style="width: 240px" disabled />
+          <el-button @click="handleUnchangable">修改</el-button>
         </div>
         <div class="input-box">
           <span class="character">信用等级</span>
-          <el-input v-model="show_Level" style="width: 240px" disabled />
-          <el-button @click="">修改</el-button>
+          <el-input v-model="userInfo.creditLevel" style="width: 240px" disabled />
+          <el-button @click="handleUnchangable">修改</el-button>
         </div>
         <div v-for="(item, index) in showItems" :key="index" class="input-box">
           <span class="character">{{ item.label }}</span>
-          <el-input v-model="item.v_model.value" style="width: 240px" />
+          <el-input v-model="item.v_model" style="width: 240px" />
           <el-button @click="handleButtonClick(index)">修改</el-button>
         </div>
         <div class="input-box">
           <span class="character">密码</span>
-          <el-input v-model="show_password" style="width: 240px" type="password" show-password />
-          <el-button @click="handlePasswordChange">修改</el-button>
+          <el-input v-model="userInfo.password" style="width: 240px" type="password" show-password />
+          <el-button @click="handleButtonClick">修改</el-button>
         </div>
         <div class="input-box">
           <span class="character">余额</span>
-          <el-input v-model="show_balance" style="width: 240px" />
+          <el-input v-model="userInfo.balance" style="width: 240px" />
           <el-button @click="handleBalanceRecharge">充值</el-button>
         </div>
         <el-button type="primary" @click="handleSave">保存</el-button>
@@ -46,7 +46,7 @@
           <OrderItem
               v-model:orderID="order.orderId"
               v-model:orderTime="order.orderDate"
-              v-model:userID=CustomerId
+              v-model:userID="CustomerId"
               v-model:bookID="order.bookID"
               v-model:orderAmount="order.totalAmount"
               v-model:orderPrice="order.totalAmount"
@@ -58,65 +58,62 @@
   </div>
 </template>
 
-
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
 import Navbar from "@/components/Navbar.vue";
-import { getCustomerById } from "@/api/Customer";
+import { editCustomerInfo, getCustomerById } from "@/api/Customer";
 import { getOrderByCustomerID } from "@/api/Order";
-
-
-// 引入图片路径
 import selfImg from "@/assets/image/self-img.jpg";
-const url = selfImg
-
-// 引入组件
 import { ElMenu, ElMenuItem } from "element-plus";
 import OrderItem from "@/components/OrderItem.vue";
 
-// 获取用户ID
+const url = selfImg;
 const CustomerId = localStorage.getItem('customerId');
 
-// 存储用户信息
-const show_ID = ref('');
-const show_name = ref('');
-const show_password = ref('');
-const show_Level = ref('');
-const show_address = ref('');
-const show_email = ref('');
-const show_phone = ref('');
-const show_balance = ref('');
+const userInfo = ref({
+  customerId: '',
+  customerName: '',
+  creditLevel: '',
+  address: '',
+  email: '',
+  phone: '',
+  balance: '',
+  password: '',
+});
 
-// 存储订单信息
 const orders = ref([]);
 
 // 用于绑定到表单的显示项
-const showItems = [
-  { label: "用户名称", v_model: show_name },
-  { label: "地址", v_model: show_address },
-  { label: "邮箱", v_model: show_email },
-  { label: "电话号码", v_model: show_phone },
-];
+const showItems = ref([
+  { label: "用户名称", v_model: '' },
+  { label: "地址", v_model: '' },
+  { label: "邮箱", v_model: '' },
+  { label: "电话号码", v_model: '' },
+]);
 
-// 响应式菜单索引
 const menuActiveIndex = ref('1');
 
-// 获取用户信息和订单信息
+// 获取用户信息
 const fetchUserData = async () => {
   if (CustomerId) {
     try {
       const responseCustomer = await getCustomerById(CustomerId);
-      console.log(responseCustomer)
-      if (responseCustomer.data.code===1) {
+      if (responseCustomer.data.code === 1) {
         const customer = responseCustomer.data.data;
-        show_ID.value = customer.customerID;
-        show_name.value = customer.customerName;
-        show_Level.value = customer.creditLevel.toString();
-        show_address.value = customer.address;
-        show_email.value = customer.email;
-        show_phone.value = customer.phone;
-        show_balance.value = customer.balance.toString();
-        show_password.value = customer.password
+        userInfo.value.customerId = customer.customerID;
+        userInfo.value.customerName = customer.customerName;
+        userInfo.value.creditLevel = customer.creditLevel.toString();
+        userInfo.value.address = customer.address;
+        userInfo.value.email = customer.email;
+        userInfo.value.phone = customer.phone;
+        userInfo.value.balance = customer.balance.toString();
+        userInfo.value.password = customer.password;
+
+        // 更新 showItems 中的 v_model 与 userInfo 保持一致
+        showItems.value[0].v_model = userInfo.value.customerName;
+        showItems.value[1].v_model = userInfo.value.address;
+        showItems.value[2].v_model = userInfo.value.email;
+        showItems.value[3].v_model = userInfo.value.phone;
       }
     } catch (error) {
       console.error("获取用户信息失败:", error);
@@ -129,10 +126,8 @@ const fetchOrders = async () => {
   if (CustomerId) {
     try {
       const responseOrders = await getOrderByCustomerID(CustomerId);
-      console.log(responseOrders)
-      if (responseOrders.data.code===1) {
+      if (responseOrders.data.code === 1) {
         orders.value = responseOrders.data.data;
-        console.log(orders)
       }
     } catch (error) {
       console.error("获取订单信息失败:", error);
@@ -140,7 +135,6 @@ const fetchOrders = async () => {
   }
 };
 
-// 初始化页面数据
 const init = async () => {
   await fetchUserData();
   await fetchOrders();
@@ -156,40 +150,42 @@ const handleMenuSelect = (index: string) => {
 };
 
 // 处理每个输入框修改按钮的点击事件
-const handleButtonClick = (index: number) => {
-  const item = showItems[index];
-  console.log(`修改后${item.label}的值是: `, item.v_model.value);
-  item.v_model.value = `${item.v_model.value}`;
-};
+const handleButtonClick = async (index: number) => {
+  const item = showItems.value[index];
 
-// 处理密码修改按钮点击事件
-const handlePasswordChange = () => {
-  console.log('密码修改');
-  // 处理密码修改逻辑
+  // 确保 showItems 中的修改值同步到 userInfo
+  if (item.label === "用户名称") {
+    userInfo.value.customerName = item.v_model;
+  } else if (item.label === "地址") {
+    userInfo.value.address = item.v_model;
+  } else if (item.label === "邮箱") {
+    userInfo.value.email = item.v_model;
+  } else if (item.label === "电话号码") {
+    userInfo.value.phone = item.v_model;
+  }
+
+  try {
+    // 直接使用 userInfo 中的数据进行更新
+    await editCustomerInfo(userInfo.value.customerId, userInfo.value);
+    console.log('用户信息更新成功');
+    alert('用户信息更新成功');
+  } catch (error) {
+    alert(`更新失败: ${error.message || '未知错误'}`);
+  }
 };
 
 // 处理余额充值按钮点击事件
 const handleBalanceRecharge = () => {
-  console.log('余额充值');
-  // 处理余额充值逻辑
+  const rechargeAmount = 1000;
+  userInfo.value.balance = (parseFloat(userInfo.value.balance) + rechargeAmount).toString();
+  handleButtonClick(1)
 };
 
 // 保存按钮的点击事件
 const handleSave = async () => {
   try {
-    const updatedCustomer = {
-      id: show_ID.value,
-      name: show_name.value,
-      creditLevel: show_Level.value,
-      address: show_address.value,
-      email: show_email.value,
-      phone: show_phone.value,
-      balance: show_balance.value,
-    };
-
-    // 调用API保存修改后的用户信息
-    await updateCustomer(updatedCustomer);
-
+    // 直接通过 userInfo 更新
+    await updateCustomer(userInfo.value);
     console.log('保存成功');
   } catch (error) {
     console.error('保存失败:', error);
@@ -198,7 +194,6 @@ const handleSave = async () => {
 
 // 更新用户信息 API 请求
 const updateCustomer = async (customerData: any) => {
-  // 这里应该根据后端的API来发送PUT或PATCH请求
   try {
     const response = await updateCustomerById(customerData);
     return response.data;
@@ -207,7 +202,6 @@ const updateCustomer = async (customerData: any) => {
     throw error;
   }
 };
-
 </script>
 
 
