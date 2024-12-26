@@ -28,16 +28,16 @@
       <div class="book-show" v-if="!loading">
         <el-row :gutter="20" class="book-list">
           <div class="book-grid">
-            <el-col v-for="book in filteredBooks" :key="book.id" :span="6" class="book-box">
+            <el-col v-for="book in filteredBooks" :key="book.bookID" :span="6" class="book-box">
               <el-card class="book-card">
                 <img :src="book.img || default_book" class="book-img" alt="book img"/>
                 <div class="book-info">
-                  <router-link :to="'/book/' + book.id" style="text-decoration: none; color: #181818">
-                    <h3 style="font-weight: bold">《{{ book.name }}》</h3>
+                  <router-link :to="'/book/' + book.bookID" style="text-decoration: none; color: #181818">
+                    <h3 style="font-weight: bold">《{{ book.title }}》</h3>
                   </router-link>
                   <p>作者：{{ book.author }}</p>
                   <p>价格：￥{{ book.price }}</p>
-                  <router-link :to="'/book/' + book.id" style="text-decoration: none; color: #181818">
+                  <router-link :to="'/book/' + book.bookID" style="text-decoration: none; color: #181818">
                     <el-button type="primary">查看详情</el-button>
                   </router-link>
                 </div>
@@ -73,7 +73,7 @@
 import { defineComponent, onMounted, ref, watch } from 'vue';
 import Navbar from '@/components/Navbar.vue';
 import default_book from '@/assets/image/default.jpg';
-import { getAllBook } from '@/api/Book'; // 假设getAllBook已经正确引入
+import { getAllBook, searchBook, searchBookByTitle, searchBookByAuthor, searchBookBykeywords } from '@/api/Book'; // 假设getAllBook已经正确引入
 
 // 响应式变量
 const books = ref([]); // 所有书籍数据
@@ -89,7 +89,7 @@ const fetchBooks = async () => {
   error.value = false;
   try {
     const response = await getAllBook();
-    books.value = response.data;
+    books.value = response.data.data;
     filteredBooks.value = books.value; // 默认显示所有书籍
   } catch (err) {
     error.value = true;
@@ -100,18 +100,51 @@ const fetchBooks = async () => {
 };
 
 // 搜索功能：根据条件过滤书籍
-const handleSearch = () => {
+const handleSearch = async () => {
+  // alert(searchQuery.value)
   if (!searchQuery.value) {
     filteredBooks.value = books.value; // 如果没有输入搜索内容，显示所有书籍
     return;
   }
 
-  // 按照搜索条件进行过滤
-  filteredBooks.value = books.value.filter(book => {
-    const field = book[searchCriteria.value];
-    return field && field.toLowerCase().includes(searchQuery.value.toLowerCase());
-  });
+  loading.value = true;
+  error.value = false;
+
+  try {
+    let response;
+    // const searchParams = {
+    //   string: searchQuery.value
+    // };
+    // console.log(searchParams)
+    // console.log("Search Criteria:", searchCriteria.value); // 打印搜索条件
+    console.log("Search Query:", searchQuery.value); // 打印搜索内容
+    console.log(typeof searchQuery.value); // 打印数据类型
+
+    switch (searchCriteria.value) {
+      case 'title':
+        response = await searchBookByTitle(searchQuery.value);
+        break;
+      case 'author':
+        response = await searchBookByAuthor(searchQuery.value);
+        break;
+      case 'category':
+        // alert(searchQuery.value)
+        response = await searchBookBykeywords(searchQuery.value); // 假设类别通过keywords字段查询
+        break;
+      default:
+        response = await searchBook(searchQuery.value);
+    }
+
+    // 如果搜索成功，更新显示的书籍数据
+    filteredBooks.value = response.data.data || [];
+  } catch (err) {
+    error.value = true;
+    console.error("Error fetching search results:", err);
+  } finally {
+    loading.value = false;
+  }
 };
+
 
 // 监听搜索条件或搜索内容变化，自动触发搜索
 watch([searchQuery, searchCriteria], handleSearch);
@@ -119,6 +152,7 @@ watch([searchQuery, searchCriteria], handleSearch);
 // 页面加载时获取书籍数据
 onMounted(fetchBooks);
 </script>
+
 <style>
 /* Main layout adjustments */
 .main-body {
@@ -133,6 +167,8 @@ onMounted(fetchBooks);
   padding-top: 60px; /* Ensuring space for Navbar */
 }
 .search-box{
+  height: 100%;
+  margin-top: 10000px;
   display: flex;
   width: 100%;
   align-items: center;
@@ -143,6 +179,7 @@ onMounted(fetchBooks);
 
 /* Book list and card styles */
 .book-show {
+
   padding: 20px 0 40px 0;
   width: 100vw;
   display: flex;

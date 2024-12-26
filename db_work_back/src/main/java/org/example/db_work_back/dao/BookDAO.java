@@ -27,12 +27,11 @@ public class BookDAO {
         String sql = "SELECT * FROM books WHERE BookID = ?";
         return jdbcTemplate.queryForObject(sql, new Object[]{id}, this::mapRowToBook);
     }
+    public List<Book> BookSearch(String keyword) {
+        String sql = "SELECT * FROM books WHERE title LIKE ? OR author LIKE ? OR keywords LIKE ?";
+        keyword = "%" + keyword + "%"; // 加上模糊搜索的百分号
 
-    public List<Book> selectBookByNameSearch(String title) {
-        String sql = "SELECT * FROM books WHERE title LIKE ?";
-        title = "%" + title + "%";
-        System.out.println(sql);
-        return jdbcTemplate.query(sql, new Object[]{title}, (rs, rowNum) -> {
+        return jdbcTemplate.query(sql, new Object[]{keyword, keyword, keyword}, (rs, rowNum) -> {
             Book book = new Book();
             book.setBookID(rs.getInt("BookID"));
             book.setTitle(rs.getString("Title"));
@@ -50,6 +49,69 @@ public class BookDAO {
         });
     }
 
+    public List<Book> selectBookByNameSearch(String title) {
+        String sql = "SELECT * FROM books WHERE title LIKE ?";
+        title = "%" + title + "%";
+//        System.out.println(sql);
+        return jdbcTemplate.query(sql, new Object[]{title}, (rs, rowNum) -> {
+            Book book = new Book();
+            book.setBookID(rs.getInt("BookID"));
+            book.setTitle(rs.getString("Title"));
+            book.setAuthor(rs.getString("Author"));
+            book.setPublisher(rs.getString("Publisher"));
+            book.setPrice(rs.getBigDecimal("Price"));
+            book.setKeywords(rs.getString("Keywords"));
+            book.setDescription(rs.getString("Description"));
+//        book.setCoverImage(rs.getBytes("CoverImage"));
+            book.setStock(rs.getInt("Stock"));
+            book.setStorageLocation(rs.getString("StorageLocation"));
+            book.setSeriesID(rs.getInt("SeriesID"));
+            book.setSupplierID(rs.getInt("SupplierID"));
+            return book;
+        });
+    }
+    public List<Book> selectBookByAuthorSearch(String author) {
+        String sql = "SELECT * FROM books WHERE author LIKE ?";
+        author = "%" + author + "%";
+//        System.out.println(sql);
+        return jdbcTemplate.query(sql, new Object[]{author}, (rs, rowNum) -> {
+            Book book = new Book();
+            book.setBookID(rs.getInt("BookID"));
+            book.setTitle(rs.getString("Title"));
+            book.setAuthor(rs.getString("Author"));
+            book.setPublisher(rs.getString("Publisher"));
+            book.setPrice(rs.getBigDecimal("Price"));
+            book.setKeywords(rs.getString("Keywords"));
+            book.setDescription(rs.getString("Description"));
+//        book.setCoverImage(rs.getBytes("CoverImage"));
+            book.setStock(rs.getInt("Stock"));
+            book.setStorageLocation(rs.getString("StorageLocation"));
+            book.setSeriesID(rs.getInt("SeriesID"));
+            book.setSupplierID(rs.getInt("SupplierID"));
+            return book;
+        });
+    }
+    public List<Book> selectBookByKeySearch(String key) {
+        String sql = "SELECT * FROM books WHERE keywords LIKE ?";
+        key = "%" + key + "%";
+//        System.out.println(sql);
+        return jdbcTemplate.query(sql, new Object[]{key}, (rs, rowNum) -> {
+            Book book = new Book();
+            book.setBookID(rs.getInt("BookID"));
+            book.setTitle(rs.getString("Title"));
+            book.setAuthor(rs.getString("Author"));
+            book.setPublisher(rs.getString("Publisher"));
+            book.setPrice(rs.getBigDecimal("Price"));
+            book.setKeywords(rs.getString("Keywords"));
+            book.setDescription(rs.getString("Description"));
+//        book.setCoverImage(rs.getBytes("CoverImage"));
+            book.setStock(rs.getInt("Stock"));
+            book.setStorageLocation(rs.getString("StorageLocation"));
+            book.setSeriesID(rs.getInt("SeriesID"));
+            book.setSupplierID(rs.getInt("SupplierID"));
+            return book;
+        });
+    }
 
     //根据系列id查询书籍
     public List<Book> selectBookBySeriesId(Integer SeriesID) {
