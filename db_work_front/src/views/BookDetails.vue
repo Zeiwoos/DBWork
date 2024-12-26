@@ -12,11 +12,11 @@
             <el-input-number v-model="quantity" :min="1" :max="10" @change="handleChange" />
           </div>
           <div class="other-info">
-            <p><strong style="font-weight: bold">作者：</strong>{{ book.author }}</p>
-            <p><strong style="font-weight: bold">关键词：</strong>{{ book.keywords }}</p>
-            <p><div><strong style="font-weight: bold">描述：</strong>{{ book.description }}</div></p>
-            <p><strong style="font-weight: bold">发货地址：</strong>{{ book.storageLocation }}</p>
-            <p><strong style="font-weight: bold">出版社：</strong>{{ book.publisher }}</p>
+            <div><strong style="font-weight: bold; width: 80px">作者：</strong><p>{{ book.author }}</p></div>
+            <div><strong style="font-weight: bold; width: 70px">关键词：</strong><p>{{ book.keywords }}</p></div>
+            <div><strong style="font-weight: bold; width: 50px">描述：</strong><p>{{ book.description }}</p></div>
+            <div><strong style="font-weight: bold; width: 90px">发货地址：</strong><p>{{ book.storageLocation }}</p></div>
+            <div><strong style="font-weight: bold; width: 90px">出版社：</strong><p>{{ book.publisher }}</p></div>
           </div>
           <div class="details-footer">
             <el-button @click="addToCart(book.bookID)" type="primary" style="width: 200px">加入购物车</el-button>
@@ -187,10 +187,16 @@ const addToCart = (id: number) => {
   gap:10px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  align-items: flex-start;
 }
-
-
+.other-info div{
+  display: flex;
+}
+.other-info strong{
+  display: flex;
+  align-items: flex-start;
+  margin-top: 2px;
+}
 .other-info p {
   font-size: large;
   display: flex;
