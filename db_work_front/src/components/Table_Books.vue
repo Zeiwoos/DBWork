@@ -42,28 +42,31 @@
         <el-input v-model="currentBook.BookID" disabled></el-input>
       </el-form-item>
       <el-form-item label="Title">
-        <el-input v-model="currentBook.Title"></el-input>
+        <el-input v-model="currentBook.title"></el-input>
       </el-form-item>
       <el-form-item label="Author">
-        <el-input v-model="currentBook.Author"></el-input>
+        <el-input v-model="currentBook.author"></el-input>
       </el-form-item>
       <el-form-item label="Publisher">
-        <el-input v-model="currentBook.Publisher"></el-input>
+        <el-input v-model="currentBook.publisher"></el-input>
       </el-form-item>
       <el-form-item label="Keywords">
-        <el-input v-model="currentBook.Keywords"></el-input>
+        <el-input v-model="currentBook.keywords"></el-input>
       </el-form-item>
       <el-form-item label="Description">
-        <el-input v-model="currentBook.Description"></el-input>
+        <el-input v-model="currentBook.description"></el-input>
       </el-form-item>
       <el-form-item label="Stock">
-        <el-input v-model="currentBook.Stock"></el-input>
+        <el-input v-model="currentBook.stock"></el-input>
       </el-form-item>
       <el-form-item label="StorageLocation">
-        <el-input v-model="currentBook.StorageLocation"></el-input>
+        <el-input v-model="currentBook.storageLocation"></el-input>
       </el-form-item>
       <el-form-item label="SeriesID">
-        <el-input v-model="currentBook.SeriesID"></el-input>
+        <el-input v-model="currentBook.seriesID"></el-input>
+      </el-form-item>
+      <el-form-item label="SupplierID">
+        <el-input v-model="newBook.supplierID" placeholder="Enter SeriesID"></el-input>
       </el-form-item>
     </el-form>
     <template #footer>
@@ -87,28 +90,31 @@
         <el-input v-model="newBook.BookID" placeholder="Enter BookID"></el-input>
       </el-form-item>
       <el-form-item label="Title">
-        <el-input v-model="newBook.Title" placeholder="Enter Title"></el-input>
+        <el-input v-model="newBook.title" placeholder="Enter Title"></el-input>
       </el-form-item>
       <el-form-item label="Author">
-        <el-input v-model="newBook.Author" placeholder="Enter Author"></el-input>
+        <el-input v-model="newBook.author" placeholder="Enter Author"></el-input>
       </el-form-item>
       <el-form-item label="Publisher">
-        <el-input v-model="newBook.Publisher" placeholder="Enter Publisher"></el-input>
+        <el-input v-model="newBook.publisher" placeholder="Enter Publisher"></el-input>
       </el-form-item>
       <el-form-item label="Keywords">
-        <el-input v-model="newBook.Keywords" placeholder="Enter Keywords"></el-input>
+        <el-input v-model="newBook.keywords" placeholder="Enter Keywords"></el-input>
       </el-form-item>
       <el-form-item label="Description">
-        <el-input v-model="newBook.Description" placeholder="Enter Description"></el-input>
+        <el-input v-model="newBook.description" placeholder="Enter Description"></el-input>
       </el-form-item>
       <el-form-item label="Stock">
-        <el-input v-model="newBook.Stock" placeholder="Enter Stock"></el-input>
+        <el-input v-model="newBook.stock" placeholder="Enter Stock"></el-input>
       </el-form-item>
       <el-form-item label="StorageLocation">
-        <el-input v-model="newBook.StorageLocation" placeholder="Enter Storage Location"></el-input>
+        <el-input v-model="newBook.storageLocation" placeholder="Enter Storage Location"></el-input>
       </el-form-item>
       <el-form-item label="SeriesID">
-        <el-input v-model="newBook.SeriesID" placeholder="Enter SeriesID"></el-input>
+        <el-input v-model="newBook.seriesID" placeholder="Enter SeriesID"></el-input>
+      </el-form-item>
+      <el-form-item label="SupplierID">
+        <el-input v-model="newBook.supplierID" placeholder="Enter SeriesID"></el-input>
       </el-form-item>
     </el-form>
     <template #footer>
@@ -122,62 +128,73 @@
 
 <script lang="ts" setup>
 import { ElButton, ElInput, ElTable, ElTableColumn } from "element-plus";
-import {onMounted, ref} from "vue";
-import { getAllBook,addBook,getBookByID,deleteBook,updateBook } from '@/api/Book'
+import {onBeforeMount, onMounted, ref} from "vue";
+import { getAllBook, addBook, getBookByID, deleteBook, updateBook } from '@/api/Book';
+
 // 当前搜索框和对话框的控制
 const searchBookID = ref('');
 const editDialogVisible = ref(false);
 const insertDialogVisible = ref(false);
 
+export interface Book {
+  BookID:number;
+  title: string;
+  author: string;
+  publisher: string;
+  price: number;
+  keywords: string;
+  description: string;
+  stock: number;
+  storageLocation: string;
+  seriesID: number;
+  supplierID:number;
+}
 // 当前正在编辑的书籍
 const currentBook = ref<Book>({
   BookID: 0,
-  Title: '',
-  Author: '',
-  Publisher: '',
-  Price: 0,
-  Keywords: '',
-  Description: '',
-  Stock: 0,
-  StorageLocation: '',
-  SeriesID: 0,
+  title: '',
+  author: '',
+  publisher: '',
+  price: 0,
+  keywords: '',
+  description: '',
+  stock: 0,
+  storageLocation: '',
+  seriesID: 0,
+  supplierID:0
 });
 
 // 新书籍的数据对象
 const newBook = ref<Book>({
   BookID: 0,
-  Title: '',
-  Author: '',
-  Publisher: '',
-  Price: 0,
-  Keywords: '',
-  Description: '',
-  Stock: 0,
-  StorageLocation: '',
-  SeriesID: 0,
+  title: '',
+  author: '',
+  publisher: '',
+  price: 0,
+  keywords: '',
+  description: '',
+  stock: 0,
+  storageLocation: '',
+  seriesID: 0,
+  supplierID:0
 });
 
-// 书籍数据接口
-interface Book {
-  BookID: number;
-  Title: string;
-  Author: string;
-  Publisher: string;
-  Price: number;
-  Keywords: string;
-  Description: string;
-  Stock: number;
-  StorageLocation: string;
-  SeriesID: number;
-}
-
-const filteredBooksData = ref<Book[]>([]);
+const filteredBooksData = ref([]);
 
 // 获取所有书籍
 const fetchBooks = async () => {
   try {
     const response = await getAllBook();
-    filteredBooksData.value = response.data; // 假设 API 返回的数据结构为 { data: Book[] }
+    console.info(response.data)
+    // 假设 response.data.data 是一个数组类型，但不一定是 Book[] 类型
+    if (Array.isArray(response.data.data)) {
+      filteredBooksData.value = response.data.data;  // 使用类型断言将其视为 Book[] 类型
+      console.info('Filtered books data:', filteredBooksData.value);
+
+    } else {
+      console.error('返回的数据格式错误，应该是一个数组');
+      filteredBooksData.value = [];  // 如果数据格式不正确，赋予空数组
+    }
   } catch (error) {
     console.error('获取书籍失败', error);
   }
@@ -195,7 +212,7 @@ const handleSearchBook = () => {
 
 // 行样式
 const tableRowClassName = ({ row }: { row: Book }) => {
-  if (row.Stock < 10) {
+  if (row.stock < 10) {
     return 'warning-row';
   }
   return '';
@@ -226,15 +243,16 @@ const handleInsertBook = async () => {
     insertDialogVisible.value = false;
     newBook.value = {
       BookID: 0,
-      Title: '',
-      Author: '',
-      Publisher: '',
-      Price: 0,
-      Keywords: '',
-      Description: '',
-      Stock: 0,
-      StorageLocation: '',
-      SeriesID: 0,
+      title: '',
+      author: '',
+      publisher: '',
+      price: 0,
+      keywords: '',
+      description: '',
+      stock: 0,
+      storageLocation: '',
+      seriesID: 0,
+      supplierID:0
     };
   } catch (error) {
     console.error('添加书籍失败', error);
@@ -252,9 +270,9 @@ const handleDeleteClick = async (bookID: number) => {
 };
 
 // 初始化加载书籍
-onMounted(() => {
+onBeforeMount(() => {
   fetchBooks();
-});
+})
 </script>
 
 <style scoped>
