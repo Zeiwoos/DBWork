@@ -30,7 +30,6 @@ export default {
       const loggedInStatus = localStorage.getItem('isLoggedIn');
       const id = localStorage.getItem("customerID")
       isLoggedIn.value = loggedInStatus === 'true'; // 如果返回的值为 'true'，表示用户已登录
-      console.log(id)
     });
 
     return {

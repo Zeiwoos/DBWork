@@ -32,6 +32,15 @@ interface CustomerLoginDTO {
     "customerID": 1,
     "password": "4VBbRL4xSJbuv_I"
 }*/
+
+
+export function getCustomerById(id: number) {
+    return request<CustomerData>({
+        url: `/api/customers/${id}`,
+        method: 'get',  // GET 请求
+    });
+}
+
 export function login(data:CustomerLoginDTO){
     return request<CustomerData>({
         url:'/api/customers/login',

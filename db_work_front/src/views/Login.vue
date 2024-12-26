@@ -115,6 +115,7 @@ const handleLogin = async () => {
       errorMessage.value = "";
       alert("登录成功！");
       localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('customerId',input_UserID.value)
       router.push('/home'); // 跳转到首页或目标页面
     } else {
       // 登录失败，显示错误信息

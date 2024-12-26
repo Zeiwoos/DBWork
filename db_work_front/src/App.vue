@@ -13,7 +13,6 @@ import FloatingCart from "@/components/FloatingCart.vue";
 import {ref} from "vue";
 const purchaseMessage = ref('');
 const addToCart = (message) => {
-  console.log(message);
   purchaseMessage.value = message;
 }
 </script>
